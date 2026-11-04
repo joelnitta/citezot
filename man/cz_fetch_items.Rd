@@ -17,5 +17,8 @@ A list of CSL-JSON items (plain lists, \code{simplifyVector = FALSE}).
 \description{
 Uses the \verb{/items/top} endpoint (excludes notes, attachments and other child
 items) and pages through the whole library using the \code{Total-Results}
-header.
+header. After the first page, the remaining pages are requested in parallel
+(at most \code{getOption("citezot.max_active", 4)} at a time, and throttled) and
+the library version is checked so that a library edited mid-download is
+re-fetched rather than returned inconsistent.
 }

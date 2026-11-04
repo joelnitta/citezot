@@ -57,3 +57,33 @@ test_that("Retry-After / Backoff headers set the retry delay", {
   expect_equal(cz_retry_after(resp(list(Backoff = "12"))), 12)
   expect_true(is.na(cz_retry_after(resp(list()))))
 })
+
+test_that("cz_fetch_items retries once if the library changes mid-download", {
+  env <- new.env()
+  env$n <- 0
+  base <- mock_library(250, env)
+  httr2::local_mocked_responses(function(req) {
+    resp <- base(req)
+    env$n <- env$n + 1
+    # first attempt: page 2 reports a newer library version
+    v <- if (env$n == 2) 11 else 10
+    resp$headers[["Last-Modified-Version"]] <- as.character(v)
+    resp
+  })
+  items <- cz_fetch_items(cz_auth("1", "k"))
+  expect_length(items, 250)
+  expect_equal(env$n, 6) # 3 requests, discarded, then 3 consistent ones
+})
+
+test_that("cz_fetch_items gives up if the library keeps changing", {
+  env <- new.env()
+  env$n <- 0
+  base <- mock_library(250, env)
+  httr2::local_mocked_responses(function(req) {
+    resp <- base(req)
+    env$n <- env$n + 1
+    resp$headers[["Last-Modified-Version"]] <- as.character(env$n)
+    resp
+  })
+  expect_error(cz_fetch_items(cz_auth("1", "k")), "changed while it was being downloaded")
+})

@@ -33,10 +33,11 @@ cz_request <- function(auth, ...) {
     )
 }
 
-# Perform a request, turning the common Zotero failures into clear errors.
-cz_perform <- function(req) {
+# Evaluate `expr` (an httr2 perform call), turning the common Zotero failures
+# into clear errors.
+cz_translate_errors <- function(expr) {
   tryCatch(
-    httr2::req_perform(req),
+    expr,
     httr2_http_412 = function(e) {
       cli::cli_abort(c(
         "The item changed in Zotero since it was read (HTTP 412).",
@@ -50,4 +51,26 @@ cz_perform <- function(req) {
       ), call = NULL)
     }
   )
+}
+
+cz_perform <- function(req) {
+  cz_translate_errors(httr2::req_perform(req))
+}
+
+# Perform several requests with a small, capped concurrency. Requests should
+# already be throttled (see cz_fetch_pages()) so we stay polite to the API.
+cz_perform_parallel <- function(reqs) {
+  cz_translate_errors(
+    httr2::req_perform_parallel(
+      reqs,
+      max_active = getOption("citezot.max_active", 4),
+      on_error = "stop",
+      progress = interactive()
+    )
+  )
+}
+
+# Library version from a response (NA if the header is absent).
+cz_resp_version <- function(resp) {
+  suppressWarnings(as.integer(httr2::resp_header(resp, "Last-Modified-Version", NA)))
 }
