@@ -4,11 +4,20 @@
 \alias{cz_pin_key}
 \title{Pin a citekey onto a Zotero item}
 \usage{
-cz_pin_key(item, key, dry_run = TRUE, overwrite = FALSE, auth = cz_auth())
+cz_pin_key(
+  item,
+  key,
+  dry_run = TRUE,
+  overwrite = FALSE,
+  auth = cz_auth(),
+  cache = getOption("citezot.cache", FALSE)
+)
 }
 \arguments{
-\item{item}{Zotero item ID, either bare (\code{"Q62TD7I9"}) or prefixed with the
-library ID as in CSL-JSON (\code{"6265773/Q62TD7I9"}).}
+\item{item}{The item to pin: a DOI, a Zotero item ID (bare, \code{"Q62TD7I9"},
+or with the library ID as in CSL-JSON, \code{"6265773/Q62TD7I9"}), an existing
+citekey, or a one-row result of \code{\link[=cz_find]{cz_find()}}. Zero or several matches is an
+error.}
 
 \item{key}{The citekey to pin.}
 
@@ -19,6 +28,9 @@ nothing.}
 to \code{FALSE}, because changing a pinned key breaks documents citing it.}
 
 \item{auth}{Credentials from \code{\link[=cz_auth]{cz_auth()}}.}
+
+\item{cache}{Passed to \code{\link[=cz_fetch_items]{cz_fetch_items()}} when \code{item} is a DOI or citekey
+that has to be looked up.}
 }
 \value{
 Invisibly, a list with \code{item}, \code{before}, \code{after} and \code{written}.
@@ -33,7 +45,4 @@ The default is a dry run: the item is \emph{read} (to get its current version an
 key) but nothing is written. Set \code{dry_run = FALSE} to write. The write
 sends \code{If-Unmodified-Since-Version}, so if the item changed in the meantime
 Zotero rejects it (HTTP 412) and nothing is overwritten.
-
-Only a Zotero item ID is accepted for now; lookup by DOI or citekey comes
-with \code{cz_find()}.
 }

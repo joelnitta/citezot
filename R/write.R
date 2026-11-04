@@ -9,27 +9,34 @@
 #' sends `If-Unmodified-Since-Version`, so if the item changed in the meantime
 #' Zotero rejects it (HTTP 412) and nothing is overwritten.
 #'
-#' Only a Zotero item ID is accepted for now; lookup by DOI or citekey comes
-#' with `cz_find()`.
-#'
-#' @param item Zotero item ID, either bare (`"Q62TD7I9"`) or prefixed with the
-#'   library ID as in CSL-JSON (`"6265773/Q62TD7I9"`).
+#' @param item The item to pin: a DOI, a Zotero item ID (bare, `"Q62TD7I9"`,
+#'   or with the library ID as in CSL-JSON, `"6265773/Q62TD7I9"`), an existing
+#'   citekey, or a one-row result of [cz_find()]. Zero or several matches is an
+#'   error.
 #' @param key The citekey to pin.
 #' @param dry_run If `TRUE` (default), report what would change and write
 #'   nothing.
 #' @param overwrite Replace a *different* key that is already pinned. Defaults
 #'   to `FALSE`, because changing a pinned key breaks documents citing it.
 #' @param auth Credentials from [cz_auth()].
+#' @param cache Passed to [cz_fetch_items()] when `item` is a DOI or citekey
+#'   that has to be looked up.
 #'
 #' @return Invisibly, a list with `item`, `before`, `after` and `written`.
 #' @export
-cz_pin_key <- function(item, key, dry_run = TRUE, overwrite = FALSE, auth = cz_auth()) {
-  rlang::check_string(item)
+cz_pin_key <- function(
+  item,
+  key,
+  dry_run = TRUE,
+  overwrite = FALSE,
+  auth = cz_auth(),
+  cache = getOption("citezot.cache", FALSE)
+) {
   rlang::check_string(key)
   rlang::check_bool(dry_run)
   rlang::check_bool(overwrite)
 
-  item_id <- sub("^.*/", "", item)
+  item_id <- cz_resolve_item(item, auth, cache = cache)
   current <- cz_request(auth, "items", item_id) |>
     cz_perform() |>
     httr2::resp_body_json(simplifyVector = FALSE)
@@ -43,8 +50,13 @@ cz_pin_key <- function(item, key, dry_run = TRUE, overwrite = FALSE, auth = cz_a
     ))
   }
 
-  shown_before <- if (nzchar(before)) before else "<none>"
   result <- list(item = item_id, before = before, after = key, written = FALSE)
+  if (before == key) {
+    cli::cli_inform(c("i" = "Item {item_id} already has the key {.val {key}}; nothing to do."))
+    return(invisible(result))
+  }
+
+  shown_before <- if (nzchar(before)) before else "<none>"
 
   if (dry_run) {
     cli::cli_inform(c(
