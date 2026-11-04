@@ -18,7 +18,7 @@ cz_qmd_keys <- function(
     "def", "exm", "exr", "rem", "sol", "nte"
   )
 ) {
-  lines <- readLines(path, warn = FALSE)
+  lines <- readLines(path, warn = FALSE, encoding = "UTF-8")
   in_code <- FALSE
   kept <- character(0)
   for (ln in lines) {
@@ -34,7 +34,7 @@ cz_qmd_keys <- function(
   # a period is only consumed when followed by more alnum/hyphen text, so a
   # sentence-ending "@Foo2020." does not capture the period.
   m <- gregexpr(
-    "(?<![[:alnum:]_])@[[:alnum:]-]+(?:\\.[[:alnum:]-]+)*",
+    "(*UCP)(?<![[:alnum:]_])@[[:alnum:]-]+(?:\\.[[:alnum:]-]+)*",
     txt,
     perl = TRUE
   )
@@ -57,9 +57,9 @@ cz_qmd_keys <- function(
 #' @return Sorted character vector of unique citekey-shaped tokens.
 #' @export
 cz_bare_keys <- function(path) {
-  txt <- paste(readLines(path, warn = FALSE), collapse = "\n")
+  txt <- paste(readLines(path, warn = FALSE, encoding = "UTF-8"), collapse = "\n")
   m <- gregexpr(
-    "(?<![[:alnum:]])[A-Za-z][A-Za-z-]*(19|20)[0-9]{2}[a-z]*(?![[:alnum:]])",
+    "(*UCP)(?<![[:alnum:]])\\p{L}[\\p{L}-]*(19|20)[0-9]{2}[a-z]*(?![[:alnum:]])",
     txt,
     perl = TRUE
   )

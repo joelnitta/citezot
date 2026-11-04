@@ -50,3 +50,16 @@ test_that("cz_strip_key_line keeps other content, NULL when empty", {
   expect_null(cz_strip_key_line("Citation Key: A2020"))
   expect_null(cz_strip_key_line(NULL))
 })
+
+test_that("keys with non-ASCII letters are kept whole", {
+  f <- write_tmp("See @Weiß2015, @Tjørve2008; @Ramírez-Barahona2020 and @Øllgaard2015.")
+  expect_equal(
+    cz_qmd_keys(f),
+    sort(c("Weiß2015", "Tjørve2008", "Ramírez-Barahona2020", "Øllgaard2015"), method = "radix")
+  )
+})
+
+test_that("cz_bare_keys handles non-ASCII author names", {
+  f <- write_tmp("defined in Weiß2015 and Sønstebø2010a", ".csv")
+  expect_equal(cz_bare_keys(f), c("Sønstebø2010a", "Weiß2015"))
+})
