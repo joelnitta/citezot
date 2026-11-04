@@ -1,0 +1,4 @@
+^LICENSE\.md$
+^dev$
+^CLAUDE\.md$
+^\.env\.local$
