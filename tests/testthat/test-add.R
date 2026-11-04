@@ -31,7 +31,7 @@ fake <- function(env) {
       return(httr2::response_json(body = setNames(as.list(rep("", length(tmpl_fields))), tmpl_fields)))
     }
     if (grepl("/items/top", url)) {
-      return(httr2::response_json(headers = list(`Total-Results` = "1"), body = list(items = list(lib_item))))
+      return(httr2::response_json(headers = list(`Total-Results` = "1"), body = list(items = list(env$lib_item %||% lib_item))))
     }
     if (grepl("/collections", url)) {
       return(httr2::response_json(headers = list(`Total-Results` = as.character(length(env$collections))), body = env$collections))
@@ -185,4 +185,28 @@ test_that("no contact address is sent to Crossref unless the user sets one", {
   env <- setup_add()
   suppressMessages(cz_add("10.1234/new", auth = a))
   expect_false(any(grepl("mailto", urls(env))))
+})
+
+test_that("key = 'auto' generates the key from the formula and shows it in the dry run", {
+  withr::local_options(citezot.key_format = "auth.lower + year + shorttitle(1).lower")
+  env <- setup_add()
+  msgs <- testthat::capture_messages(res <- cz_add("10.1234/new", key = "auto", auth = a))
+  expect_equal(res$item$citationKey, "author2024new")
+  expect_match(paste(msgs, collapse = ""), "author2024new")
+})
+
+test_that("an auto key that is already taken gets a letter", {
+  withr::local_options(citezot.key_format = "auth.lower + year + shorttitle(1).lower")
+  env <- new.env()
+  env$lib_item <- modifyList(lib_item, list(`citation-key` = "author2024new", DOI = "10.1234/other"))
+  setup_add(env)
+  res <- suppressMessages(cz_add("10.1234/new", key = "auto", auth = a))
+  expect_equal(res$item$citationKey, "author2024newa")
+})
+
+test_that("an unsupported formula stops cz_add before anything is written", {
+  withr::local_options(citezot.key_format = "auth || title")
+  env <- setup_add()
+  expect_error(cz_add("10.1234/new", key = "auto", dry_run = FALSE, auth = a), "alternatives")
+  expect_false(any(vapply(env$reqs, httr2::req_get_method, "") == "POST"))
 })

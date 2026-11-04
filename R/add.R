@@ -22,7 +22,9 @@
 #' @param id A DOI, with or without a `https://doi.org/` or `doi:` prefix.
 #' @param key Optional citekey to pin on the new item, e.g. `"Kent2002"`. It
 #'   must be usable as a pandoc citation key and not already used in your
-#'   library.
+#'   library. Use `"auto"` to generate one from your Better BibTeX formula
+#'   (see [cz_suggest_key()] and [cz_key_format()]); a letter is appended if
+#'   the key is taken. The key is shown in the dry run.
 #' @param collection Optional collection to add the item to: its 8-character
 #'   key, or its exact name.
 #' @param dry_run If `TRUE` (default), show what would be created and write
@@ -53,7 +55,8 @@ cz_add <- function(
   if (!is.null(collection)) rlang::check_string(collection)
   rlang::check_bool(dry_run)
   doi <- cz_add_doi_or_abort(id)
-  if (!is.null(key)) cz_check_key_syntax(key)
+  auto_key <- identical(key, "auto")
+  if (!is.null(key) && !auto_key) cz_check_key_syntax(key)
 
   items <- cz_fetch_items(auth, cache = cache)
 
@@ -64,7 +67,7 @@ cz_add <- function(
     ))
     return(invisible(list(item = NULL, key = NULL, existing = existing, written = FALSE)))
   }
-  if (!is.null(key)) {
+  if (!is.null(key) && !auto_key) {
     clash <- cz_find(citekey = key, items = items)
     if (nrow(clash) > 0) {
       cli::cli_abort(c(
@@ -79,6 +82,10 @@ cz_add <- function(
   type <- cz_crossref_type(msg$type %||% "")
   built <- cz_crossref_to_item(msg, type, cz_item_template_fields(type))
   item <- built$item
+  if (auto_key) {
+    taken <- vapply(items, cz_item_key, character(1))
+    key <- cz_suggest_key(item, existing = taken[!is.na(taken)])
+  }
   if (!is.null(key)) item$citationKey <- key
   if (!is.null(coll_key)) item$collections <- list(coll_key)
 

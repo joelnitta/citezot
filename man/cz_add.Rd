@@ -18,7 +18,9 @@ cz_add(
 
 \item{key}{Optional citekey to pin on the new item, e.g. \code{"Kent2002"}. It
 must be usable as a pandoc citation key and not already used in your
-library.}
+library. Use \code{"auto"} to generate one from your Better BibTeX formula
+(see \code{\link[=cz_suggest_key]{cz_suggest_key()}} and \code{\link[=cz_key_format]{cz_key_format()}}); a letter is appended if
+the key is taken. The key is shown in the dry run.}
 
 \item{collection}{Optional collection to add the item to: its 8-character
 key, or its exact name.}
