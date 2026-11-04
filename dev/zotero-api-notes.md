@@ -32,5 +32,13 @@ Checked 2026-11-04 against the official docs (write_requests, basics, types_and_
 ## API key
 - **[live]** `GET /keys/current` shows the key in Joel's environment has **write access** (library read+write, files). The key used for reading is therefore capable of writing. Recommended: a separate read-only key for routine use (`cz_update_bib()`), and a write key only in sessions that edit.
 
-## Open items before live write tests
-- The 200-response shape of POST (`success` vs `successful`) and the exact PATCH/POST behaviours marked **[docs]** must be confirmed with a live round trip on a throwaway item, with Joel's explicit go-ahead, ideally in a scratch collection and followed by moving the item to the trash by hand.
+## Live write round trip (2026-11-04, Joel's go-ahead, one throwaway item XZVSG5K8)
+All **[docs]** behaviours above that citezot relies on were confirmed:
+- **POST create** returned 200 with all four maps present: `successful`, `success`, `unchanged`, `failed` (parsed from `successful[["0"]]$key`, falling back to `success[["0"]]`). The new item appeared in the next incremental fetch (5867 -> 5868) with its `citationKey`, pinned in the same request.
+- **Write token**: re-sending the identical POST with the same `Zotero-Write-Token` returned **412** and created no duplicate item.
+- **PATCH** with `If-Unmodified-Since-Version` succeeded (item version 23087 -> 23088); a stale version returned **412** and wrote nothing.
+- `cz_pin_key(overwrite = TRUE)` changed `citationKey` via PATCH as intended.
+- Crossref old records can have ALL-CAPS names (`WATSON J. D.`); citezot re-cases fully upper-case names, as Zotero's importer does.
+- Crossref sends empty arrays (`"subtitle": []`) for absent values; never index `[[1]]` without a length check.
+
+The test item has no delete route in citezot (v1 has no deletes): move it to the Zotero trash by hand.
