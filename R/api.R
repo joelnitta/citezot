@@ -53,14 +53,47 @@ cz_translate_errors <- function(expr) {
   )
 }
 
+# Zotero's `Backoff: <seconds>` header can arrive on any response, including
+# successful ones: finish what is needed, then pause before the next request.
+# Remember the deadline and honour it before the next request is sent.
+.cz_state <- new.env(parent = emptyenv())
+.cz_state$backoff_until <- NULL
+
+cz_sleep <- function(seconds) Sys.sleep(seconds)
+
+cz_note_backoff <- function(resp) {
+  h <- suppressWarnings(as.numeric(httr2::resp_header(resp, "Backoff", NA)))
+  if (!is.na(h) && h > 0) {
+    .cz_state$backoff_until <- Sys.time() + min(h, 300)
+  }
+  invisible(resp)
+}
+
+cz_wait_backoff <- function() {
+  until <- .cz_state$backoff_until
+  if (!is.null(until)) {
+    wait <- as.numeric(difftime(until, Sys.time(), units = "secs"))
+    .cz_state$backoff_until <- NULL
+    if (wait > 0) {
+      cli::cli_inform(c("i" = "Zotero asked for a pause; waiting {round(wait)} second{?s}."))
+      cz_sleep(wait)
+    }
+  }
+  invisible()
+}
+
 cz_perform <- function(req) {
-  cz_translate_errors(httr2::req_perform(req))
+  cz_wait_backoff()
+  resp <- cz_translate_errors(httr2::req_perform(req))
+  cz_note_backoff(resp)
+  resp
 }
 
 # Perform several requests with a small, capped concurrency. Requests should
 # already be throttled (see cz_fetch_pages()) so we stay polite to the API.
 cz_perform_parallel <- function(reqs) {
-  cz_translate_errors(
+  cz_wait_backoff()
+  resps <- cz_translate_errors(
     httr2::req_perform_parallel(
       reqs,
       max_active = getOption("citezot.max_active", 4),
@@ -68,6 +101,8 @@ cz_perform_parallel <- function(reqs) {
       progress = interactive()
     )
   )
+  for (r in resps) cz_note_backoff(r)
+  resps
 }
 
 # Library version from a response (NA if the header is absent).
