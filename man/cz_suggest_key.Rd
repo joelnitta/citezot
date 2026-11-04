@@ -23,9 +23,10 @@ Builds a key from a Better BibTeX-style formula, e.g.
 letter (\code{a}, \code{b}, ...) is appended, as Better BibTeX does.
 }
 \details{
-The formula is, in order of preference, the \code{formula} argument,
-\code{getOption("citezot.key_format")}, or Better BibTeX's default
-(\code{auth.lower + shorttitle(3,3) + year}). Supported functions are \code{auth}
+The formula is, in order of preference, the \code{formula} argument, then the one
+found by \code{\link[=cz_key_format]{cz_key_format()}} (the \code{citezot.key_format} option, your Zotero
+profile's Better BibTeX pattern, or Better BibTeX's default
+\code{auth.lower + shorttitle(3,3) + year}). Supported functions are \code{auth}
 (first author's last name), \code{year}, \code{shorttitle(n, m)} (first \code{n} words of
 the title, skipping short function words, with the first \code{m} capitalised),
 and \code{title}; filters are \code{lower}, \code{upper}, \code{fold}, \code{transliterate}, \code{clean},

@@ -161,3 +161,51 @@ test_that("a taken key gets a letter: a, b, ... aa", {
 test_that("cz_postfix counts like spreadsheet columns", {
   expect_equal(vapply(c(1, 26, 27, 28, 52, 53, 702, 703), cz_postfix, ""), c("a", "z", "aa", "ab", "az", "ba", "zz", "aaa"))
 })
+
+# --- finding the formula -----------------------------------------------------------
+write_prefs <- function(dir, lines) {
+  dir.create(dir, recursive = TRUE, showWarnings = FALSE)
+  writeLines(lines, file.path(dir, "prefs.js"))
+}
+
+test_that("the option wins over everything", {
+  withr::local_options(citezot.key_format = "auth + year", citezot.zotero_profile = withr::local_tempdir())
+  expect_equal(cz_key_format(), list(formula = "auth + year", source = "option"))
+})
+
+test_that("the formula is read from the Zotero profile, and only that line", {
+  d <- withr::local_tempdir()
+  write_prefs(d, c(
+    'user_pref("extensions.zotero.sync.server.username", "secret-user");',
+    'user_pref("extensions.zotero.translators.better-bibtex.citekeyFormatEditing", "wrong");',
+    'user_pref("extensions.zotero.translators.better-bibtex.citekeyFormat", "auth.lower + year + shorttitle(1).lower");'
+  ))
+  withr::local_options(citezot.key_format = NULL, citezot.zotero_profile = d)
+  fmt <- cz_key_format()
+  expect_equal(fmt, list(formula = "auth.lower + year + shorttitle(1).lower", source = "zotero profile"))
+  expect_false(grepl("secret", paste(unlist(fmt), collapse = "")))
+  # the prefs.js path itself is also accepted
+  withr::local_options(citezot.zotero_profile = file.path(d, "prefs.js"))
+  expect_equal(cz_key_format()$source, "zotero profile")
+})
+
+test_that("escaped quotes in the stored formula are unescaped", {
+  d <- withr::local_tempdir()
+  write_prefs(d, 'user_pref("extensions.zotero.translators.better-bibtex.citekeyFormat", "auth + \\"-\\" + year");')
+  withr::local_options(citezot.key_format = NULL, citezot.zotero_profile = d)
+  expect_equal(cz_key_format()$formula, 'auth + "-" + year')
+})
+
+test_that("with no option and no Zotero settings, BBT's default is used", {
+  withr::local_options(citezot.key_format = NULL, citezot.zotero_profile = withr::local_tempdir())
+  expect_equal(cz_key_format(), list(formula = cz_default_key_format, source = "default"))
+  d <- withr::local_tempdir()
+  write_prefs(d, 'user_pref("extensions.zotero.other", 1);')
+  withr::local_options(citezot.zotero_profile = d)
+  expect_equal(cz_key_format()$source, "default")
+})
+
+test_that("cz_suggest_key uses the resolved formula when none is given", {
+  withr::local_options(citezot.key_format = "auth.lower + year")
+  expect_equal(cz_suggest_key(native("T", "Kent", "2002")), "kent2002")
+})

@@ -196,9 +196,10 @@ cz_postfix <- function(i) {
 #' `"auth.lower + year + shorttitle(1).lower"`. If the key is already taken, a
 #' letter (`a`, `b`, ...) is appended, as Better BibTeX does.
 #'
-#' The formula is, in order of preference, the `formula` argument,
-#' `getOption("citezot.key_format")`, or Better BibTeX's default
-#' (`auth.lower + shorttitle(3,3) + year`). Supported functions are `auth`
+#' The formula is, in order of preference, the `formula` argument, then the one
+#' found by [cz_key_format()] (the `citezot.key_format` option, your Zotero
+#' profile's Better BibTeX pattern, or Better BibTeX's default
+#' `auth.lower + shorttitle(3,3) + year`). Supported functions are `auth`
 #' (first author's last name), `year`, `shorttitle(n, m)` (first `n` words of
 #' the title, skipping short function words, with the first `m` capitalised),
 #' and `title`; filters are `lower`, `upper`, `fold`, `transliterate`, `clean`,
@@ -224,7 +225,11 @@ cz_postfix <- function(i) {
 #' cz_suggest_key(item, existing = "ebihara2006taxonomic",
 #'                formula = "auth.lower + year + shorttitle(1).lower")
 cz_suggest_key <- function(item, formula = NULL, existing = character()) {
-  formula <- formula %||% getOption("citezot.key_format") %||% cz_default_key_format
+  if (is.null(formula)) {
+    fmt <- cz_key_format()
+    cz_announce_format(fmt)
+    formula <- fmt$formula
+  }
   terms <- cz_parse_key_format(formula)
   fields <- cz_key_fields(item)
   base <- cz_sanitize_key(paste(vapply(terms, cz_eval_term, character(1), fields = fields), collapse = ""))
@@ -241,4 +246,90 @@ cz_suggest_key <- function(item, formula = NULL, existing = character()) {
     key <- paste0(base, cz_postfix(i))
   }
   key
+}
+
+# --- finding the user's formula ----------------------------------------------
+
+# Candidate Zotero profile folders (each holds a prefs.js).
+cz_zotero_profile_dirs <- function() {
+  opt <- getOption("citezot.zotero_profile")
+  if (!is.null(opt)) {
+    return(if (grepl("prefs\\.js$", opt)) dirname(opt) else opt)
+  }
+  home <- path.expand("~")
+  roots <- c(
+    file.path(home, "Library", "Application Support", "Zotero", "Profiles"),
+    file.path(home, ".zotero", "zotero"),
+    file.path(Sys.getenv("APPDATA"), "Zotero", "Zotero", "Profiles")
+  )
+  roots <- roots[nzchar(roots) & dir.exists(roots)]
+  unlist(lapply(roots, list.dirs, recursive = FALSE))
+}
+
+#' The Better BibTeX citation-key pattern from the Zotero profile
+#'
+#' Reads *only* the single `better-bibtex.citekeyFormat` line from the
+#' profile's `prefs.js`; nothing else in that file is looked at or kept. The
+#' most recently modified profile that has the setting wins. Returns `NULL` if
+#' Zotero or Better BibTeX settings are not found.
+#' @noRd
+cz_bbt_format_from_prefs <- function() {
+  dirs <- cz_zotero_profile_dirs()
+  files <- file.path(dirs, "prefs.js")
+  files <- files[file.exists(files)]
+  if (!length(files)) {
+    return(NULL)
+  }
+  files <- files[order(file.mtime(files), decreasing = TRUE)]
+  pattern <- "^user_pref\\(\"extensions\\.zotero\\.translators\\.better-bibtex\\.citekeyFormat\",\\s*\"((?:[^\"\\\\]|\\\\.)*)\"\\);"
+  for (f in files) {
+    lines <- readLines(f, warn = FALSE, encoding = "UTF-8")
+    hit <- regmatches(lines, regexec(pattern, lines, perl = TRUE))
+    hit <- Filter(length, hit)
+    if (length(hit)) {
+      return(gsub("\\\\(.)", "\\1", hit[[1]][2]))
+    }
+  }
+  NULL
+}
+
+#' Which key formula citezot will use
+#'
+#' In order: `getOption("citezot.key_format")`; the Better BibTeX pattern in
+#' your Zotero profile (see Details); Better BibTeX's default pattern.
+#'
+#' Detection of the Zotero profile reads one line of its `prefs.js` and only
+#' happens when a key is generated, never at load. Set
+#' `options(citezot.key_format = ...)` to choose a formula yourself and skip
+#' the detection, and `options(citezot.zotero_profile = "<folder>")` if Zotero
+#' keeps its profile somewhere unusual. The source in use is reported once per
+#' session.
+#'
+#' @return A list with `formula` and `source` (`"option"`, `"zotero profile"`
+#'   or `"default"`).
+#' @export
+#' @examples
+#' options(citezot.key_format = "auth.lower + year")
+#' cz_key_format()
+cz_key_format <- function() {
+  opt <- getOption("citezot.key_format")
+  if (!is.null(opt)) {
+    return(list(formula = opt, source = "option"))
+  }
+  prefs <- cz_bbt_format_from_prefs()
+  if (!is.null(prefs)) {
+    return(list(formula = prefs, source = "zotero profile"))
+  }
+  list(formula = cz_default_key_format, source = "default")
+}
+
+cz_announce_format <- function(fmt) {
+  msg <- switch(fmt$source,
+    option = NULL,
+    "zotero profile" = "Citekey formula {.code {fmt$formula}} read from your Zotero profile (Better BibTeX).",
+    default = "No citekey formula found; using Better BibTeX's default {.code {fmt$formula}}. Set {.code options(citezot.key_format = \"...\")} to choose your own."
+  )
+  if (!is.null(msg)) {
+    cli::cli_inform(c(i = msg), .frequency = "once", .frequency_id = paste("citezot_format", fmt$source, fmt$formula))
+  }
 }
