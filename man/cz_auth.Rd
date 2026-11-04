@@ -31,6 +31,6 @@ files or stores the key. The key is never printed.
 }
 \details{
 Create a key at \url{https://www.zotero.org/settings/keys}; the numeric user ID
-is on the same page. A read-only key is enough for reading from the library;
+is on the same page. A read-only key is enough for \code{\link[=cz_fetch_items]{cz_fetch_items()}};
 use a separate key with write access for functions that change the library.
 }

@@ -7,7 +7,7 @@
 #' files or stores the key. The key is never printed.
 #'
 #' Create a key at <https://www.zotero.org/settings/keys>; the numeric user ID
-#' is on the same page. A read-only key is enough for reading from the library;
+#' is on the same page. A read-only key is enough for [cz_fetch_items()];
 #' use a separate key with write access for functions that change the library.
 #'
 #' @param library_id Numeric user ID (or group ID), as a string or number.

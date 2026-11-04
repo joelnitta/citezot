@@ -3,5 +3,6 @@
 S3method(print,cz_auth)
 export(cz_auth)
 export(cz_bare_keys)
+export(cz_fetch_items)
 export(cz_item_key)
 export(cz_qmd_keys)
