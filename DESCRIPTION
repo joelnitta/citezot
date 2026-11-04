@@ -1,0 +1,19 @@
+Package: citezot
+Title: Pull Cited References from Zotero into Quarto Bibliographies
+Version: 0.0.0.9000
+Authors@R: 
+    person("Joel", "Nitta", , "joelnitta@gmail.com", role = c("aut", "cre", "cph"))
+Description: Scans Quarto and R Markdown documents for citation keys,
+    pulls the matching items from the Zotero web API, and writes a
+    bibliography file. Also provides dry-run-by-default helpers to find,
+    add, and update Zotero items.
+License: MIT + file LICENSE
+Config/roxygen2/version: 8.0.0
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+Depends:
+    R (>= 4.1.0)
+Suggests:
+    testthat (>= 3.0.0),
+    withr
+Config/testthat/edition: 3
