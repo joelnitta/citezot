@@ -37,9 +37,7 @@ cz_pin_key <- function(
   rlang::check_bool(overwrite)
 
   item_id <- cz_resolve_item(item, auth, cache = cache)
-  current <- cz_request(auth, "items", item_id) |>
-    cz_perform() |>
-    httr2::resp_body_json(simplifyVector = FALSE)
+  current <- cz_get_native(auth, item_id)
   before <- current$data$citationKey
   if (is.null(before)) before <- ""
 
