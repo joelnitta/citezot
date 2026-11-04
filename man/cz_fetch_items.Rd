@@ -4,15 +4,27 @@
 \alias{cz_fetch_items}
 \title{Fetch every top-level item in a Zotero library as CSL-JSON}
 \usage{
-cz_fetch_items(auth = cz_auth(), page_size = 100)
+cz_fetch_items(
+  auth = cz_auth(),
+  page_size = 100,
+  cache = getOption("citezot.cache", FALSE),
+  refresh = FALSE
+)
 }
 \arguments{
 \item{auth}{Credentials from \code{\link[=cz_auth]{cz_auth()}}.}
 
 \item{page_size}{Items per request (Zotero's maximum is 100).}
+
+\item{cache}{Use and update the local cache? Defaults to
+\code{getOption("citezot.cache", FALSE)}.}
+
+\item{refresh}{If \code{TRUE}, ignore any existing cache and download the whole
+library (the cache, if enabled, is then rewritten).}
 }
 \value{
 A list of CSL-JSON items (plain lists, \code{simplifyVector = FALSE}).
+The order is not guaranteed.
 }
 \description{
 Uses the \verb{/items/top} endpoint (excludes notes, attachments and other child
@@ -21,4 +33,15 @@ header. After the first page, the remaining pages are requested in parallel
 (at most \code{getOption("citezot.max_active", 4)} at a time, and throttled) and
 the library version is checked so that a library edited mid-download is
 re-fetched rather than returned inconsistent.
+}
+\details{
+A full download of a large library takes a while. With \code{cache = TRUE} the
+items are stored in a local file (in \code{tools::R_user_dir("citezot", "cache")},
+or \code{getOption("citezot.cache_dir")}), and later calls download only what
+changed since: one request if nothing changed, otherwise the changed items
+plus the lists of deleted and trashed items. The cache holds the library's
+bibliographic metadata, never your API key. It is opt-in: nothing is
+written to disk unless you ask, either here or with
+\code{options(citezot.cache = TRUE)}. Use \code{refresh = TRUE} to ignore the cache
+and download everything again, and \code{\link[=cz_clear_cache]{cz_clear_cache()}} to delete it.
 }
