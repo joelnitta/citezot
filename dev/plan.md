@@ -36,8 +36,8 @@ Based on CRAN/GitHub README and manual pages only (code not read; "not documente
 
 ## Primary use case: writing Quarto docs
 One call produces the `references.yaml` / `references.bib` that the qmd's `bibliography:` points to. `targets` is optional.
-- `format = c("bib", "yaml")` in `cz_update_bib()`; **default is `.bib`** (works with Typst, which doesn't read CSL-YAML; also LaTeX/HTML). Bib route: Zotero `format=biblatex` export with entry keys rewritten to the pinned citekeys (same safety rules). YAML (CSL-YAML from `csljson`) stays as an option. Default `out_path` = front-matter `bibliography:`, else `references.bib`; format inferred from the file extension when given. Port tests must cover both formats; verify biblatex entries render in Typst via Quarto.
-- `out_path` default read from the qmd's front-matter `bibliography:`; `qmd_paths` default = all `.qmd`/`.Rmd` in the Quarto project (respect `_quarto.yml` render list).
+- `format = c("bib", "yaml")` in `cz_update_bib()`; **default is `.bib`** (works with Typst, which doesn't read CSL-YAML; also LaTeX/HTML). Bib route (as built): Zotero's own `format=biblatex` export of just the cited items (`itemKey=`, 50 per request), which already uses the pinned citekeys as entry keys. Entries come back in arbitrary order, so they are matched to items by key, never by position; an entry exported under a different key (e.g. pinned only via Extra) is re-fetched alone and its key rewritten. YAML (CSL-YAML from `csljson`) stays as an option. Default `out` = front-matter `bibliography:` (then `_quarto.yml`), else `references.bib`; format inferred from the extension. Verified live: renders in Quarto html and typst.
+- Argument names: `cz_update_bib(qmd, out, format, bare, allow_incomplete, auth, cache, quiet)`. `qmd` default = all `.qmd`/`.Rmd` under the working directory (skipping hidden/underscore dirs, renv, packrat, node_modules). Honouring the `_quarto.yml` render list is not done yet.
 - Missing-key error points to `cz_find()`, `cz_add()`, `cz_pin_key()`.
 
 ## Use scenario (sketch)
@@ -52,7 +52,7 @@ library(citezot)
 
 # 1. Write with @Ebihara2006, @Kent2002 ... then pull refs
 cz_update_bib("manuscript.qmd")                 # writes references.bib (path from front matter)
-cz_update_bib("manuscript.qmd", out_path = "references.yaml")   # yaml inferred from extension
+cz_update_bib("manuscript.qmd", out = "references.yaml")   # yaml inferred from extension
 cz_update_bib()                                 # all qmds in the project
 
 # 2. A key is missing -> error; existing references.yaml untouched
