@@ -33,12 +33,29 @@ cz_request <- function(auth, ...) {
     )
 }
 
+# Requests to Zotero endpoints that are not under a library (item templates,
+# item types): same headers and retry, but no credentials.
+cz_request_global <- function(...) {
+  httr2::request(cz_base_url()) |>
+    httr2::req_url_path_append(...) |>
+    httr2::req_headers(`Zotero-API-Version` = "3") |>
+    httr2::req_user_agent("citezot") |>
+    httr2::req_retry(
+      max_tries = 3,
+      is_transient = function(resp) httr2::resp_status(resp) %in% c(429, 503),
+      after = cz_retry_after
+    )
+}
+
 # Evaluate `expr` (an httr2 perform call), turning the common Zotero failures
 # into clear errors.
-cz_translate_errors <- function(expr) {
+cz_translate_errors <- function(expr, on_412 = NULL) {
   tryCatch(
     expr,
     httr2_http_412 = function(e) {
+      if (!is.null(on_412)) {
+        cli::cli_abort(on_412, call = NULL)
+      }
       cli::cli_abort(c(
         "The item changed in Zotero since it was read (HTTP 412).",
         "i" = "Nothing was written. Re-fetch the item, check the new version, and retry deliberately."
@@ -58,6 +75,7 @@ cz_translate_errors <- function(expr) {
 # Remember the deadline and honour it before the next request is sent.
 .cz_state <- new.env(parent = emptyenv())
 .cz_state$backoff_until <- NULL
+.cz_state$templates <- list()
 
 cz_sleep <- function(seconds) Sys.sleep(seconds)
 
@@ -82,9 +100,9 @@ cz_wait_backoff <- function() {
   invisible()
 }
 
-cz_perform <- function(req) {
+cz_perform <- function(req, on_412 = NULL) {
   cz_wait_backoff()
-  resp <- cz_translate_errors(httr2::req_perform(req))
+  resp <- cz_translate_errors(httr2::req_perform(req), on_412 = on_412)
   cz_note_backoff(resp)
   resp
 }
