@@ -48,7 +48,7 @@ bookkeeping fields (\code{key}, \code{version}, \code{itemType}, dates, \code{pa
 }
 \examples{
 \dontrun{
-cz_update_item("Regnier2024", list(date = "in press"))                  # preview
-cz_update_item("Regnier2024", list(date = "in press"), dry_run = FALSE) # write
+cz_update_item("Regnier2024", list(date = "in press")) # preview
+cz_update_item("Regnier2024", list(date = "in press"), dry_run = FALSE)
 }
 }

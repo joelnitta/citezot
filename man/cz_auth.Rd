@@ -12,8 +12,7 @@ cz_auth(
 }
 \arguments{
 \item{library_id}{Numeric user ID (or group ID), as a string or number.
-If \code{NULL} (default), taken from \code{ZOTERO_LIBRARY_ID}; for a user library
-\code{ZOTERO_USER_ID} is used as a fallback.}
+If \code{NULL} (default), taken from \code{ZOTERO_LIBRARY_ID}.}
 
 \item{api_key}{Zotero API key.}
 
@@ -24,15 +23,14 @@ A \code{cz_auth} object, for the \code{auth} argument of other functions.
 }
 \description{
 Resolves the library ID and API key, by default from the environment
-variables \code{ZOTERO_LIBRARY_ID} (or, for a user library, \code{ZOTERO_USER_ID})
-and \code{ZOTERO_API_KEY}. Load them yourself
+variables \code{ZOTERO_LIBRARY_ID} and \code{ZOTERO_API_KEY}. Load them yourself
 (e.g. from a gitignored \code{.Renviron} or \code{.env.local}); citezot never reads
 files or stores the key. The key is never printed.
 }
 \details{
 Create a key at \url{https://www.zotero.org/settings/keys}; the numeric user ID
-is on the same page. A read-only key is enough for \code{\link[=cz_fetch_items]{cz_fetch_items()}};
-use a separate key with write access for functions that change the library.
+is on the same page. A read-only key is enough for \code{\link[=cz_fetch_items]{cz_fetch_items()}}; only
+functions that change the library need a key with write access.
 }
 \examples{
 # Explicit values (normally these come from environment variables). The key

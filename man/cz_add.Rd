@@ -61,7 +61,7 @@ its faster pool. citezot never sends an address by itself; to opt in, set
 }
 \examples{
 \dontrun{
-cz_add("10.3767/000651906X622210", key = "Ebihara2006")        # preview
+cz_add("10.3767/000651906X622210", key = "Ebihara2006") # preview
 cz_add("10.3767/000651906X622210", key = "Ebihara2006", dry_run = FALSE)
 }
 }

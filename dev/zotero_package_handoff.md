@@ -70,7 +70,7 @@ Notes on the Zotero Web API v3 (from general knowledge, **verify against https:/
 
 - **Writes to a live library are outward-facing and hard to reverse.** Every write function should default to `dry_run = TRUE`, printing exactly what would be sent. Joel flips it deliberately.
 - **No deletes** in v1. If Joel later wants them, require explicit confirmation and a Zotero trash (not permanent) route.
-- **API keys:** read from `ZOTERO_API_KEY` and `ZOTERO_LIBRARY_ID` (env vars, optionally loaded from a gitignored `.env.local`). Never print, log, or store the key in test fixtures or snapshots. A read-only key is enough for the pull; writes need a key with write access, and docs should recommend two separate keys.
+- **API keys:** read from `ZOTERO_API_KEY` and `ZOTERO_LIBRARY_ID` (env vars, optionally loaded from a gitignored `.env.local`). Never print, log, or store the key in test fixtures or snapshots. A read-only key is enough for the pull; writes need a key with write access. The docs describe a single key and note that read-only is technically safer (decided after the first draft, which recommended two keys).
 - **Do not commit** unless Joel asks. He reviews changes first.
 - The package must not run network calls at load or at check time. Tests use recorded fixtures only.
 

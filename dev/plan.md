@@ -41,7 +41,7 @@ One call produces the `references.yaml` / `references.bib` that the qmd's `bibli
 - Missing-key error points to `cz_find()`, `cz_add()`, `cz_pin_key()`.
 
 ## Use scenario (sketch)
-Setup: API keys at zotero.org/settings/keys (read-only key for pulling, separate write key for edits) in a gitignored `.Renviron`/`.env.local`:
+Setup: API keys at zotero.org/settings/keys (one key; read-only is enough for pulling and technically safer, write access only if you add or edit items) in a gitignored `.Renviron`/`.env.local`:
 ```
 ZOTERO_LIBRARY_ID=1234567
 ZOTERO_API_KEY=xxxx

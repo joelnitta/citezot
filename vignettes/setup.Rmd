@@ -27,17 +27,17 @@ citezot talks to the Zotero web API, so it needs an API key. Zotero desktop does
 
 1. Sign in at <https://www.zotero.org/settings/keys> and choose **Create new private key**.
 2. Give it a name you will recognise, such as `citezot (read only)`.
-3. Under *Personal library*, tick **Allow library access** and leave **Allow write access** unticked. This is enough for `cz_update_bib()`, `cz_find()`, `cz_get_item()` and `cz_fetch_items()`.
+3. Under *Personal library*, tick **Allow library access**. Leave **Allow write access** unticked unless you want citezot to add or edit items (see below).
 4. Save the key and **copy it now**. Zotero shows the key only once.
 5. Note your **numeric user ID**. It is shown on the same page, in the sentence "Your userID for use in API calls is ...". It is *not* your user name.
 
-### Two keys are better than one
+### Read-only or write access
 
-The functions that change your library (`cz_add()`, `cz_update_item()` and `cz_pin_key()`) need a key with **Allow write access**. Rather than giving that power to every session, create a second key, `citezot (write)`, and use it only when you are adding or editing items. Everything that writes is a dry run unless you pass `dry_run = FALSE`, and citezot has no delete, but a key that cannot write is the strongest guarantee.
+A read-only key is enough for `cz_update_bib()`, `cz_find()`, `cz_get_item()` and `cz_fetch_items()`. Only the functions that change your library (`cz_add()`, `cz_update_item()` and `cz_pin_key()`) need **Allow write access**. Those functions are dry runs unless you pass `dry_run = FALSE`, and citezot has no delete, but a read-only key is technically the safer choice, because it cannot change your library no matter what. You can edit the key on the same page later to add write access.
 
 ### Group libraries
 
-For a group library, create the key under *Group permissions* on the same page. The group ID is the number in the group's URL (`https://www.zotero.org/groups/<ID>/<name>`). Then use `cz_auth(library_type = "group")`.
+For a group library, create the key under *Group permissions* on the same page. The group ID is the number in the group's URL (`https://www.zotero.org/groups/<ID>/<name>`). Then set `ZOTERO_LIBRARY_ID` (below) to that group ID and use `cz_auth(library_type = "group")`.
 
 ## 2. Tell R about the key
 
@@ -46,8 +46,7 @@ citezot reads these environment variables:
 | Variable | What it holds |
 |---|---|
 | `ZOTERO_API_KEY` | the API key |
-| `ZOTERO_USER_ID` | the numeric ID of your personal library |
-| `ZOTERO_LIBRARY_ID` | optional; used in preference to `ZOTERO_USER_ID`, and the only name used for group libraries |
+| `ZOTERO_LIBRARY_ID` | the numeric ID of your personal library (your user ID), or of a group library |
 
 Put them in your **user-level** `.Renviron`, so they are available in every project and cannot be committed by accident:
 
@@ -57,7 +56,7 @@ usethis::edit_r_environ()   # opens ~/.Renviron
 
 ```
 ZOTERO_API_KEY=xxxxxxxxxxxxxxxxxxxxxxxx
-ZOTERO_USER_ID=1234567
+ZOTERO_LIBRARY_ID=1234567
 ```
 
 Save the file and **restart R**: `.Renviron` is read only at startup. Then check that citezot can see the credentials. The key is never printed:
@@ -67,8 +66,6 @@ library(citezot)
 cz_auth()
 #> <cz_auth> user library 1234567 (API key hidden)
 ```
-
-If you switch between a read-only and a write key, use `cz_auth(api_key = "...")` for the session that needs the other one, or keep the write key in a second variable and pass it explicitly, for example `cz_auth(api_key = Sys.getenv("ZOTERO_WRITE_KEY"))`, then give that object to the `auth` argument of the function.
 
 Do not put the key in a file inside a project. If you must, make sure the file is in `.gitignore`.
 

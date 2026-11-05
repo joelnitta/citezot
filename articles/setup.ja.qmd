@@ -22,17 +22,17 @@ citezot は Zotero Web API と通信するため、API キーが必要です。Z
 
 1. <https://www.zotero.org/settings/keys> にサインインし、**Create new private key** を選びます。
 2. わかりやすい名前を付けます(例: `citezot (read only)`)。
-3. *Personal library* の下で **Allow library access** にチェックを入れ、**Allow write access** はチェックを外したままにします。これで `cz_update_bib()`、`cz_find()`、`cz_get_item()`、`cz_fetch_items()` には十分です。
+3. *Personal library* の下で **Allow library access** にチェックを入れます。citezot で項目の追加や編集をしたい場合を除き、**Allow write access** はチェックを外したままにします(後述)。
 4. キーを保存し、**今すぐコピーしてください**。Zotero がキーを表示するのは一度だけです。
 5. **数字のユーザー ID** を控えます。同じページの「Your userID for use in API calls is ...」という文に表示されています。ユーザー名では*ありません*。
 
-### キーは 2 つあるほうが安全です
+### 読み取り専用か、書き込み権限か
 
-ライブラリを変更する関数(`cz_add()`、`cz_update_item()`、`cz_pin_key()`)には、**Allow write access** を付けたキーが必要です。すべてのセッションにその権限を与えるのではなく、2 つ目のキー `citezot (write)` を作り、項目を追加・編集するときだけ使いましょう。書き込みを行う操作は `dry_run = FALSE` を渡さない限りドライランで、citezot には削除機能もありませんが、書き込めないキーを使うことが最も確実な保証です。
+`cz_update_bib()`、`cz_find()`、`cz_get_item()`、`cz_fetch_items()` には、読み取り専用のキーで足ります。ライブラリを変更する関数(`cz_add()`、`cz_update_item()`、`cz_pin_key()`)だけが **Allow write access** を必要とします。これらの関数は `dry_run = FALSE` を渡さない限りドライランで、citezot には削除機能もありませんが、読み取り専用のキーは何が起きてもライブラリを変更できないため、技術的にはより安全です。書き込み権限は、あとで同じページからキーを編集して追加できます。
 
 ### グループライブラリ
 
-グループライブラリの場合は、同じページの *Group permissions* でキーを作成します。グループ ID は、グループの URL(`https://www.zotero.org/groups/<ID>/<name>`)に含まれる数字です。そのうえで `cz_auth(library_type = "group")` を使います。
+グループライブラリの場合は、同じページの *Group permissions* でキーを作成します。グループ ID は、グループの URL(`https://www.zotero.org/groups/<ID>/<name>`)に含まれる数字です。そのうえで、`ZOTERO_LIBRARY_ID`(下記)にそのグループ ID を設定し、`cz_auth(library_type = "group")` を使います。
 
 ## 2. キーを R に教える
 
@@ -41,8 +41,7 @@ citezot は次の環境変数を読み取ります。
 | 変数 | 内容 |
 |---|---|
 | `ZOTERO_API_KEY` | API キー |
-| `ZOTERO_USER_ID` | 個人ライブラリの数字の ID |
-| `ZOTERO_LIBRARY_ID` | 省略可。`ZOTERO_USER_ID` より優先され、グループライブラリではこの名前のみが使われます |
+| `ZOTERO_LIBRARY_ID` | 個人ライブラリ(ユーザー ID)またはグループライブラリの数字の ID |
 
 これらは**ユーザーレベル**の `.Renviron` に書いてください。すべてのプロジェクトで使え、誤ってコミットしてしまうこともありません。
 
@@ -52,7 +51,7 @@ usethis::edit_r_environ()   # ~/.Renviron を開く
 
 ```
 ZOTERO_API_KEY=xxxxxxxxxxxxxxxxxxxxxxxx
-ZOTERO_USER_ID=1234567
+ZOTERO_LIBRARY_ID=1234567
 ```
 
 ファイルを保存して **R を再起動**してください。`.Renviron` は起動時にしか読み込まれません。その後、citezot が認証情報を認識できているか確認します。キーが表示されることはありません。
@@ -62,8 +61,6 @@ library(citezot)
 cz_auth()
 #> <cz_auth> user library 1234567 (API key hidden)
 ```
-
-読み取り専用キーと書き込み用キーを切り替える場合は、もう一方のキーが必要なセッションで `cz_auth(api_key = "...")` を使うか、書き込み用キーを別の変数に入れておき、たとえば `cz_auth(api_key = Sys.getenv("ZOTERO_WRITE_KEY"))` のように明示的に渡し、そのオブジェクトを関数の `auth` 引数に与えます。
 
 キーをプロジェクト内のファイルに書かないでください。どうしても書く場合は、そのファイルを `.gitignore` に入れてください。
 

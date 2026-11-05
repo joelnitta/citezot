@@ -21,6 +21,9 @@ Deliberately conservative: \verb{Ebihara 2006} or \code{Hsu7949} do not match.
 }
 \examples{
 notes <- tempfile(fileext = ".csv")
-writeLines(c("site,comment", "A,defined in Darwin1859", "B,see Ebihara 2006"), notes)
+writeLines(
+  c("site,comment", "A,defined in Darwin1859", "B,see Ebihara 2006"),
+  notes
+)
 cz_bare_keys(notes) # "Ebihara 2006" does not match
 }

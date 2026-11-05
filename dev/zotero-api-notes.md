@@ -30,7 +30,7 @@ Checked 2026-11-04 against the official docs (write_requests, basics, types_and_
 - **Gap:** `cz_request()` only honours these headers on 429/503. A `Backoff` on a successful response is not yet honoured: a bulk write loop must sleep.
 
 ## API key
-- **[live]** `GET /keys/current` shows the key in Joel's environment has **write access** (library read+write, files). The key used for reading is therefore capable of writing. Recommended: a separate read-only key for routine use (`cz_update_bib()`), and a write key only in sessions that edit.
+- **[live]** `GET /keys/current` shows the key in Joel's environment has **write access** (library read+write, files). The key used for reading is therefore capable of writing. Recommended: a read-only key unless you need to add or edit items (the setup guide describes one key, not two).
 
 ## Live write round trip (2026-11-04, Joel's go-ahead, one throwaway item XZVSG5K8)
 All **[docs]** behaviours above that citezot relies on were confirmed:

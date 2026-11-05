@@ -39,9 +39,13 @@ item <- list(
   itemType = "journalArticle",
   title = "A taxonomic revision of Hymenophyllaceae",
   date = "2006",
-  creators = list(list(creatorType = "author", firstName = "A", lastName = "Ebihara"))
+  creators = list(
+    list(creatorType = "author", firstName = "A", lastName = "Ebihara")
+  )
 )
 cz_suggest_key(item, "auth.lower + year + shorttitle(1).lower")
-cz_suggest_key(item, existing = "ebihara2006taxonomic",
-               formula = "auth.lower + year + shorttitle(1).lower")
+cz_suggest_key(item,
+  existing = "ebihara2006taxonomic",
+  formula = "auth.lower + year + shorttitle(1).lower"
+)
 }
