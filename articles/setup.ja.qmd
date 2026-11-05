@@ -1,0 +1,105 @@
+---
+title: "citezot のセットアップ"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", eval = FALSE)
+```
+
+これは最初に一度だけ行うセットアップです。所要時間は 5 分ほどで、プロジェクトごとにやり直す必要はありません。次のことを行います。
+
+1. Zotero の API キーを作成する
+2. キーと Zotero のユーザー ID を R に教える
+3. 引用したい項目すべてに引用キーがあることを確認する
+
+このガイドのコードは、Zotero のアカウントが必要なため、サイトのビルド時には実行されません。
+
+## 1. API キーを作成する
+
+citezot は Zotero Web API と通信するため、API キーが必要です。Zotero デスクトップを起動しておく必要はありませんが、ライブラリが zotero.org と同期されている必要があります(Zotero デスクトップの*設定*→*同期*)。
+
+<!-- TODO: add screenshots of the Zotero keys page -->
+
+1. <https://www.zotero.org/settings/keys> にサインインし、**Create new private key** を選びます。
+2. わかりやすい名前を付けます(例: `citezot (read only)`)。
+3. *Personal library* の下で **Allow library access** にチェックを入れ、**Allow write access** はチェックを外したままにします。これで `cz_update_bib()`、`cz_find()`、`cz_get_item()`、`cz_fetch_items()` には十分です。
+4. キーを保存し、**今すぐコピーしてください**。Zotero がキーを表示するのは一度だけです。
+5. **数字のユーザー ID** を控えます。同じページの「Your userID for use in API calls is ...」という文に表示されています。ユーザー名では*ありません*。
+
+### キーは 2 つあるほうが安全です
+
+ライブラリを変更する関数(`cz_add()`、`cz_update_item()`、`cz_pin_key()`)には、**Allow write access** を付けたキーが必要です。すべてのセッションにその権限を与えるのではなく、2 つ目のキー `citezot (write)` を作り、項目を追加・編集するときだけ使いましょう。書き込みを行う操作は `dry_run = FALSE` を渡さない限りドライランで、citezot には削除機能もありませんが、書き込めないキーを使うことが最も確実な保証です。
+
+### グループライブラリ
+
+グループライブラリの場合は、同じページの *Group permissions* でキーを作成します。グループ ID は、グループの URL(`https://www.zotero.org/groups/<ID>/<name>`)に含まれる数字です。そのうえで `cz_auth(library_type = "group")` を使います。
+
+## 2. キーを R に教える
+
+citezot は次の環境変数を読み取ります。
+
+| 変数 | 内容 |
+|---|---|
+| `ZOTERO_API_KEY` | API キー |
+| `ZOTERO_USER_ID` | 個人ライブラリの数字の ID |
+| `ZOTERO_LIBRARY_ID` | 省略可。`ZOTERO_USER_ID` より優先され、グループライブラリではこの名前のみが使われます |
+
+これらは**ユーザーレベル**の `.Renviron` に書いてください。すべてのプロジェクトで使え、誤ってコミットしてしまうこともありません。
+
+```{r}
+usethis::edit_r_environ()   # ~/.Renviron を開く
+```
+
+```
+ZOTERO_API_KEY=xxxxxxxxxxxxxxxxxxxxxxxx
+ZOTERO_USER_ID=1234567
+```
+
+ファイルを保存して **R を再起動**してください。`.Renviron` は起動時にしか読み込まれません。その後、citezot が認証情報を認識できているか確認します。キーが表示されることはありません。
+
+```{r}
+library(citezot)
+cz_auth()
+#> <cz_auth> user library 1234567 (API key hidden)
+```
+
+読み取り専用キーと書き込み用キーを切り替える場合は、もう一方のキーが必要なセッションで `cz_auth(api_key = "...")` を使うか、書き込み用キーを別の変数に入れておき、たとえば `cz_auth(api_key = Sys.getenv("ZOTERO_WRITE_KEY"))` のように明示的に渡し、そのオブジェクトを関数の `auth` 引数に与えます。
+
+キーをプロジェクト内のファイルに書かないでください。どうしても書く場合は、そのファイルを `.gitignore` に入れてください。
+
+### citezot はキーをどう扱うか
+
+* キーは `api.zotero.org` にのみ、ベアラートークンとして送信します。
+* キーを表示、記録、保存することはありません。認証オブジェクトを `print()` してもキーは隠されます。
+* 任意のキャッシュ(`cz_clear_cache()` を参照)に保存されるのは書誌情報のみで、キーは含まれません。
+
+## 3. 項目に引用キーがあることを確認する
+
+citezot は、項目に**保存された引用キー**で項目を引用します。キーのない項目は引用できず、`cz_update_bib()` は見つからなかったキーを知らせます。
+
+項目にキーを付ける方法は 2 つあります。
+
+### Better BibTeX を使う(すでに使っている場合におすすめ)
+
+[Better BibTeX](https://retorque.re/zotero-better-bibtex/installation/) は、選んだ書式からキーを生成し、キーを*固定*して変わらないようにできます。固定されたキーは項目に保存され、citezot が読み取るのはそれです。Zotero デスクトップで項目を選択し、右クリックして *Better BibTeX*→*Pin BibTeX key* を選びます。その後同期すると、キーがアップロードされます。
+
+Better BibTeX は必須ではありません。citezot がキーを読み取るのに必要ありません。
+
+### Better BibTeX を使わない
+
+Zotero は、各項目の **Citation Key** フィールドにキーを保存します。Zotero で手動で設定することも、R から設定することもできます。
+
+```{r}
+cz_find("darwin origin of species")             # 項目を探す
+cz_pin_key("Darwin1859", "Darwin1859")          # プレビュー。item には cz_find() が解釈できる識別子を指定できます
+cz_add("10.1016/0022-5193(64)90038-4", key = "auto")        # または、生成したキーで新しい項目を追加する
+```
+
+新しいキーの生成方法を含む一連の流れは、[論文執筆ガイド](manuscript.qmd)を参照してください。
+
+## トラブルシューティング
+
+* **「Zotero credentials not found.」** この R セッションで環境変数が設定されていません。`Sys.getenv("ZOTERO_API_KEY") != ""` を確認し、`.Renviron` を編集したら R を再起動してください。
+* **HTTP 403。** キーが無効か、要求した権限がありません(たとえば、読み取り専用キーで項目を追加しようとした場合)。
+* **存在するライブラリなのに HTTP 404。** ユーザー ID が間違っています。ユーザー名ではなく数字を使ってください。
+* **Zotero デスクトップで追加したばかりの項目が見つからない。** ライブラリがまだ同期されていません。
