@@ -1,0 +1,38 @@
+# Local hooks: they need R with styler and lintr installed, and no network.
+# One-time setup:  pre-commit install
+# Run by hand:     pre-commit run --all-files
+repos:
+  - repo: local
+    hooks:
+      - id: styler
+        name: styler (tidyverse style)
+        description: Fails if styler would reformat R/ or tests/.
+        entry: >-
+          Rscript -e
+          'r <- do.call(rbind, lapply(c("R", "tests"), styler::style_dir));
+          if (any(r$changed)) quit(status = 1)'
+        language: system
+        files: '^(R|tests)/.*\.[Rr]$'
+        pass_filenames: false
+      - id: lintr
+        name: lintr
+        description: Fails on any lint, as configured in .lintr.
+        entry: >-
+          Rscript -e
+          'l <- lintr::lint_package(); print(l);
+          if (length(l) > 0) quit(status = 1)'
+        language: system
+        files: '\.([Rr]|[Rr]md)$'
+        pass_filenames: false
+      - id: readme-rendered
+        name: README.md is rendered from README.Rmd
+        description: README.Rmd and README.md must be committed together.
+        entry: >-
+          bash -c 'staged=$(git diff --cached --name-only);
+          if echo "$staged" | grep -qx README.Rmd &&
+          ! echo "$staged" | grep -qx README.md; then
+          echo "README.Rmd changed: run devtools::build_readme() and stage README.md";
+          exit 1; fi'
+        language: system
+        files: '^README\.Rmd$'
+        pass_filenames: false
