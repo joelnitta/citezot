@@ -201,6 +201,18 @@ These descriptions are based on each package's documentation, not its code. Plea
 - BibLaTeX output comes from Zotero's own exporter, and CSL-YAML from the library's CSL-JSON, so what you see in Quarto is what Zotero's exporters produce.
 - Matching is by the citekey stored on the item; items without one cannot be cited.
 
+## Development
+
+To work on citezot, clone the repository and install its development dependencies (`pak::local_install_dev_deps()`). The checks that run before each commit use [pre-commit](https://pre-commit.com); install it once (for example `brew install pre-commit` or `pip install pre-commit`), then enable the hooks in your clone:
+
+```sh
+pre-commit install
+```
+
+- Before every commit, the hooks run [styler](https://styler.r-lib.org) and [lintr](https://lintr.r-lib.org) (tidyverse style, 80 columns; see `.lintr`) and check that `README.md` has been rendered from `README.Rmd`. Run them by hand with `pre-commit run --all-files`.
+- Before every push, a hook runs `devtools::check()` and refuses the push unless it has no errors, warnings or notes.
+- The tests make no network calls (`devtools::test()`). Edit `README.Rmd`, not `README.md`, and render it with `devtools::build_readme()`. Some of its examples read from a Zotero library, so rendering needs Zotero credentials (see `vignette("setup")`) and the items cited in the examples; if you cannot render it, say so in your pull request.
+
 ## Getting help
 
 Please report bugs and ideas at <https://github.com/joelnitta/citezot/issues>. See `vignette("citezot")` for a worked example.
