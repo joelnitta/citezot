@@ -4,7 +4,8 @@
 # citezot
 
 <!-- badges: start -->
-<!-- badges: end -->
+
+[![R-CMD-check](https://github.com/joelnitta/citezot/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/joelnitta/citezot/actions/workflows/R-CMD-check.yaml) <!-- badges: end -->
 
 The goal of **citezot** is to make it easy to cite references in [Quarto](https://quarto.org) or R Markdown documents using [Zotero](https://www.zotero.org).
 
@@ -216,7 +217,7 @@ pre-commit install
 
 ## Getting help
 
-Please report bugs and ideas at <https://github.com/joelnitta/citezot/issues>. See `vignette("citezot")` for a worked example.
+Documentation, including a worked example, is at <https://joelnitta.github.io/citezot/> (or `vignette("citezot")` once installed). Please report bugs and ideas at <https://github.com/joelnitta/citezot/issues>.
 
 ## License
 
