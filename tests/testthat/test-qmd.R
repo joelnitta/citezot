@@ -52,7 +52,7 @@ test_that("cz_doc_bib_paths prefers front matter, resolved from the document", {
   )
   expect_identical(
     cz_doc_bib_paths(f),
-    file.path(normalizePath(file.path(d, "sub")), "refs.bib")
+    file.path(normalizePath(file.path(d, "sub"), winslash = "/"), "refs.bib")
   )
 })
 
@@ -68,7 +68,7 @@ test_that("cz_doc_bib_paths falls back to _quarto.yml in the project", {
   )
   expect_identical(
     cz_doc_bib_paths(f),
-    file.path(normalizePath(d), "refs", "all.bib")
+    file.path(normalizePath(d, winslash = "/"), "refs", "all.bib")
   )
 })
 

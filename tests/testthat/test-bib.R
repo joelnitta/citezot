@@ -260,7 +260,7 @@ test_that("cz_rel_path shortens paths inside the working directory only", {
   d <- withr::local_tempdir()
   withr::local_dir(d)
   expect_identical(
-    cz_rel_path(file.path(normalizePath(d), "sub", "x.bib")),
+    cz_rel_path(file.path(normalizePath(d, winslash = "/"), "sub", "x.bib")),
     "sub/x.bib"
   )
   expect_identical(cz_rel_path("/elsewhere/x.bib"), "/elsewhere/x.bib")

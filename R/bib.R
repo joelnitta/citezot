@@ -161,7 +161,7 @@ cz_update_bib <- function(
 # `path` relative to the working directory when it lies inside it (for
 # readable messages); otherwise unchanged.
 cz_rel_path <- function(path) {
-  wd <- normalizePath(getwd(), mustWork = FALSE)
+  wd <- normalizePath(getwd(), winslash = "/", mustWork = FALSE)
   p <- cz_norm_path(path)
   prefix <- paste0(wd, "/")
   if (startsWith(p, prefix)) substring(p, nchar(prefix) + 1) else path

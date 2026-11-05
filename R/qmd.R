@@ -27,7 +27,7 @@ cz_bib_entries <- function(x) {
 
 # Nearest _quarto.yml (or .yaml) in `dir` or one of its parents, or NULL.
 cz_quarto_yml <- function(dir) {
-  dir <- normalizePath(dir, mustWork = FALSE)
+  dir <- normalizePath(dir, winslash = "/", mustWork = FALSE)
   for (i in 1:10) {
     for (nm in c("_quarto.yml", "_quarto.yaml")) {
       f <- file.path(dir, nm)
@@ -66,8 +66,10 @@ cz_doc_bib_paths <- function(qmd) {
 
 # Canonical spelling of a (possibly not yet existing) file path: resolve the
 # directory, which normalizePath() does consistently, and keep the file name.
+# Always forward slashes, so paths compare equal on Windows too.
 cz_norm_path <- function(path) {
-  file.path(normalizePath(dirname(path), mustWork = FALSE), basename(path))
+  dir <- normalizePath(dirname(path), winslash = "/", mustWork = FALSE)
+  file.path(dir, basename(path))
 }
 
 # All .qmd/.Rmd files under `dir`, skipping hidden or underscore-prefixed
