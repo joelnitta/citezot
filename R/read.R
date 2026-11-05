@@ -100,7 +100,7 @@ cz_fetch_removed <- function(auth, version) {
     cz_perform()
   # an empty trash comes back as an empty body
   trashed <- if (httr2::resp_has_body(trash_resp)) httr2::resp_body_string(trash_resp) else ""
-  keys <- c(as.character(unlist(deleted$items)), strsplit(trashed, "\n")[[1]])
+  keys <- c(as.character(unlist(deleted$items)), strsplit(trashed, "\n", fixed = TRUE)[[1]])
   keys[nzchar(keys)]
 }
 

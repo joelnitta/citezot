@@ -7,7 +7,7 @@ cz_front_matter <- function(path) {
   if (!length(lines) || !grepl("^---\\s*$", lines[1])) {
     return(list())
   }
-  close <- which(grepl("^(---|\\.\\.\\.)\\s*$", lines[-1]))[1] + 1
+  close <- grep("^(---|\\.\\.\\.)\\s*$", lines[-1])[1] + 1
   if (is.na(close) || close == 2) {
     return(list())
   }
@@ -22,7 +22,7 @@ cz_front_matter <- function(path) {
 # (.bib/.bibtex/.yaml/.yml), whether given as a string or a list.
 cz_bib_entries <- function(x) {
   x <- as.character(unlist(x))
-  x[grepl("\\.(bib|bibtex|ya?ml)$", x, ignore.case = TRUE)]
+  grep("\\.(bib|bibtex|ya?ml)$", x, ignore.case = TRUE, value = TRUE)
 }
 
 # Nearest _quarto.yml (or .yaml) in `dir` or one of its parents, or NULL.

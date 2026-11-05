@@ -32,7 +32,7 @@ cz_fold <- function(x) {
 
 # Split on top-level '+' (not inside quotes or parentheses).
 cz_split_plus <- function(formula) {
-  chars <- strsplit(formula, "")[[1]]
+  chars <- strsplit(formula, "", fixed = TRUE)[[1]]
   parts <- character()
   cur <- character()
   depth <- 0
@@ -60,7 +60,7 @@ cz_unsupported_formula <- function(what, formula) {
   cli::cli_abort(c(
     "Unsupported in the key formula {.code {formula}}: {what}.",
     "i" = "Supported functions: {.code {cz_key_functions}}; filters: {.code {cz_key_filters}}; joined with {.code +}; quoted text is kept as is.",
-    "i" = "Use {.code cz_pin_key()} to set a key by hand, or ask Better BibTeX for the key if Zotero is running."
+    "i" = "Use {.code cz_pin_key()} to set a key by hand, or ask Better BibTeX for the key if Zotero is running." # nolint: duplicate_argument_linter.
   ), call = NULL)
 }
 
@@ -87,7 +87,7 @@ cz_parse_key_format <- function(formula) {
     filters <- tolower(filters)
     bad <- setdiff(filters, cz_key_filters)
     if (length(bad)) cz_unsupported_formula(sprintf("the filter `%s`", bad[1]), formula)
-    args <- if (nzchar(m[3])) suppressWarnings(as.integer(trimws(strsplit(m[3], ",")[[1]]))) else integer()
+    args <- if (nzchar(m[3])) suppressWarnings(as.integer(trimws(strsplit(m[3], ",", fixed = TRUE)[[1]]))) else integer()
     if (anyNA(args)) cz_unsupported_formula(sprintf("the arguments of `%s`", fn), formula)
     list(kind = "fn", name = fn, args = args, filters = filters)
   })

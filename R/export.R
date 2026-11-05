@@ -43,7 +43,11 @@ cz_bib_requests <- function(auth, ids) {
 }
 
 cz_bib_text <- function(resp) {
-  if (!httr2::resp_has_body(resp)) "" else httr2::resp_body_string(resp, encoding = "UTF-8")
+  if (httr2::resp_has_body(resp)) {
+    httr2::resp_body_string(resp, encoding = "UTF-8")
+  } else {
+    ""
+  }
 }
 
 #' Export items as BibLaTeX entries keyed by their pinned citekeys

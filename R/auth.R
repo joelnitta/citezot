@@ -35,12 +35,13 @@ cz_auth <- function(
     }
   }
   library_id <- as.character(library_id)
-  if (length(library_id) != 1 || is.na(library_id) || !nzchar(library_id) ||
-    !rlang::is_string(api_key) || !nzchar(api_key)) {
+  bad_id <- length(library_id) != 1 || is.na(library_id) || !nzchar(library_id)
+  bad_key <- !rlang::is_string(api_key) || !nzchar(api_key)
+  if (bad_id || bad_key) {
     cli::cli_abort(c(
       "Zotero credentials not found.",
       "i" = "Set {.envvar ZOTERO_LIBRARY_ID} (or {.envvar ZOTERO_USER_ID} for a user library) and {.envvar ZOTERO_API_KEY}, or pass {.arg library_id} and {.arg api_key}.",
-      "i" = "Create a key at {.url https://www.zotero.org/settings/keys}."
+      "i" = "Create a key at {.url https://www.zotero.org/settings/keys}." # nolint: duplicate_argument_linter.
     ))
   }
   structure(

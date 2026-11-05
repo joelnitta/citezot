@@ -134,8 +134,8 @@ cz_strip_key_line <- function(note) {
   if (is.null(note)) {
     return(NULL)
   }
-  lines <- strsplit(note, "\n")[[1]]
+  lines <- strsplit(note, "\n", fixed = TRUE)[[1]]
   lines <- lines[!grepl("^Citation Key:[ \t]*\\S+[ \t]*$", lines)]
   txt <- trimws(paste(trimws(lines), collapse = "\n"))
-  if (!nzchar(txt)) NULL else txt
+  if (nzchar(txt)) txt else NULL
 }

@@ -54,7 +54,12 @@ cz_canon <- function(x) {
 # Short human-readable form of a field value for the before/after display.
 cz_show_value <- function(x, width = 70) {
   txt <- if (is.list(x)) {
-    if (!length(x)) "" else paste(unlist(lapply(x, function(e) paste(unlist(e), collapse = " "))), collapse = "; ")
+    if (length(x)) {
+      parts <- lapply(x, function(e) paste(unlist(e), collapse = " "))
+      paste(unlist(parts), collapse = "; ")
+    } else {
+      ""
+    }
   } else {
     as.character(x)
   }
@@ -63,7 +68,9 @@ cz_show_value <- function(x, width = 70) {
 }
 
 # Escape braces so cli does not treat user text as glue
-cz_cli_escape <- function(x) gsub("\\}", "}}", gsub("\\{", "{{", x))
+cz_cli_escape <- function(x) {
+  gsub("}", "}}", gsub("{", "{{", x, fixed = TRUE), fixed = TRUE)
+}
 
 #' Update fields of a Zotero item
 #'

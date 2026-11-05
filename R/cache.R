@@ -27,7 +27,7 @@ cz_cache_read <- function(auth) {
     identical(x$library_type, auth$library_type) &&
     is.numeric(x$version) && length(x$version) == 1 && !is.na(x$version) &&
     is.list(x$items)
-  if (!ok) NULL else x
+  if (ok) x else NULL
 }
 
 # Write atomically (temp file, then rename) so an interrupted write cannot
