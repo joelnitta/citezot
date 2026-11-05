@@ -1,0 +1,919 @@
+[
+  {
+    "objectID": "reference/index.html",
+    "href": "reference/index.html",
+    "title": "Package index",
+    "section": "",
+    "text": "Build a bibliography\ncz_update_bib()\n      Write a bibliography file from the references cited in your documents\ncz_qmd_keys()\n      Extract pandoc citation keys used in a qmd/Rmd file\ncz_bare_keys()\n      Extract bare (no @) citekey-shaped tokens from a text/data file\n\n\nConnect to Zotero\ncz_auth()\n      Zotero credentials\ncz_fetch_items()\n      Fetch every top-level item in a Zotero library as CSL-JSON\ncz_clear_cache()\n      Delete citezot’s cached library data\n\n\nFind, add and edit items\ncz_find()\n      Find items in your Zotero library\ncz_get_item()\n      Get one item in Zotero’s native JSON\ncz_add()\n      Add an item to your Zotero library from a DOI\ncz_update_item()\n      Update fields of a Zotero item\ncz_pin_key()\n      Pin a citekey onto a Zotero item\n\n\nCitekeys\ncz_item_key()\n      Get a CSL item’s pinned citekey, however it is pinned\ncz_suggest_key()\n      Suggest a citekey for an item\ncz_key_format()\n      Which key formula citezot will use"
+  },
+  {
+    "objectID": "reference/cz_update_bib.html",
+    "href": "reference/cz_update_bib.html",
+    "title": "Write a bibliography file from the references cited in your documents",
+    "section": "",
+    "text": "R/bib.R"
+  },
+  {
+    "objectID": "reference/cz_update_bib.html#cz_update_bib",
+    "href": "reference/cz_update_bib.html#cz_update_bib",
+    "title": "Write a bibliography file from the references cited in your documents",
+    "section": "cz_update_bib",
+    "text": "cz_update_bib"
+  },
+  {
+    "objectID": "reference/cz_update_bib.html#description",
+    "href": "reference/cz_update_bib.html#description",
+    "title": "Write a bibliography file from the references cited in your documents",
+    "section": "Description",
+    "text": "Description\nScans Quarto / R Markdown documents for @key citations, looks the keys up among the pinned citekeys in your Zotero library, and writes a bibliography file containing only the cited items. Zotero is the source of truth for the content of each reference; the documents decide which references are needed."
+  },
+  {
+    "objectID": "reference/cz_update_bib.html#usage",
+    "href": "reference/cz_update_bib.html#usage",
+    "title": "Write a bibliography file from the references cited in your documents",
+    "section": "Usage",
+    "text": "Usage\ncz_update_bib(\n  qmd = NULL,\n  out = NULL,\n  format = NULL,\n  bare = NULL,\n  allow_incomplete = FALSE,\n  auth = cz_auth(),\n  cache = getOption(\"citezot.cache\", FALSE),\n  quiet = FALSE\n)"
+  },
+  {
+    "objectID": "reference/cz_update_bib.html#arguments",
+    "href": "reference/cz_update_bib.html#arguments",
+    "title": "Write a bibliography file from the references cited in your documents",
+    "section": "Arguments",
+    "text": "Arguments\n\n\n\n\n\n\n\nArguments\nDescription\n\n\n\n\nqmd\nDocuments to scan for @key citations. Defaults to every .qmd and .Rmd file under the working directory, skipping hidden and underscore-prefixed directories, renv, packrat and node_modules.\n\n\nout\nBibliography file to write. Defaults to the file named by bibliography: in the documents’ YAML front matter (or the project’s _quarto.yml), else references.bib. If the documents name different files, out must be given.\n\n\nformat\n\"bib\" or \"yaml\"; inferred from out if NULL.\n\n\nbare\nOptional files (e.g. CSVs) scanned for bare citekey-shaped tokens such as Ebihara2006. Missing ones only warn.\n\n\nallow_incomplete\nWrite the file even if keys cited in qmd are not found in Zotero.\n\n\nauth\nCredentials from cz_auth().\n\n\ncache\nPassed to cz_fetch_items(): keep a local copy of the library so repeat runs are fast. Defaults to getOption(\"citezot.cache\", FALSE).\n\n\nquiet\nSuppress the summary message."
+  },
+  {
+    "objectID": "reference/cz_update_bib.html#details",
+    "href": "reference/cz_update_bib.html#details",
+    "title": "Write a bibliography file from the references cited in your documents",
+    "section": "Details",
+    "text": "Details\nSafety: if a key cited in a document is not found in Zotero, the function stops and leaves the existing output file untouched (a bibliography that silently loses entries breaks the render). Set allow_incomplete = TRUE to write what was found anyway. Keys found only in bare files, and duplicate citekeys in Zotero (the first match is used), give warnings. The file is only rewritten when its content would change, so unchanged bibliographies keep their modification time."
+  },
+  {
+    "objectID": "reference/cz_update_bib.html#output-formats",
+    "href": "reference/cz_update_bib.html#output-formats",
+    "title": "Write a bibliography file from the references cited in your documents",
+    "section": "Output formats",
+    "text": "Output formats\n\"bib\" (default) writes BibLaTeX using Zotero’s own exporter, with each entry keyed by its pinned citekey; it works with every Quarto output format, including Typst. \"yaml\" writes CSL-YAML (a references: list with id and citation-key set to the citekey). The format is inferred from the extension of out (.bib or .yaml/.yml)."
+  },
+  {
+    "objectID": "reference/cz_update_bib.html#value",
+    "href": "reference/cz_update_bib.html#value",
+    "title": "Write a bibliography file from the references cited in your documents",
+    "section": "Value",
+    "text": "Value\nout, invisibly (handy for targets::tar_target(format = \"file\"))."
+  },
+  {
+    "objectID": "reference/cz_update_bib.html#examples",
+    "href": "reference/cz_update_bib.html#examples",
+    "title": "Write a bibliography file from the references cited in your documents",
+    "section": "Examples",
+    "text": "Examples\n# reads ZOTERO_LIBRARY_ID / ZOTERO_API_KEY from the environment\ncz_update_bib(\"manuscript.qmd\")\ncz_update_bib(\"manuscript.qmd\", out = \"references.yaml\")"
+  },
+  {
+    "objectID": "reference/cz_qmd_keys.html",
+    "href": "reference/cz_qmd_keys.html",
+    "title": "Extract pandoc citation keys used in a qmd/Rmd file",
+    "section": "",
+    "text": "R/keys.R"
+  },
+  {
+    "objectID": "reference/cz_qmd_keys.html#cz_qmd_keys",
+    "href": "reference/cz_qmd_keys.html#cz_qmd_keys",
+    "title": "Extract pandoc citation keys used in a qmd/Rmd file",
+    "section": "cz_qmd_keys",
+    "text": "cz_qmd_keys"
+  },
+  {
+    "objectID": "reference/cz_qmd_keys.html#description",
+    "href": "reference/cz_qmd_keys.html#description",
+    "title": "Extract pandoc citation keys used in a qmd/Rmd file",
+    "section": "Description",
+    "text": "Description\nStrips fenced code blocks first (so @ in R code is never mistaken for a citation), finds @key tokens, then drops Quarto cross-references (?@fig-x, ?@tbl-x, ?@eq-x, …), which use the same syntax but are not bibliography citations."
+  },
+  {
+    "objectID": "reference/cz_qmd_keys.html#usage",
+    "href": "reference/cz_qmd_keys.html#usage",
+    "title": "Extract pandoc citation keys used in a qmd/Rmd file",
+    "section": "Usage",
+    "text": "Usage\ncz_qmd_keys(\n  path,\n  crossref_prefixes = c(\"fig\", \"tbl\", \"eq\", \"sec\", \"lst\", \"thm\", \"lem\", \"cor\", \"prp\",\n    \"cnj\", \"def\", \"exm\", \"exr\", \"rem\", \"sol\", \"nte\")\n)"
+  },
+  {
+    "objectID": "reference/cz_qmd_keys.html#arguments",
+    "href": "reference/cz_qmd_keys.html#arguments",
+    "title": "Extract pandoc citation keys used in a qmd/Rmd file",
+    "section": "Arguments",
+    "text": "Arguments\n\n\n\n\n\n\n\nArguments\nDescription\n\n\n\n\npath\nPath to a .qmd or .Rmd file.\n\n\ncrossref_prefixes\nCross-reference prefixes to drop (without the trailing hyphen)."
+  },
+  {
+    "objectID": "reference/cz_qmd_keys.html#value",
+    "href": "reference/cz_qmd_keys.html#value",
+    "title": "Extract pandoc citation keys used in a qmd/Rmd file",
+    "section": "Value",
+    "text": "Value\nSorted character vector of unique citation keys (no leading @)."
+  },
+  {
+    "objectID": "reference/cz_qmd_keys.html#examples",
+    "href": "reference/cz_qmd_keys.html#examples",
+    "title": "Extract pandoc citation keys used in a qmd/Rmd file",
+    "section": "Examples",
+    "text": "Examples\n\nqmd &lt;- tempfile(fileext = \".qmd\")\nwriteLines(c(\n  \"Species evolve by natural selection [@Darwin1859]; see @fig-map.\",\n  \"```{r}\",\n  \"x@slot  # not a citation\",\n  \"```\"\n), qmd)\ncz_qmd_keys(qmd)\n\n[1] \"Darwin1859\""
+  },
+  {
+    "objectID": "reference/cz_key_format.html",
+    "href": "reference/cz_key_format.html",
+    "title": "Which key formula citezot will use",
+    "section": "",
+    "text": "R/key-format.R"
+  },
+  {
+    "objectID": "reference/cz_key_format.html#cz_key_format",
+    "href": "reference/cz_key_format.html#cz_key_format",
+    "title": "Which key formula citezot will use",
+    "section": "cz_key_format",
+    "text": "cz_key_format"
+  },
+  {
+    "objectID": "reference/cz_key_format.html#description",
+    "href": "reference/cz_key_format.html#description",
+    "title": "Which key formula citezot will use",
+    "section": "Description",
+    "text": "Description\nIn order: getOption(\"citezot.key_format\"); the Better BibTeX pattern in your Zotero profile (see Details); Better BibTeX’s default pattern."
+  },
+  {
+    "objectID": "reference/cz_key_format.html#usage",
+    "href": "reference/cz_key_format.html#usage",
+    "title": "Which key formula citezot will use",
+    "section": "Usage",
+    "text": "Usage\ncz_key_format()"
+  },
+  {
+    "objectID": "reference/cz_key_format.html#details",
+    "href": "reference/cz_key_format.html#details",
+    "title": "Which key formula citezot will use",
+    "section": "Details",
+    "text": "Details\nDetection of the Zotero profile reads one line of its prefs.js and only happens when a key is generated, never at load. Set options(citezot.key_format = ...) to choose a formula yourself and skip the detection, and options(citezot.zotero_profile = \"&lt;folder&gt;\") if Zotero keeps its profile somewhere unusual. The source in use is reported once per session."
+  },
+  {
+    "objectID": "reference/cz_key_format.html#value",
+    "href": "reference/cz_key_format.html#value",
+    "title": "Which key formula citezot will use",
+    "section": "Value",
+    "text": "Value\nA list with formula and source (\"option\", \"zotero profile\" or \"default\")."
+  },
+  {
+    "objectID": "reference/cz_key_format.html#examples",
+    "href": "reference/cz_key_format.html#examples",
+    "title": "Which key formula citezot will use",
+    "section": "Examples",
+    "text": "Examples\n\noptions(citezot.key_format = \"auth.lower + year\")\ncz_key_format()\n\n$formula\n[1] \"auth.lower + year\"\n\n$source\n[1] \"option\""
+  },
+  {
+    "objectID": "reference/cz_get_item.html",
+    "href": "reference/cz_get_item.html",
+    "title": "Get one item in Zotero’s native JSON",
+    "section": "",
+    "text": "R/item.R"
+  },
+  {
+    "objectID": "reference/cz_get_item.html#cz_get_item",
+    "href": "reference/cz_get_item.html#cz_get_item",
+    "title": "Get one item in Zotero’s native JSON",
+    "section": "cz_get_item",
+    "text": "cz_get_item"
+  },
+  {
+    "objectID": "reference/cz_get_item.html#description",
+    "href": "reference/cz_get_item.html#description",
+    "title": "Get one item in Zotero’s native JSON",
+    "section": "Description",
+    "text": "Description\nReturns the item as Zotero stores it (not CSL-JSON): writable fields are in $data, and $version is the item version used for safe updates."
+  },
+  {
+    "objectID": "reference/cz_get_item.html#usage",
+    "href": "reference/cz_get_item.html#usage",
+    "title": "Get one item in Zotero’s native JSON",
+    "section": "Usage",
+    "text": "Usage\ncz_get_item(item, auth = cz_auth(), cache = getOption(\"citezot.cache\", FALSE))"
+  },
+  {
+    "objectID": "reference/cz_get_item.html#arguments",
+    "href": "reference/cz_get_item.html#arguments",
+    "title": "Get one item in Zotero’s native JSON",
+    "section": "Arguments",
+    "text": "Arguments\n\n\n\n\n\n\n\nArguments\nDescription\n\n\n\n\nitem\nThe item: a DOI, Zotero item ID, citekey, or one-row result of cz_find() (see cz_pin_key()).\n\n\nauth\nCredentials from cz_auth().\n\n\ncache\nPassed to cz_fetch_items() when item has to be looked up."
+  },
+  {
+    "objectID": "reference/cz_get_item.html#value",
+    "href": "reference/cz_get_item.html#value",
+    "title": "Get one item in Zotero’s native JSON",
+    "section": "Value",
+    "text": "Value\nA list with key, version, data and other API fields."
+  },
+  {
+    "objectID": "reference/cz_get_item.html#examples",
+    "href": "reference/cz_get_item.html#examples",
+    "title": "Get one item in Zotero’s native JSON",
+    "section": "Examples",
+    "text": "Examples\nitem &lt;- cz_get_item(\"Darwin1859\")\nitem$data$title\nitem$version"
+  },
+  {
+    "objectID": "reference/cz_fetch_items.html",
+    "href": "reference/cz_fetch_items.html",
+    "title": "Fetch every top-level item in a Zotero library as CSL-JSON",
+    "section": "",
+    "text": "R/read.R"
+  },
+  {
+    "objectID": "reference/cz_fetch_items.html#cz_fetch_items",
+    "href": "reference/cz_fetch_items.html#cz_fetch_items",
+    "title": "Fetch every top-level item in a Zotero library as CSL-JSON",
+    "section": "cz_fetch_items",
+    "text": "cz_fetch_items"
+  },
+  {
+    "objectID": "reference/cz_fetch_items.html#description",
+    "href": "reference/cz_fetch_items.html#description",
+    "title": "Fetch every top-level item in a Zotero library as CSL-JSON",
+    "section": "Description",
+    "text": "Description\nUses the /items/top endpoint (excludes notes, attachments and other child items) and pages through the whole library using the Total-Results header. After the first page, the remaining pages are requested in parallel (at most getOption(\"citezot.max_active\", 4) at a time, and throttled) and the library version is checked so that a library edited mid-download is re-fetched rather than returned inconsistent."
+  },
+  {
+    "objectID": "reference/cz_fetch_items.html#usage",
+    "href": "reference/cz_fetch_items.html#usage",
+    "title": "Fetch every top-level item in a Zotero library as CSL-JSON",
+    "section": "Usage",
+    "text": "Usage\ncz_fetch_items(\n  auth = cz_auth(),\n  page_size = 100,\n  cache = getOption(\"citezot.cache\", FALSE),\n  refresh = FALSE\n)"
+  },
+  {
+    "objectID": "reference/cz_fetch_items.html#arguments",
+    "href": "reference/cz_fetch_items.html#arguments",
+    "title": "Fetch every top-level item in a Zotero library as CSL-JSON",
+    "section": "Arguments",
+    "text": "Arguments\n\n\n\n\n\n\n\nArguments\nDescription\n\n\n\n\nauth\nCredentials from cz_auth().\n\n\npage_size\nItems per request (Zotero’s maximum is 100).\n\n\ncache\nUse and update the local cache? Defaults to getOption(\"citezot.cache\", FALSE).\n\n\nrefresh\nIf TRUE, ignore any existing cache and download the whole library (the cache, if enabled, is then rewritten)."
+  },
+  {
+    "objectID": "reference/cz_fetch_items.html#details",
+    "href": "reference/cz_fetch_items.html#details",
+    "title": "Fetch every top-level item in a Zotero library as CSL-JSON",
+    "section": "Details",
+    "text": "Details\nA full download of a large library takes a while. With cache = TRUE the items are stored in a local file (in tools::R_user_dir(\"citezot\", \"cache\"), or getOption(\"citezot.cache_dir\")), and later calls download only what changed since: one request if nothing changed, otherwise the changed items plus the lists of deleted and trashed items. The cache holds the library’s bibliographic metadata, never your API key. It is opt-in: nothing is written to disk unless you ask, either here or with options(citezot.cache = TRUE). Use refresh = TRUE to ignore the cache and download everything again, and cz_clear_cache() to delete it."
+  },
+  {
+    "objectID": "reference/cz_fetch_items.html#value",
+    "href": "reference/cz_fetch_items.html#value",
+    "title": "Fetch every top-level item in a Zotero library as CSL-JSON",
+    "section": "Value",
+    "text": "Value\nA list of CSL-JSON items (plain lists, simplifyVector = FALSE). The order is not guaranteed."
+  },
+  {
+    "objectID": "reference/cz_fetch_items.html#examples",
+    "href": "reference/cz_fetch_items.html#examples",
+    "title": "Fetch every top-level item in a Zotero library as CSL-JSON",
+    "section": "Examples",
+    "text": "Examples\nitems &lt;- cz_fetch_items()\nlength(items)\n\n# Keep a local copy, so later calls download only what changed\nitems &lt;- cz_fetch_items(cache = TRUE)"
+  },
+  {
+    "objectID": "reference/cz_bare_keys.html",
+    "href": "reference/cz_bare_keys.html",
+    "title": "Extract bare (no @) citekey-shaped tokens from a text/data file",
+    "section": "",
+    "text": "R/keys.R"
+  },
+  {
+    "objectID": "reference/cz_bare_keys.html#cz_bare_keys",
+    "href": "reference/cz_bare_keys.html#cz_bare_keys",
+    "title": "Extract bare (no @) citekey-shaped tokens from a text/data file",
+    "section": "cz_bare_keys",
+    "text": "cz_bare_keys"
+  },
+  {
+    "objectID": "reference/cz_bare_keys.html#description",
+    "href": "reference/cz_bare_keys.html#description",
+    "title": "Extract bare (no @) citekey-shaped tokens from a text/data file",
+    "section": "Description",
+    "text": "Description\nFor files that reference sources informally (e.g. a CSV “comments” column saying “defined in Dubuisson2013a”). Matches an author-shaped run of letters (hyphens allowed) immediately followed by a 19\n/20\nyear and an optional lowercase disambiguator, e.g. Ebihara2006, Boucheron-Dubuisson2024. Deliberately conservative: Ebihara 2006 or Hsu7949 do not match."
+  },
+  {
+    "objectID": "reference/cz_bare_keys.html#usage",
+    "href": "reference/cz_bare_keys.html#usage",
+    "title": "Extract bare (no @) citekey-shaped tokens from a text/data file",
+    "section": "Usage",
+    "text": "Usage\ncz_bare_keys(path)"
+  },
+  {
+    "objectID": "reference/cz_bare_keys.html#arguments",
+    "href": "reference/cz_bare_keys.html#arguments",
+    "title": "Extract bare (no @) citekey-shaped tokens from a text/data file",
+    "section": "Arguments",
+    "text": "Arguments\n\n\n\nArguments\nDescription\n\n\n\n\npath\nPath to the file to scan."
+  },
+  {
+    "objectID": "reference/cz_bare_keys.html#value",
+    "href": "reference/cz_bare_keys.html#value",
+    "title": "Extract bare (no @) citekey-shaped tokens from a text/data file",
+    "section": "Value",
+    "text": "Value\nSorted character vector of unique citekey-shaped tokens."
+  },
+  {
+    "objectID": "reference/cz_bare_keys.html#examples",
+    "href": "reference/cz_bare_keys.html#examples",
+    "title": "Extract bare (no @) citekey-shaped tokens from a text/data file",
+    "section": "Examples",
+    "text": "Examples\n\nnotes &lt;- tempfile(fileext = \".csv\")\nwriteLines(c(\"site,comment\", \"A,defined in Darwin1859\", \"B,see Ebihara 2006\"), notes)\ncz_bare_keys(notes) # \"Ebihara 2006\" does not match\n\ncharacter(0)"
+  },
+  {
+    "objectID": "reference/cz_add.html",
+    "href": "reference/cz_add.html",
+    "title": "Add an item to your Zotero library from a DOI",
+    "section": "",
+    "text": "R/add.R"
+  },
+  {
+    "objectID": "reference/cz_add.html#cz_add",
+    "href": "reference/cz_add.html#cz_add",
+    "title": "Add an item to your Zotero library from a DOI",
+    "section": "cz_add",
+    "text": "cz_add"
+  },
+  {
+    "objectID": "reference/cz_add.html#description",
+    "href": "reference/cz_add.html#description",
+    "title": "Add an item to your Zotero library from a DOI",
+    "section": "Description",
+    "text": "Description\nLooks up the metadata for a DOI (via the public Crossref API), checks that the item is not already in your library, and creates it. The default is a dry run: the library is read and Crossref is queried, but nothing is written to Zotero. Use dry_run = FALSE to create the item."
+  },
+  {
+    "objectID": "reference/cz_add.html#usage",
+    "href": "reference/cz_add.html#usage",
+    "title": "Add an item to your Zotero library from a DOI",
+    "section": "Usage",
+    "text": "Usage\ncz_add(\n  id,\n  key = NULL,\n  collection = NULL,\n  dry_run = TRUE,\n  auth = cz_auth(),\n  cache = getOption(\"citezot.cache\", FALSE)\n)"
+  },
+  {
+    "objectID": "reference/cz_add.html#arguments",
+    "href": "reference/cz_add.html#arguments",
+    "title": "Add an item to your Zotero library from a DOI",
+    "section": "Arguments",
+    "text": "Arguments\n\n\n\n\n\n\n\nArguments\nDescription\n\n\n\n\nid\nA DOI, with or without a https://doi.org/ or doi: prefix.\n\n\nkey\nOptional citekey to pin on the new item, e.g. \"Kent2002\". It must be usable as a pandoc citation key and not already used in your library. Use \"auto\" to generate one from your Better BibTeX formula (see cz_suggest_key() and cz_key_format()); a letter is appended if the key is taken. The key is shown in the dry run.\n\n\ncollection\nOptional collection to add the item to: its 8-character key, or its exact name.\n\n\ndry_run\nIf TRUE (default), show what would be created and write nothing.\n\n\nauth\nCredentials from cz_auth() (a key with write access to write).\n\n\ncache\nPassed to cz_fetch_items(), which is used for the duplicate check."
+  },
+  {
+    "objectID": "reference/cz_add.html#details",
+    "href": "reference/cz_add.html#details",
+    "title": "Add an item to your Zotero library from a DOI",
+    "section": "Details",
+    "text": "Details\nThe new item is built from Zotero’s own template for its type, so it only contains fields valid for that type. The citekey, if you give one, is pinned in the same request (the native citationKey field), so there is no moment where the item exists without it. Only DOIs registered with Crossref are supported for now; ISBN, arXiv and PMID lookups are planned.\nCreating is retry-safe: each request carries a random Zotero-Write-Token, so a retried request after a network hiccup cannot create the item twice. Existing items are never changed or deleted.\nCrossref asks clients to identify themselves with a contact address to use its faster pool. citezot never sends an address by itself; to opt in, set options(citezot.mailto = \"you@example.org\")."
+  },
+  {
+    "objectID": "reference/cz_add.html#value",
+    "href": "reference/cz_add.html#value",
+    "title": "Add an item to your Zotero library from a DOI",
+    "section": "Value",
+    "text": "Value\nInvisibly, a list with item (the payload), key (the new Zotero item ID, or NULL), existing (matching rows of cz_find() if the item was already in the library) and written."
+  },
+  {
+    "objectID": "reference/cz_add.html#examples",
+    "href": "reference/cz_add.html#examples",
+    "title": "Add an item to your Zotero library from a DOI",
+    "section": "Examples",
+    "text": "Examples\ncz_add(\"10.3767/000651906X622210\", key = \"Ebihara2006\")        # preview\ncz_add(\"10.3767/000651906X622210\", key = \"Ebihara2006\", dry_run = FALSE)"
+  },
+  {
+    "objectID": "articles/manuscript.html",
+    "href": "articles/manuscript.html",
+    "title": "citezot で論文を書く",
+    "section": "",
+    "text": "このガイドでは、1 本の論文について、最初の引用からレンダリング済みの文書までの流れを追います。Zotero アカウントが必要なチャンクは表示のみで実行せず、オフラインで動く部分は実行します。\nlibrary(citezot)"
+  },
+  {
+    "objectID": "articles/manuscript.html#セットアップ",
+    "href": "articles/manuscript.html#セットアップ",
+    "title": "citezot で論文を書く",
+    "section": "セットアップ",
+    "text": "セットアップ\n始める前に、Zotero の API キー、~/.Renviron に書いたユーザー ID、そして項目の引用キーが必要です。手順はセットアップガイドにあります。citezot が認証情報を認識できているか確認しましょう(キーが表示されることはありません)。\n\ncz_auth()\n#&gt; &lt;cz_auth&gt; user library 1234567 (API key hidden)"
+  },
+  {
+    "objectID": "articles/manuscript.html#引用更新レンダリングの流れ",
+    "href": "articles/manuscript.html#引用更新レンダリングの流れ",
+    "title": "citezot で論文を書く",
+    "section": "引用→更新→レンダリングの流れ",
+    "text": "引用→更新→レンダリングの流れ\nmanuscript.qmd では通常どおり引用し、citezot が書き出すファイルを Quarto に指定します。\n---\ntitle: \"On the Origin of Species\"\nbibliography: references.bib\n---\n\nThe origin of species is explained by @Darwin1859; see also @Weiß2015.\ncitezot は本文中の引用を見つけます。コードチャンクと、@fig-map のような Quarto の相互参照は無視されます。\n\nqmd &lt;- tempfile(fileext = \".qmd\")\nwriteLines(c(\n  \"---\",\n  \"bibliography: references.bib\",\n  \"---\",\n  \"The origin of species is explained by @Darwin1859; see also @Weiß2015 and @fig-map.\",\n  \"\",\n  \"```{r}\",\n  \"x@slot  # not a citation\",\n  \"```\"\n), qmd)\n\ncz_qmd_keys(qmd)\n#&gt; [1] \"Darwin1859\" \"Weiß2015\"\n\nでは、参考文献ファイルを書き出します。\n\ncz_update_bib(\"manuscript.qmd\")\n#&gt; ✔ 2/2 cited keys found; 'references.bib' updated.\n\nあとは、いつもどおり Quarto で文書をレンダリングします(quarto render manuscript.qmd。HTML、PDF、Typst のいずれでも可)。書き出されるのは引用した項目だけで、キー順に、Zotero のエクスポーターから直接得た BibLaTeX 形式になります。CSL-YAML にしたい場合は .yaml の名前を指定します: cz_update_bib(\"manuscript.qmd\", out = \"references.yaml\")\n\nキーが見つからないとき\n本文が @Kent2002 を引用しているのに、Zotero にその引用キーを持つ項目がないとします。更新は中断され、既存のファイルには触れません。\n\ncz_update_bib(\"manuscript.qmd\")\n#&gt; Error in `cz_update_bib()`:\n#&gt; ! Cited in the documents but not found in Zotero: \"Kent2002\".\n#&gt; ✖ 'references.bib' was NOT touched, because an incomplete bibliography would\n#&gt;   break the render.\n#&gt; ℹ Pin the citekey in Zotero (see `cz_pin_key()`), check the spelling, or use\n#&gt;   `allow_incomplete = TRUE` to write what was found.\n\n原因は 3 つ考えられ、citezot はそれぞれに対応できます。\n\nタイプミス、または項目が別のキーで登録されている。 検索します。\n\ncz_find(\"kent blat\")\ncz_find(doi = \"10.1101/gr.229202\")\n\n項目は Zotero にあるが、まだキーがない。 キーを固定します。書き込みはすべてそうですが、指示するまではドライランです。\n\ncz_pin_key(\"10.1101/gr.229202\", \"Kent2002\")                  # プレビュー\ncz_pin_key(\"10.1101/gr.229202\", \"Kent2002\", dry_run = FALSE) # 書き込み\n\n項目がライブラリにない。 DOI から追加します。\n\ncz_add(\"10.1101/gr.229202\", key = \"Kent2002\")                  # プレビュー\ncz_add(\"10.1101/gr.229202\", key = \"Kent2002\", dry_run = FALSE) # 作成\n\nプレビューには、作成される項目のタイトル、著者、日付、キーが表示されます。cz_add() は、まず DOI とキーがライブラリにまだないことを確認します。(現時点では、Crossref に登録された DOI のみ対応しています。)\n\nもう一度 cz_update_bib() を実行すれば、文書は完成です。"
+  },
+  {
+    "objectID": "articles/manuscript.html#項目を修正する",
+    "href": "articles/manuscript.html#項目を修正する",
+    "title": "citezot で論文を書く",
+    "section": "項目を修正する",
+    "text": "項目を修正する\n日付が間違っているとします。変更をプレビューしてから、適用します。\n\ncz_update_item(\"Regnier2024\", list(date = \"in press\"))\n#&gt; ℹ Dry run: nothing written. Use `dry_run = FALSE` to apply to item ABCD2345 (...).\n#&gt; • date: \"2026\" -&gt; \"in press\"\n\ncz_update_item(\"Regnier2024\", list(date = \"in press\"), dry_run = FALSE)\n\n実際に変わるフィールドだけが、項目のバージョンとともに送信されます。citezot が読み取った後に誰か(または Zotero デスクトップ)が項目を編集していた場合、Zotero は HTTP 412 を返し、何も上書きされません。cz_get_item(\"Regnier2024\") で項目を確認してから、もう一度コマンドを実行してください。作成者、タグ、コレクションは丸ごと置き換えられるため、タグを 1 つ追加するには、タグの完全なリストを渡します。識別用のフィールド(key、version、itemType、追加日・更新日)と引用キーはここでは変更できません。キーの変更には cz_pin_key() を使います。"
+  },
+  {
+    "objectID": "articles/manuscript.html#引用キー",
+    "href": "articles/manuscript.html#引用キー",
+    "title": "citezot で論文を書く",
+    "section": "引用キー",
+    "text": "引用キー\nBetter BibTeX を使っている場合、キーは auth.lower + year + shorttitle(1).lower のようなパターンに従っています。citezot は、新しい項目に対して同じパターンでキーを生成できます。\n\nitem &lt;- list(\n  itemType = \"journalArticle\",\n  title = \"On the origin of species by means of natural selection\",\n  date = \"1859\",\n  creators = list(list(creatorType = \"author\", firstName = \"Charles\", lastName = \"Darwin\"))\n)\n\ncz_suggest_key(item, \"auth.lower + year + shorttitle(1).lower\")\n#&gt; [1] \"darwin1859origin\"\n\n# すでに使われているキーには文字が付く\ncz_suggest_key(item, \"auth.lower + year + shorttitle(1).lower\",\n               existing = \"darwin1859origin\")\n#&gt; [1] \"darwin1859origina\"\n\n# Better BibTeX 自身の既定のパターン\ncz_suggest_key(item, \"auth.lower + shorttitle(3,3) + year\")\n#&gt; [1] \"darwinOriginSpeciesMeans1859\"\n\ncz_add(..., key = \"auto\") は cz_key_format() のパターンを使います。citezot.key_format オプションを設定していればそれ、なければ Better BibTeX が Zotero のプロファイルに保存したもの、それもなければ Better BibTeX の既定です。書式言語は一部(auth、year、shorttitle、title、いくつかのフィルター、+)のみ対応しており、それ以外はキーが変わるのではなくエラーになります。Better BibTeX 自体は必要ありません。cz_pin_key() で固定したキーや cz_add() に渡したキーは、どれも使えます。\nタイトル中の単語は Better BibTeX の規則に従います。HTML タグは除かれ、タイトルは最初のコロンまたは文末で切られ、“a” や “the” のような短い機能語は飛ばされ、単語内のハイフンなどの記号は取り除かれます(early-diverging は earlydiverging になります)。"
+  },
+  {
+    "objectID": "articles/manuscript.html#速度",
+    "href": "articles/manuscript.html#速度",
+    "title": "citezot で論文を書く",
+    "section": "速度",
+    "text": "速度\n大きなライブラリを初めてダウンロードするには数十秒かかります。キャッシュを有効にすると、2 回目以降は変更分だけを取得します。\n\noptions(citezot.cache = TRUE)   # .Rprofile に書いておきましょう\nsystem.time(cz_update_bib(\"manuscript.qmd\"))\n#&gt;    user  system elapsed\n#&gt;   0.121   0.019   0.342\n\nキャッシュは tools::R_user_dir(\"citezot\", \"cache\") にあり、保存されるのは書誌情報のみです。cz_fetch_items(refresh = TRUE) で全件を再ダウンロードでき、cz_clear_cache() でキャッシュを削除できます。"
+  },
+  {
+    "objectID": "articles/manuscript.html#自動化",
+    "href": "articles/manuscript.html#自動化",
+    "title": "citezot で論文を書く",
+    "section": "自動化",
+    "text": "自動化\n_quarto.yml に pre-render ステップを追加すると、プロジェクトをレンダリングするたびに参考文献ファイルが更新されます。\nproject:\n  pre-render: Rscript -e 'citezot::cz_update_bib()'\ntargets のパイプラインでは、パスを返し、ファイルの追跡は targets に任せます。\n\ntar_target(\n  references,\n  cz_update_bib(\"manuscript.qmd\", quiet = TRUE),\n  format = \"file\",\n  cue = tar_cue(mode = \"always\")\n)\n\ncz_update_bib() は変更がないときファイルに触れないので、参考文献が実際に変わったときだけ再レンダリングされます。"
+  },
+  {
+    "objectID": "articles/manuscript.html#トラブルシューティング",
+    "href": "articles/manuscript.html#トラブルシューティング",
+    "title": "citezot で論文を書く",
+    "section": "トラブルシューティング",
+    "text": "トラブルシューティング\n\n「Zotero credentials not found.」 この R セッションで環境変数が設定されていません。Sys.getenv(\"ZOTERO_API_KEY\") != \"\" を確認し、~/.Renviron を編集したら R を再起動してください。\nHTTP 403。 キーが無効か、必要な権限がありません。書き込みには、書き込み権限のあるキーが必要です。\n更新時の HTTP 412。 読み取った後に項目が変更されました。cz_get_item() でもう一度確認し、意図して再試行してください。\n項目が Zotero にあるのに、引用キーが「見つからない」。 項目に引用キーが保存されていない(または別のキーが保存されている)ためです。cz_find() で項目のキーを確認し、cz_pin_key() で設定してください。\n変わった文字(?? など)を含むキーは、文書から引用できません。Zotero で直すか、cz_pin_key(..., overwrite = TRUE) で修正してください。"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "citezot",
+    "section": "",
+    "text": "ソースコード\nバグを報告\n\n\n\n\nMIT\n\n\n\nJoel H. Nitta\n作者・メンテナー\ncitezot は、Zotero を使って Quarto や R Markdown の文書に参考文献を引用しやすくするためのパッケージです。\ncitezot を使うには、通常どおり Quarto (Pandoc) の記法で本文中に文献を引用します。たとえば manuscript.qmd は次のようになります。\nこの 2 件の文献は Zotero ライブラリに登録されていて、それぞれの項目に引用キー Darwin1859 と Kenrick1997a が保存されている必要があります。\ncz_update_bib() を呼ぶと、引用した文献だけを含む references.bib ファイルが Zotero から直接生成されます。\ncitezot では、項目の検索、DOI からの追加、フィールドの修正もできます(後述)。いずれも、実行する前に必ず内容を表示します。\ncitezot は Zotero Web API と通信するため、Zotero デスクトップを起動していなくても動作します。そのため、サーバー上や、GitHub Actions で自動生成する文書(自動生成の CV など)でも文献を引用できます。\ncitezot は Zotero とは無関係であり、Zotero の承認を受けたものではありません。"
+  },
+  {
+    "objectID": "index.html#インストール",
+    "href": "index.html#インストール",
+    "title": "citezot",
+    "section": "インストール",
+    "text": "インストール\ncitezot は CRAN には登録されていません。GitHub から開発版をインストールしてください。\n# install.packages(\"pak\")\npak::pak(\"joelnitta/citezot\")"
+  },
+  {
+    "objectID": "index.html#セットアップ",
+    "href": "index.html#セットアップ",
+    "title": "citezot",
+    "section": "セットアップ",
+    "text": "セットアップ\nZotero の API キーとユーザー ID(~/.Renviron に保存します)が必要で、引用する各項目には引用キーが必要です。項目の追加と編集以外は、読み取り専用のキーで足ります。\n手順はセットアップガイドを参照してください。"
+  },
+  {
+    "objectID": "index.html#使い方",
+    "href": "index.html#使い方",
+    "title": "citezot",
+    "section": "使い方",
+    "text": "使い方\n\n参考文献ファイルの生成\ncz_update_bib(\"manuscript.qmd\") # `bibliography:` で指定されたファイルに書き出す\ncz_update_bib(\"manuscript.qmd\", out = \"references.yaml\") # BibLaTeX ではなく CSL-YAML 形式\n\n出力ファイルは、文書の YAML ヘッダー(または _quarto.yml)の bibliography: で指定されたものが既定で、指定がなければ references.bib です。BibLaTeX を既定にしているのは、Typst を含む Quarto のあらゆる出力形式で使えるためです。\n非公式な形で文献に言及しているファイル(たとえば「Darwin1859 で定義」と書かれた CSV のメモ)もスキャンできます: cz_update_bib(qmd, bare = \"data.csv\")\n\n\n\n参考文献を黙って失うことはありません\n文書で引用したキーが Zotero に見つからない場合、cz_update_bib() は処理を中断し、既存のファイルには触れません。項目が黙って欠落した参考文献ファイルはレンダリングを壊すためです。見つからなかったキーと、その対処法が表示されます。(allow_incomplete = TRUE を指定すると、見つかった分だけを書き出します。)\n\n\nレンダリングのたびに実行できる速さ\n大きなライブラリの取得には、初回はしばらくかかります(約 6,000 件で 20 秒ほど、並列でリクエストします)。キャッシュを有効にすると、2 回目以降は変更分だけをダウンロードし、変更がなければ 0.3 秒ほどで終わります。\n# .Rprofile に書いておくこともできます\n# キャッシュは tools::R_user_dir(\"citezot\", \"cache\") に保存されます\noptions(citezot.cache = TRUE)\nキャッシュは、指定しない限り無効です。キャッシュに保存されるのは書誌情報のみで、API キーは含まれません。cz_clear_cache() で削除できます。"
+  },
+  {
+    "objectID": "index.html#項目の検索追加修正",
+    "href": "index.html#項目の検索追加修正",
+    "title": "citezot",
+    "section": "項目の検索・追加・修正",
+    "text": "項目の検索・追加・修正\nライブラリを変更する操作はすべて、特に指定しない限りドライランです。読み取りと、実行内容の表示だけを行い、dry_run = FALSE を付けるまで何も書き込みません。削除機能はありません。\ncz_find(\"darwin origin of species\") # 自由テキスト\ncz_find(doi = \"10.2307/1796430\") # DOI、ISBN、または完全一致する引用キー\ncz_find(citekey = \"Darwin1859\")\n\ncz_add(\"10.1016/0022-5193(64)90038-4\", key = \"auto\")\n\ncz_update_item(\"Darwin1859\", list(publisher = \"John Murray\"))\nitem を受け取る関数には、DOI、Zotero の項目 ID、既存の引用キー、または cz_find() が返す 1 行の結果を渡せます。\n\ncz_add() は、Crossref で DOI を検索し、その項目がライブラリにまだないこと(および引用キーが未使用で、pandoc で使える形式であること)を確認したうえで、Zotero 自身のテンプレートから項目タイプに応じた項目を作り、同じリクエストで引用キーを固定します。各リクエストには書き込みトークンが付くため、ネットワークエラー後に再試行しても項目が二重に作られることはありません。現時点では Crossref の DOI のみ対応しています。\ncz_update_item() は、実際に変更されるフィールドだけを、項目のバージョンとともに送信します。その間に別の場所で項目が編集されていた場合、Zotero は拒否し(HTTP 412)、何も上書きされません。作成者、タグ、コレクションは、Zotero の仕様どおり丸ごと置き換えられます。\ncz_pin_key() は、overwrite = TRUE を指定しない限り、別の固定済みキーを置き換えません。古いキーを引用している文書が壊れるためです。\n\n\n引用キーの生成\nkey = \"auto\" を指定すると、Better BibTeX 方式の書式(たとえば auth.lower + year + shorttitle(1).lower。結果は hamilton1964genetical のようになります)からキーが作られます。\n書式は次の順で決まります。options(citezot.key_format = \"...\")、Better BibTeX が Zotero のプロファイルに保存したパターン(citezot は Zotero の prefs.js からこの 1 項目だけを、キーを生成するときにのみ読み取り、セッションごとに一度お知らせします)、そして Better BibTeX の既定のパターンです。同じキーがすでにある場合は、新しいキーの末尾に文字(a、b、…)が付きます。\n書式言語はドキュメント化された一部のみ対応しており、それ以外はキーが変わるのではなくエラーになります。使用中の書式は cz_key_format() で確認でき、cz_suggest_key() で試せます。\nitem &lt;- list(\n  itemType = \"journalArticle\",\n  title = \"The genetical evolution of social behaviour. I\",\n  date = \"1964-07\",\n  creators = list(list(\n    creatorType = \"author\",\n    firstName = \"W. D.\",\n    lastName = \"Hamilton\"\n  ))\n)\ncz_suggest_key(item, \"auth.lower + year + shorttitle(1).lower\")\ncz_suggest_key(\n  item,\n  \"auth.lower + year + shorttitle(1).lower\",\n  existing = \"hamilton1964genetical\"\n)"
+  },
+  {
+    "objectID": "index.html#自動化",
+    "href": "index.html#自動化",
+    "title": "citezot",
+    "section": "自動化",
+    "text": "自動化\ncz_update_bib() を手作業で実行する代わりに、文書をレンダリングするたびに自動で実行したい場合があります。\n_quarto.yml に Quarto の pre-render ステップを書けば実現できます。\nproject:\n  pre-render: Rscript -e 'citezot::cz_update_bib()'\ntargets を使う場合は、tar_make() のたびに必ず再確認されるターゲットを定義できます。\ntar_target(\n  references,\n  cz_update_bib(\"manuscript.qmd\", quiet = TRUE),\n  format = \"file\",\n  cue = tar_cue(mode = \"always\")\n)"
+  },
+  {
+    "objectID": "index.html#他のパッケージとの違い",
+    "href": "index.html#他のパッケージとの違い",
+    "title": "citezot",
+    "section": "他のパッケージとの違い",
+    "text": "他のパッケージとの違い\nrbbt は RStudio、特に執筆中に引用を挿入するアドインを中心に作られています。Zotero デスクトップと Better BibTeX プラグインを起動しておく必要があります。\nzot は汎用の Zotero クライアントです。より低レベル(直接的)に動作し、バージョン付きの書き込み、バッチ計画、ファイル添付、ローカルデータベースの読み取り専用クエリなどを備えています。\nc2z は、さまざまなソース(DOI、ISBN、ノルウェーの Cristin 登録簿など)から Zotero に文献をインポートでき、項目の編集、コピー、削除もできます。\ncitezot は、軽量(依存パッケージが最小限)で、参考文献の管理が簡単(関数 1 回の呼び出しで参考文献ファイルができる)、ライブラリの扱いが慎重(書き込みはすべて、指定しない限りドライランで、削除はできない)、そして Zotero が起動していなくてもどの環境でも動くことを目指しています。\nこれらの説明は、各パッケージのコードではなくドキュメントに基づいています。最新の状況は各パッケージのページで確認してください。"
+  },
+  {
+    "objectID": "index.html#制限事項",
+    "href": "index.html#制限事項",
+    "title": "citezot",
+    "section": "制限事項",
+    "text": "制限事項\n\n識別子による項目の検索は、現時点では Crossref の DOI のみ対応しています(ISBN、arXiv、PMID は対応予定です)。\ncitezot では何も削除できません。\nBibLaTeX の出力は Zotero 自身のエクスポーターによるもの、CSL-YAML はライブラリの CSL-JSON によるものです。したがって、Quarto で表示される内容は Zotero のエクスポーターの出力どおりになります。\n照合は項目に保存された引用キーで行われるため、キーのない項目は引用できません。"
+  },
+  {
+    "objectID": "index.html#開発",
+    "href": "index.html#開発",
+    "title": "citezot",
+    "section": "開発",
+    "text": "開発\ncitezot の開発に参加するには、リポジトリをクローンし、開発用の依存パッケージをインストールします(pak::local_install_dev_deps())。コミット前のチェックには pre-commit を使います。一度インストールしてください(たとえば brew install pre-commit や pip install pre-commit)。そのうえで、クローンしたリポジトリでフックを有効にします。\npre-commit install\n\nコミットのたびに、フックが styler と lintr(tidyverse スタイル、1 行 80 文字。.lintr を参照)を実行し、README.md が README.Rmd から生成されていることを確認します。手動で実行するには pre-commit run --all-files を使います。\nプッシュのたびに、フックが devtools::check() を実行し、エラー・警告・ノートがない場合のみプッシュを許可します。\nテストはネットワークを使いません(devtools::test())。編集するのは README.md ではなく README.Rmd で、devtools::build_readme() でレンダリングします。例の一部は Zotero ライブラリから読み取るため、レンダリングには Zotero の認証情報(セットアップガイドを参照)と、例で引用している項目が必要です。レンダリングできない場合は、プルリクエストにその旨を書いてください。"
+  },
+  {
+    "objectID": "index.html#ヘルプ",
+    "href": "index.html#ヘルプ",
+    "title": "citezot",
+    "section": "ヘルプ",
+    "text": "ヘルプ\nドキュメント(実践的な例を含む)は https://joelnitta.github.io/citezot/ にあります。バグ報告やアイデアは https://github.com/joelnitta/citezot/issues へお寄せください。"
+  },
+  {
+    "objectID": "index.html#ライセンス-1",
+    "href": "index.html#ライセンス-1",
+    "title": "citezot",
+    "section": "ライセンス",
+    "text": "ライセンス\ncitezot は MIT ライセンスで公開されています。"
+  },
+  {
+    "objectID": "articles/setup.html",
+    "href": "articles/setup.html",
+    "title": "citezot のセットアップ",
+    "section": "",
+    "text": "これは最初に一度だけ行うセットアップです。所要時間は 5 分ほどで、プロジェクトごとにやり直す必要はありません。次のことを行います。\nこのガイドのコードは、Zotero のアカウントが必要なため、サイトのビルド時には実行されません。"
+  },
+  {
+    "objectID": "articles/setup.html#api-キーを作成する",
+    "href": "articles/setup.html#api-キーを作成する",
+    "title": "citezot のセットアップ",
+    "section": "1. API キーを作成する",
+    "text": "1. API キーを作成する\ncitezot は Zotero Web API と通信するため、API キーが必要です。Zotero デスクトップを起動しておく必要はありませんが、ライブラリが zotero.org と同期されている必要があります(Zotero デスクトップの設定→同期)。\n\n\nhttps://www.zotero.org/settings/keys にサインインし、Create new private key を選びます。\nわかりやすい名前を付けます(例: citezot (read only))。\nPersonal library の下で Allow library access にチェックを入れ、Allow write access はチェックを外したままにします。これで cz_update_bib()、cz_find()、cz_get_item()、cz_fetch_items() には十分です。\nキーを保存し、今すぐコピーしてください。Zotero がキーを表示するのは一度だけです。\n数字のユーザー ID を控えます。同じページの「Your userID for use in API calls is …」という文に表示されています。ユーザー名ではありません。\n\n\nキーは 2 つあるほうが安全です\nライブラリを変更する関数(cz_add()、cz_update_item()、cz_pin_key())には、Allow write access を付けたキーが必要です。すべてのセッションにその権限を与えるのではなく、2 つ目のキー citezot (write) を作り、項目を追加・編集するときだけ使いましょう。書き込みを行う操作は dry_run = FALSE を渡さない限りドライランで、citezot には削除機能もありませんが、書き込めないキーを使うことが最も確実な保証です。\n\n\nグループライブラリ\nグループライブラリの場合は、同じページの Group permissions でキーを作成します。グループ ID は、グループの URL(https://www.zotero.org/groups/&lt;ID&gt;/&lt;name&gt;)に含まれる数字です。そのうえで cz_auth(library_type = \"group\") を使います。"
+  },
+  {
+    "objectID": "articles/setup.html#キーを-r-に教える",
+    "href": "articles/setup.html#キーを-r-に教える",
+    "title": "citezot のセットアップ",
+    "section": "2. キーを R に教える",
+    "text": "2. キーを R に教える\ncitezot は次の環境変数を読み取ります。\n\n\n\n\n\n\n\n変数\n内容\n\n\n\n\nZOTERO_API_KEY\nAPI キー\n\n\nZOTERO_USER_ID\n個人ライブラリの数字の ID\n\n\nZOTERO_LIBRARY_ID\n省略可。ZOTERO_USER_ID より優先され、グループライブラリではこの名前のみが使われます\n\n\n\nこれらはユーザーレベルの .Renviron に書いてください。すべてのプロジェクトで使え、誤ってコミットしてしまうこともありません。\n\nusethis::edit_r_environ()   # ~/.Renviron を開く\n\nZOTERO_API_KEY=xxxxxxxxxxxxxxxxxxxxxxxx\nZOTERO_USER_ID=1234567\nファイルを保存して R を再起動してください。.Renviron は起動時にしか読み込まれません。その後、citezot が認証情報を認識できているか確認します。キーが表示されることはありません。\n\nlibrary(citezot)\ncz_auth()\n#&gt; &lt;cz_auth&gt; user library 1234567 (API key hidden)\n\n読み取り専用キーと書き込み用キーを切り替える場合は、もう一方のキーが必要なセッションで cz_auth(api_key = \"...\") を使うか、書き込み用キーを別の変数に入れておき、たとえば cz_auth(api_key = Sys.getenv(\"ZOTERO_WRITE_KEY\")) のように明示的に渡し、そのオブジェクトを関数の auth 引数に与えます。\nキーをプロジェクト内のファイルに書かないでください。どうしても書く場合は、そのファイルを .gitignore に入れてください。\n\ncitezot はキーをどう扱うか\n\nキーは api.zotero.org にのみ、ベアラートークンとして送信します。\nキーを表示、記録、保存することはありません。認証オブジェクトを print() してもキーは隠されます。\n任意のキャッシュ(cz_clear_cache() を参照)に保存されるのは書誌情報のみで、キーは含まれません。"
+  },
+  {
+    "objectID": "articles/setup.html#項目に引用キーがあることを確認する",
+    "href": "articles/setup.html#項目に引用キーがあることを確認する",
+    "title": "citezot のセットアップ",
+    "section": "3. 項目に引用キーがあることを確認する",
+    "text": "3. 項目に引用キーがあることを確認する\ncitezot は、項目に保存された引用キーで項目を引用します。キーのない項目は引用できず、cz_update_bib() は見つからなかったキーを知らせます。\n項目にキーを付ける方法は 2 つあります。\n\nBetter BibTeX を使う(すでに使っている場合におすすめ)\nBetter BibTeX は、選んだ書式からキーを生成し、キーを固定して変わらないようにできます。固定されたキーは項目に保存され、citezot が読み取るのはそれです。Zotero デスクトップで項目を選択し、右クリックして Better BibTeX→Pin BibTeX key を選びます。その後同期すると、キーがアップロードされます。\nBetter BibTeX は必須ではありません。citezot がキーを読み取るのに必要ありません。\n\n\nBetter BibTeX を使わない\nZotero は、各項目の Citation Key フィールドにキーを保存します。Zotero で手動で設定することも、R から設定することもできます。\n\ncz_find(\"darwin origin of species\")             # 項目を探す\ncz_pin_key(\"Darwin1859\", \"Darwin1859\")          # プレビュー。item には cz_find() が解釈できる識別子を指定できます\ncz_add(\"10.1016/0022-5193(64)90038-4\", key = \"auto\")        # または、生成したキーで新しい項目を追加する\n\n新しいキーの生成方法を含む一連の流れは、論文執筆ガイドを参照してください。"
+  },
+  {
+    "objectID": "articles/setup.html#トラブルシューティング",
+    "href": "articles/setup.html#トラブルシューティング",
+    "title": "citezot のセットアップ",
+    "section": "トラブルシューティング",
+    "text": "トラブルシューティング\n\n「Zotero credentials not found.」 この R セッションで環境変数が設定されていません。Sys.getenv(\"ZOTERO_API_KEY\") != \"\" を確認し、.Renviron を編集したら R を再起動してください。\nHTTP 403。 キーが無効か、要求した権限がありません(たとえば、読み取り専用キーで項目を追加しようとした場合)。\n存在するライブラリなのに HTTP 404。 ユーザー ID が間違っています。ユーザー名ではなく数字を使ってください。\nZotero デスクトップで追加したばかりの項目が見つからない。 ライブラリがまだ同期されていません。"
+  },
+  {
+    "objectID": "reference/cz_auth.html",
+    "href": "reference/cz_auth.html",
+    "title": "Zotero credentials",
+    "section": "",
+    "text": "R/auth.R"
+  },
+  {
+    "objectID": "reference/cz_auth.html#cz_auth",
+    "href": "reference/cz_auth.html#cz_auth",
+    "title": "Zotero credentials",
+    "section": "cz_auth",
+    "text": "cz_auth"
+  },
+  {
+    "objectID": "reference/cz_auth.html#description",
+    "href": "reference/cz_auth.html#description",
+    "title": "Zotero credentials",
+    "section": "Description",
+    "text": "Description\nResolves the library ID and API key, by default from the environment variables ZOTERO_LIBRARY_ID (or, for a user library, ZOTERO_USER_ID) and ZOTERO_API_KEY. Load them yourself (e.g. from a gitignored .Renviron or .env.local); citezot never reads files or stores the key. The key is never printed."
+  },
+  {
+    "objectID": "reference/cz_auth.html#usage",
+    "href": "reference/cz_auth.html#usage",
+    "title": "Zotero credentials",
+    "section": "Usage",
+    "text": "Usage\ncz_auth(\n  library_id = NULL,\n  api_key = Sys.getenv(\"ZOTERO_API_KEY\"),\n  library_type = c(\"user\", \"group\")\n)"
+  },
+  {
+    "objectID": "reference/cz_auth.html#arguments",
+    "href": "reference/cz_auth.html#arguments",
+    "title": "Zotero credentials",
+    "section": "Arguments",
+    "text": "Arguments\n\n\n\n\n\n\n\nArguments\nDescription\n\n\n\n\nlibrary_id\nNumeric user ID (or group ID), as a string or number. If NULL (default), taken from ZOTERO_LIBRARY_ID; for a user library ZOTERO_USER_ID is used as a fallback.\n\n\napi_key\nZotero API key.\n\n\nlibrary_type\n\"user\" (personal library) or \"group\"."
+  },
+  {
+    "objectID": "reference/cz_auth.html#details",
+    "href": "reference/cz_auth.html#details",
+    "title": "Zotero credentials",
+    "section": "Details",
+    "text": "Details\nCreate a key at https://www.zotero.org/settings/keys; the numeric user ID is on the same page. A read-only key is enough for cz_fetch_items(); use a separate key with write access for functions that change the library."
+  },
+  {
+    "objectID": "reference/cz_auth.html#value",
+    "href": "reference/cz_auth.html#value",
+    "title": "Zotero credentials",
+    "section": "Value",
+    "text": "Value\nA cz_auth object, for the auth argument of other functions."
+  },
+  {
+    "objectID": "reference/cz_auth.html#examples",
+    "href": "reference/cz_auth.html#examples",
+    "title": "Zotero credentials",
+    "section": "Examples",
+    "text": "Examples\n\n# Explicit values (normally these come from environment variables). The key\n# is never shown when the object is printed.\ncz_auth(library_id = \"1234567\", api_key = \"not-a-real-key\")\n\n&lt;cz_auth&gt; user library 1234567 (API key hidden)"
+  },
+  {
+    "objectID": "reference/cz_clear_cache.html",
+    "href": "reference/cz_clear_cache.html",
+    "title": "Delete citezot’s cached library data",
+    "section": "",
+    "text": "R/cache.R"
+  },
+  {
+    "objectID": "reference/cz_clear_cache.html#cz_clear_cache",
+    "href": "reference/cz_clear_cache.html#cz_clear_cache",
+    "title": "Delete citezot’s cached library data",
+    "section": "cz_clear_cache",
+    "text": "cz_clear_cache"
+  },
+  {
+    "objectID": "reference/cz_clear_cache.html#description",
+    "href": "reference/cz_clear_cache.html#description",
+    "title": "Delete citezot’s cached library data",
+    "section": "Description",
+    "text": "Description\nRemoves cache files created by cz_fetch_items() when caching is enabled. Only citezot’s own cache files are removed; nothing in Zotero is touched."
+  },
+  {
+    "objectID": "reference/cz_clear_cache.html#usage",
+    "href": "reference/cz_clear_cache.html#usage",
+    "title": "Delete citezot’s cached library data",
+    "section": "Usage",
+    "text": "Usage\ncz_clear_cache(auth = NULL)"
+  },
+  {
+    "objectID": "reference/cz_clear_cache.html#arguments",
+    "href": "reference/cz_clear_cache.html#arguments",
+    "title": "Delete citezot’s cached library data",
+    "section": "Arguments",
+    "text": "Arguments\n\n\n\n\n\n\n\nArguments\nDescription\n\n\n\n\nauth\nCredentials from cz_auth() to clear just that library’s cache, or NULL (default) to clear every cached library."
+  },
+  {
+    "objectID": "reference/cz_clear_cache.html#value",
+    "href": "reference/cz_clear_cache.html#value",
+    "title": "Delete citezot’s cached library data",
+    "section": "Value",
+    "text": "Value\nInvisibly, the number of files removed."
+  },
+  {
+    "objectID": "reference/cz_clear_cache.html#examples",
+    "href": "reference/cz_clear_cache.html#examples",
+    "title": "Delete citezot’s cached library data",
+    "section": "Examples",
+    "text": "Examples\n\n# Use an empty temporary cache directory so nothing real is deleted\nold &lt;- options(citezot.cache_dir = tempfile(\"citezot-cache\"))\ncz_clear_cache()\noptions(old)"
+  },
+  {
+    "objectID": "reference/cz_find.html",
+    "href": "reference/cz_find.html",
+    "title": "Find items in your Zotero library",
+    "section": "",
+    "text": "R/find.R"
+  },
+  {
+    "objectID": "reference/cz_find.html#cz_find",
+    "href": "reference/cz_find.html#cz_find",
+    "title": "Find items in your Zotero library",
+    "section": "cz_find",
+    "text": "cz_find"
+  },
+  {
+    "objectID": "reference/cz_find.html#description",
+    "href": "reference/cz_find.html#description",
+    "title": "Find items in your Zotero library",
+    "section": "Description",
+    "text": "Description\nSearches the library for items matching all the criteria given. Matching is done locally on the library’s CSL-JSON (see cz_fetch_items()), because Zotero’s server-side search cannot look items up by DOI or citekey. Use cache = TRUE (or options(citezot.cache = TRUE)) to make this fast on repeat calls."
+  },
+  {
+    "objectID": "reference/cz_find.html#usage",
+    "href": "reference/cz_find.html#usage",
+    "title": "Find items in your Zotero library",
+    "section": "Usage",
+    "text": "Usage\ncz_find(\n  query = NULL,\n  doi = NULL,\n  isbn = NULL,\n  citekey = NULL,\n  auth = cz_auth(),\n  cache = getOption(\"citezot.cache\", FALSE),\n  items = NULL\n)"
+  },
+  {
+    "objectID": "reference/cz_find.html#arguments",
+    "href": "reference/cz_find.html#arguments",
+    "title": "Find items in your Zotero library",
+    "section": "Arguments",
+    "text": "Arguments\n\n\n\n\n\n\n\nArguments\nDescription\n\n\n\n\nquery\nFree text. Every word must appear (case-insensitively) in the title, authors, year, journal or citekey.\n\n\ndoi\nA DOI, with or without a https://doi.org/ or doi: prefix.\n\n\nisbn\nAn ISBN (hyphens and spaces are ignored).\n\n\ncitekey\nAn exact pinned citekey.\n\n\nauth\nCredentials from cz_auth().\n\n\ncache\nPassed to cz_fetch_items().\n\n\nitems\nItems already fetched with cz_fetch_items(), to avoid fetching again."
+  },
+  {
+    "objectID": "reference/cz_find.html#value",
+    "href": "reference/cz_find.html#value",
+    "title": "Find items in your Zotero library",
+    "section": "Value",
+    "text": "Value\nA data frame with one row per match and columns item (Zotero item ID), citekey, author, year, title, doi and type. It can be passed as the item argument of cz_pin_key() when it has one row."
+  },
+  {
+    "objectID": "reference/cz_find.html#examples",
+    "href": "reference/cz_find.html#examples",
+    "title": "Find items in your Zotero library",
+    "section": "Examples",
+    "text": "Examples\ncz_find(doi = \"10.3767/000651906X622210\")\ncz_find(\"Ebihara Hymenophyllaceae revision\")\ncz_find(citekey = \"Ebihara2006\")"
+  },
+  {
+    "objectID": "reference/cz_item_key.html",
+    "href": "reference/cz_item_key.html",
+    "title": "Get a CSL item’s pinned citekey, however it is pinned",
+    "section": "",
+    "text": "R/keys.R"
+  },
+  {
+    "objectID": "reference/cz_item_key.html#cz_item_key",
+    "href": "reference/cz_item_key.html#cz_item_key",
+    "title": "Get a CSL item’s pinned citekey, however it is pinned",
+    "section": "cz_item_key",
+    "text": "cz_item_key"
+  },
+  {
+    "objectID": "reference/cz_item_key.html#description",
+    "href": "reference/cz_item_key.html#description",
+    "title": "Get a CSL item’s pinned citekey, however it is pinned",
+    "section": "Description",
+    "text": "Description\nChecks the native citation-key property first, then falls back to a Citation Key: line in note."
+  },
+  {
+    "objectID": "reference/cz_item_key.html#usage",
+    "href": "reference/cz_item_key.html#usage",
+    "title": "Get a CSL item’s pinned citekey, however it is pinned",
+    "section": "Usage",
+    "text": "Usage\ncz_item_key(item)"
+  },
+  {
+    "objectID": "reference/cz_item_key.html#arguments",
+    "href": "reference/cz_item_key.html#arguments",
+    "title": "Get a CSL item’s pinned citekey, however it is pinned",
+    "section": "Arguments",
+    "text": "Arguments\n\n\n\nArguments\nDescription\n\n\n\n\nitem\nA single CSL-JSON item (a list)."
+  },
+  {
+    "objectID": "reference/cz_item_key.html#value",
+    "href": "reference/cz_item_key.html#value",
+    "title": "Get a CSL item’s pinned citekey, however it is pinned",
+    "section": "Value",
+    "text": "Value\nThe citekey, or NA_character_."
+  },
+  {
+    "objectID": "reference/cz_item_key.html#examples",
+    "href": "reference/cz_item_key.html#examples",
+    "title": "Get a CSL item’s pinned citekey, however it is pinned",
+    "section": "Examples",
+    "text": "Examples\n\ncz_item_key(list(`citation-key` = \"Darwin1859\"))\n\n[1] \"Darwin1859\"\n\ncz_item_key(list(note = \"Citation Key: Darwin1859\"))\n\n[1] \"Darwin1859\"\n\ncz_item_key(list(title = \"No key pinned\"))\n\n[1] NA"
+  },
+  {
+    "objectID": "reference/cz_pin_key.html",
+    "href": "reference/cz_pin_key.html",
+    "title": "Pin a citekey onto a Zotero item",
+    "section": "",
+    "text": "R/write.R"
+  },
+  {
+    "objectID": "reference/cz_pin_key.html#cz_pin_key",
+    "href": "reference/cz_pin_key.html#cz_pin_key",
+    "title": "Pin a citekey onto a Zotero item",
+    "section": "cz_pin_key",
+    "text": "cz_pin_key"
+  },
+  {
+    "objectID": "reference/cz_pin_key.html#description",
+    "href": "reference/cz_pin_key.html#description",
+    "title": "Pin a citekey onto a Zotero item",
+    "section": "Description",
+    "text": "Description\nSets the item’s native citationKey field via the Web API (the same field a desktop Better BibTeX install manages), so cz_item_key() and cz_fetch_items() see it. Requires a key with write access."
+  },
+  {
+    "objectID": "reference/cz_pin_key.html#usage",
+    "href": "reference/cz_pin_key.html#usage",
+    "title": "Pin a citekey onto a Zotero item",
+    "section": "Usage",
+    "text": "Usage\ncz_pin_key(\n  item,\n  key,\n  dry_run = TRUE,\n  overwrite = FALSE,\n  auth = cz_auth(),\n  cache = getOption(\"citezot.cache\", FALSE)\n)"
+  },
+  {
+    "objectID": "reference/cz_pin_key.html#arguments",
+    "href": "reference/cz_pin_key.html#arguments",
+    "title": "Pin a citekey onto a Zotero item",
+    "section": "Arguments",
+    "text": "Arguments\n\n\n\n\n\n\n\nArguments\nDescription\n\n\n\n\nitem\nThe item to pin: a DOI, a Zotero item ID (bare, \"Q62TD7I9\", or with the library ID as in CSL-JSON, \"6265773/Q62TD7I9\"), an existing citekey, or a one-row result of cz_find(). Zero or several matches is an error.\n\n\nkey\nThe citekey to pin.\n\n\ndry_run\nIf TRUE (default), report what would change and write nothing.\n\n\noverwrite\nReplace a different key that is already pinned. Defaults to FALSE, because changing a pinned key breaks documents citing it.\n\n\nauth\nCredentials from cz_auth().\n\n\ncache\nPassed to cz_fetch_items() when item is a DOI or citekey that has to be looked up."
+  },
+  {
+    "objectID": "reference/cz_pin_key.html#details",
+    "href": "reference/cz_pin_key.html#details",
+    "title": "Pin a citekey onto a Zotero item",
+    "section": "Details",
+    "text": "Details\nThe default is a dry run: the item is read (to get its current version and key) but nothing is written. Set dry_run = FALSE to write. The write sends If-Unmodified-Since-Version, so if the item changed in the meantime Zotero rejects it (HTTP 412) and nothing is overwritten."
+  },
+  {
+    "objectID": "reference/cz_pin_key.html#value",
+    "href": "reference/cz_pin_key.html#value",
+    "title": "Pin a citekey onto a Zotero item",
+    "section": "Value",
+    "text": "Value\nInvisibly, a list with item, before, after and written."
+  },
+  {
+    "objectID": "reference/cz_pin_key.html#examples",
+    "href": "reference/cz_pin_key.html#examples",
+    "title": "Pin a citekey onto a Zotero item",
+    "section": "Examples",
+    "text": "Examples\ncz_pin_key(\"10.1016/0022-5193(64)90038-4\", \"Hamilton1964\") # dry run\ncz_pin_key(\"10.1016/0022-5193(64)90038-4\", \"Hamilton1964\", dry_run = FALSE)"
+  },
+  {
+    "objectID": "reference/cz_suggest_key.html",
+    "href": "reference/cz_suggest_key.html",
+    "title": "Suggest a citekey for an item",
+    "section": "",
+    "text": "R/key-format.R"
+  },
+  {
+    "objectID": "reference/cz_suggest_key.html#cz_suggest_key",
+    "href": "reference/cz_suggest_key.html#cz_suggest_key",
+    "title": "Suggest a citekey for an item",
+    "section": "cz_suggest_key",
+    "text": "cz_suggest_key"
+  },
+  {
+    "objectID": "reference/cz_suggest_key.html#description",
+    "href": "reference/cz_suggest_key.html#description",
+    "title": "Suggest a citekey for an item",
+    "section": "Description",
+    "text": "Description\nBuilds a key from a Better BibTeX-style formula, e.g. \"auth.lower + year + shorttitle(1).lower\". If the key is already taken, a letter (a, b, …) is appended, as Better BibTeX does."
+  },
+  {
+    "objectID": "reference/cz_suggest_key.html#usage",
+    "href": "reference/cz_suggest_key.html#usage",
+    "title": "Suggest a citekey for an item",
+    "section": "Usage",
+    "text": "Usage\ncz_suggest_key(item, formula = NULL, existing = character())"
+  },
+  {
+    "objectID": "reference/cz_suggest_key.html#arguments",
+    "href": "reference/cz_suggest_key.html#arguments",
+    "title": "Suggest a citekey for an item",
+    "section": "Arguments",
+    "text": "Arguments\n\n\n\n\n\n\n\nArguments\nDescription\n\n\n\n\nitem\nA Zotero native item (as from cz_get_item(), or the payload cz_add() builds) or a CSL-JSON item.\n\n\nformula\nThe key formula. See Details.\n\n\nexisting\nKeys already in use, so the result can be made unique."
+  },
+  {
+    "objectID": "reference/cz_suggest_key.html#details",
+    "href": "reference/cz_suggest_key.html#details",
+    "title": "Suggest a citekey for an item",
+    "section": "Details",
+    "text": "Details\nThe formula is, in order of preference, the formula argument, then the one found by cz_key_format() (the citezot.key_format option, your Zotero profile’s Better BibTeX pattern, or Better BibTeX’s default auth.lower + shorttitle(3,3) + year). Supported functions are auth (first author’s last name), year, shorttitle(n, m) (first n words of the title, skipping short function words, with the first m capitalised), and title; filters are lower, upper, fold, transliterate, clean, condense and nopunct; terms are joined with + and quoted text is kept as is. Anything else is an error rather than a silently different key. The result is ASCII and safe to cite in pandoc."
+  },
+  {
+    "objectID": "reference/cz_suggest_key.html#value",
+    "href": "reference/cz_suggest_key.html#value",
+    "title": "Suggest a citekey for an item",
+    "section": "Value",
+    "text": "Value\nA single string."
+  },
+  {
+    "objectID": "reference/cz_suggest_key.html#examples",
+    "href": "reference/cz_suggest_key.html#examples",
+    "title": "Suggest a citekey for an item",
+    "section": "Examples",
+    "text": "Examples\n\nitem &lt;- list(\n  itemType = \"journalArticle\",\n  title = \"A taxonomic revision of Hymenophyllaceae\",\n  date = \"2006\",\n  creators = list(list(creatorType = \"author\", firstName = \"A\", lastName = \"Ebihara\"))\n)\ncz_suggest_key(item, \"auth.lower + year + shorttitle(1).lower\")\n\n[1] \"ebihara2006taxonomic\"\n\ncz_suggest_key(item, existing = \"ebihara2006taxonomic\",\n               formula = \"auth.lower + year + shorttitle(1).lower\")\n\n[1] \"ebihara2006taxonomica\""
+  },
+  {
+    "objectID": "reference/cz_update_item.html",
+    "href": "reference/cz_update_item.html",
+    "title": "Update fields of a Zotero item",
+    "section": "",
+    "text": "R/item.R"
+  },
+  {
+    "objectID": "reference/cz_update_item.html#cz_update_item",
+    "href": "reference/cz_update_item.html#cz_update_item",
+    "title": "Update fields of a Zotero item",
+    "section": "cz_update_item",
+    "text": "cz_update_item"
+  },
+  {
+    "objectID": "reference/cz_update_item.html#description",
+    "href": "reference/cz_update_item.html#description",
+    "title": "Update fields of a Zotero item",
+    "section": "Description",
+    "text": "Description\nChanges selected fields of one item and shows exactly what will change. The default is a dry run: the item is read and a before/after diff is shown, but nothing is written. Use dry_run = FALSE to write."
+  },
+  {
+    "objectID": "reference/cz_update_item.html#usage",
+    "href": "reference/cz_update_item.html#usage",
+    "title": "Update fields of a Zotero item",
+    "section": "Usage",
+    "text": "Usage\ncz_update_item(\n  item,\n  fields,\n  dry_run = TRUE,\n  auth = cz_auth(),\n  cache = getOption(\"citezot.cache\", FALSE)\n)"
+  },
+  {
+    "objectID": "reference/cz_update_item.html#arguments",
+    "href": "reference/cz_update_item.html#arguments",
+    "title": "Update fields of a Zotero item",
+    "section": "Arguments",
+    "text": "Arguments\n\n\n\n\n\n\n\nArguments\nDescription\n\n\n\n\nitem\nThe item: a DOI, Zotero item ID, citekey, or one-row result of cz_find().\n\n\nfields\nA named list of new values, e.g. list(date = \"in press\", DOI = \"10.1234/abc\"). Names must be fields that exist for the item’s type; see names(cz_get_item(item)$data).\n\n\ndry_run\nIf TRUE (default), show the diff and write nothing.\n\n\nauth\nCredentials from cz_auth() (a key with write access to write).\n\n\ncache\nPassed to cz_fetch_items() when item has to be looked up."
+  },
+  {
+    "objectID": "reference/cz_update_item.html#details",
+    "href": "reference/cz_update_item.html#details",
+    "title": "Update fields of a Zotero item",
+    "section": "Details",
+    "text": "Details\nOnly fields whose value actually changes are sent (a PATCH), together with If-Unmodified-Since-Version: if the item was edited elsewhere since it was read, Zotero rejects the write (HTTP 412) and nothing is overwritten.\nPlain fields take a single string (use \"\" to clear one). creators, tags, collections and relations take lists and are replaced as a whole, so to add one tag pass the full list of tags. Identity and bookkeeping fields (key, version, itemType, dates, parentItem, deleted) can’t be changed, and the citekey is changed with cz_pin_key()."
+  },
+  {
+    "objectID": "reference/cz_update_item.html#value",
+    "href": "reference/cz_update_item.html#value",
+    "title": "Update fields of a Zotero item",
+    "section": "Value",
+    "text": "Value\nInvisibly, a list with item, changes (for each changed field, its before and after) and written."
+  },
+  {
+    "objectID": "reference/cz_update_item.html#examples",
+    "href": "reference/cz_update_item.html#examples",
+    "title": "Update fields of a Zotero item",
+    "section": "Examples",
+    "text": "Examples\ncz_update_item(\"Regnier2024\", list(date = \"in press\"))                  # preview\ncz_update_item(\"Regnier2024\", list(date = \"in press\"), dry_run = FALSE) # write"
+  }
+]
