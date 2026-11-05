@@ -1,0 +1,150 @@
+# Setting up citezot
+
+This is the one-time setup. It takes about five minutes, and you do not
+need to repeat it for each project. You need to:
+
+1.  create a Zotero API key,
+2.  tell R about the key and your Zotero user ID,
+3.  check that every item you want to cite has a citekey.
+
+None of the code in this vignette is run when the vignette is built,
+because it needs your Zotero account.
+
+## 1. Create an API key
+
+citezot talks to the Zotero web API, so it needs an API key. Zotero
+desktop does not have to be running, but your library must be synced to
+zotero.org (in Zotero desktop: *Settings*, *Sync*).
+
+1.  Sign in at <https://www.zotero.org/settings/keys> and choose
+    **Create new private key**.
+2.  Give it a name you will recognise, such as `citezot (read only)`.
+3.  Under *Personal library*, tick **Allow library access** and leave
+    **Allow write access** unticked. This is enough for
+    [`cz_update_bib()`](https://joelnitta.github.io/citezot/reference/cz_update_bib.md),
+    [`cz_find()`](https://joelnitta.github.io/citezot/reference/cz_find.md),
+    [`cz_get_item()`](https://joelnitta.github.io/citezot/reference/cz_get_item.md)
+    and
+    [`cz_fetch_items()`](https://joelnitta.github.io/citezot/reference/cz_fetch_items.md).
+4.  Save the key and **copy it now**. Zotero shows the key only once.
+5.  Note your **numeric user ID**. It is shown on the same page, in the
+    sentence “Your userID for use in API calls is …”. It is *not* your
+    user name.
+
+### Two keys are better than one
+
+The functions that change your library
+([`cz_add()`](https://joelnitta.github.io/citezot/reference/cz_add.md),
+[`cz_update_item()`](https://joelnitta.github.io/citezot/reference/cz_update_item.md)
+and
+[`cz_pin_key()`](https://joelnitta.github.io/citezot/reference/cz_pin_key.md))
+need a key with **Allow write access**. Rather than giving that power to
+every session, create a second key, `citezot (write)`, and use it only
+when you are adding or editing items. Everything that writes is a dry
+run unless you pass `dry_run = FALSE`, and citezot has no delete, but a
+key that cannot write is the strongest guarantee.
+
+### Group libraries
+
+For a group library, create the key under *Group permissions* on the
+same page. The group ID is the number in the group’s URL
+(`https://www.zotero.org/groups/<ID>/<name>`). Then use
+`cz_auth(library_type = "group")`.
+
+## 2. Tell R about the key
+
+citezot reads these environment variables:
+
+| Variable | What it holds |
+|----|----|
+| `ZOTERO_API_KEY` | the API key |
+| `ZOTERO_USER_ID` | the numeric ID of your personal library |
+| `ZOTERO_LIBRARY_ID` | optional; used in preference to `ZOTERO_USER_ID`, and the only name used for group libraries |
+
+Put them in your **user-level** `.Renviron`, so they are available in
+every project and cannot be committed by accident:
+
+``` r
+
+usethis::edit_r_environ()   # opens ~/.Renviron
+```
+
+    ZOTERO_API_KEY=xxxxxxxxxxxxxxxxxxxxxxxx
+    ZOTERO_USER_ID=1234567
+
+Save the file and **restart R**: `.Renviron` is read only at startup.
+Then check that citezot can see the credentials. The key is never
+printed:
+
+``` r
+
+library(citezot)
+cz_auth()
+#> <cz_auth> user library 1234567 (API key hidden)
+```
+
+If you switch between a read-only and a write key, use
+`cz_auth(api_key = "...")` for the session that needs the other one, or
+keep the write key in a second variable and pass it explicitly, for
+example `cz_auth(api_key = Sys.getenv("ZOTERO_WRITE_KEY"))`, then give
+that object to the `auth` argument of the function.
+
+Do not put the key in a file inside a project. If you must, make sure
+the file is in `.gitignore`.
+
+### What citezot does with your key
+
+- It sends the key only to `api.zotero.org`, as a bearer token.
+- It never prints, logs or stores it.
+  [`print()`](https://rdrr.io/r/base/print.html) on an auth object hides
+  it.
+- The optional cache (see
+  [`cz_clear_cache()`](https://joelnitta.github.io/citezot/reference/cz_clear_cache.md))
+  holds bibliographic metadata, never the key.
+
+## 3. Make sure your items have citekeys
+
+citezot cites an item by the **citekey saved on it**. An item without
+one cannot be cited, and
+[`cz_update_bib()`](https://joelnitta.github.io/citezot/reference/cz_update_bib.md)
+will tell you which keys it could not find.
+
+There are two ways to get a key onto an item.
+
+### With Better BibTeX (recommended if you already use it)
+
+[Better BibTeX](https://retorque.re/zotero-better-bibtex/installation/)
+generates keys from a formula you choose, and can *pin* them so they
+never change. Pinned keys are saved on the item, which is what citezot
+reads. In Zotero desktop, select the items, right-click, then *Better
+BibTeX* and *Pin BibTeX key*. Syncing then uploads the keys.
+
+Better BibTeX is optional. citezot does not need it to read keys.
+
+### Without Better BibTeX
+
+Zotero stores the key in each item’s **Citation Key** field. You can set
+it by hand in Zotero, or from R:
+
+``` r
+
+cz_find("darwin origin of species")             # find the item
+cz_pin_key("Darwin1859", "Darwin1859")          # preview; item = any of the identifiers cz_find() understands
+cz_add("10.1016/0022-5193(64)90038-4", key = "auto")        # or add a new item with a generated key
+```
+
+See
+[`vignette("citezot")`](https://joelnitta.github.io/citezot/articles/citezot.md)
+for the full workflow, including how new keys are generated.
+
+## Troubleshooting
+
+- **“Zotero credentials not found.”** The variables are not set in this
+  R session. Check `Sys.getenv("ZOTERO_API_KEY") != ""`, and restart R
+  after editing `.Renviron`.
+- **HTTP 403.** The key is invalid, or lacks the access you asked for
+  (for example, a read-only key used to add an item).
+- **HTTP 404 for a library that exists.** The user ID is wrong. Use the
+  number, not the user name.
+- **Items you just added in Zotero desktop are missing.** The library
+  has not synced yet.
