@@ -38,20 +38,32 @@ cz_auth <- function(
   bad_id <- length(library_id) != 1 || is.na(library_id) || !nzchar(library_id)
   bad_key <- !rlang::is_string(api_key) || !nzchar(api_key)
   if (bad_id || bad_key) {
+    # nolint start: duplicate_argument_linter.
     cli::cli_abort(c(
       "Zotero credentials not found.",
-      "i" = "Set {.envvar ZOTERO_LIBRARY_ID} (or {.envvar ZOTERO_USER_ID} for a user library) and {.envvar ZOTERO_API_KEY}, or pass {.arg library_id} and {.arg api_key}.",
-      "i" = "Create a key at {.url https://www.zotero.org/settings/keys}." # nolint: duplicate_argument_linter.
+      "i" = paste0(
+        "Set {.envvar ZOTERO_LIBRARY_ID} (or {.envvar ZOTERO_USER_ID} for a ",
+        "user library) and {.envvar ZOTERO_API_KEY}, or pass ",
+        "{.arg library_id} and {.arg api_key}."
+      ),
+      "i" = "Create a key at {.url https://www.zotero.org/settings/keys}."
     ))
+    # nolint end
   }
   structure(
-    list(library_id = library_id, api_key = api_key, library_type = library_type),
+    list(
+      library_id = library_id,
+      api_key = api_key,
+      library_type = library_type
+    ),
     class = "cz_auth"
   )
 }
 
 #' @export
 print.cz_auth <- function(x, ...) {
-  cli::cli_text("<cz_auth> {x$library_type} library {x$library_id} (API key hidden)")
+  cli::cli_text(
+    "<cz_auth> {x$library_type} library {x$library_id} (API key hidden)"
+  )
   invisible(x)
 }

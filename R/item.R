@@ -1,4 +1,4 @@
-# One item in Zotero's native JSON: list(key, version, library, links, meta, data)
+# One item in Zotero's native JSON: key, version, library, links, meta, data
 cz_get_native <- function(auth, id) {
   cz_request(auth, "items", id) |>
     cz_perform() |>
@@ -23,7 +23,11 @@ cz_get_native <- function(auth, id) {
 #' item$data$title
 #' item$version
 #' }
-cz_get_item <- function(item, auth = cz_auth(), cache = getOption("citezot.cache", FALSE)) {
+cz_get_item <- function(
+  item,
+  auth = cz_auth(),
+  cache = getOption("citezot.cache", FALSE)
+) {
   cz_get_native(auth, cz_resolve_item(item, auth, cache = cache))
 }
 
@@ -36,7 +40,10 @@ cz_protected_fields <- c(
   dateModified = "is managed by Zotero",
   deleted = "(trash) is not supported",
   parentItem = "is not supported",
-  citationKey = "should be changed with cz_pin_key(), which protects pinned keys"
+  citationKey = paste0(
+    "should be changed with cz_pin_key(), ",
+    "which protects pinned keys"
+  )
 )
 
 # Fields whose value is a list. Zotero replaces these wholesale on update.
@@ -49,6 +56,12 @@ cz_canon <- function(x) {
     if (!is.null(names(x))) x <- x[order(names(x), method = "radix")]
   }
   x
+}
+
+# A field value that is not a single string or number
+cz_bad_scalar <- function(v) {
+  is.null(v) || length(v) != 1 || is.list(v) || is.na(v) ||
+    !(is.character(v) || is.numeric(v))
 }
 
 # Short human-readable form of a field value for the before/after display.
@@ -103,7 +116,7 @@ cz_cli_escape <- function(x) {
 #' @examples
 #' \dontrun{
 #' cz_update_item("Regnier2024", list(date = "in press")) # preview
-#' cz_update_item("Regnier2024", list(date = "in press"), dry_run = FALSE) # write
+#' cz_update_item("Regnier2024", list(date = "in press"), dry_run = FALSE)
 #' }
 cz_update_item <- function(
   item,
@@ -113,8 +126,15 @@ cz_update_item <- function(
   cache = getOption("citezot.cache", FALSE)
 ) {
   rlang::check_bool(dry_run)
-  if (!is.list(fields) || !length(fields) || is.null(names(fields)) || !all(nzchar(names(fields)))) {
-    cli::cli_abort("{.arg fields} must be a non-empty named list, e.g. {.code list(date = \"in press\")}.")
+  bad_fields <- !is.list(fields) || !length(fields) ||
+    is.null(names(fields)) || !all(nzchar(names(fields)))
+  if (bad_fields) {
+    cli::cli_abort(
+      paste0(
+        "{.arg fields} must be a non-empty named list, e.g. ",
+        "{.code list(date = \"in press\")}."
+      )
+    )
   }
   if (anyDuplicated(names(fields))) {
     cli::cli_abort("{.arg fields} has duplicated names.")
@@ -123,16 +143,25 @@ cz_update_item <- function(
   if (length(bad)) {
     cli::cli_abort(c(
       "Can't update {.field {bad}} here.",
-      stats::setNames(sprintf("%s %s", bad, cz_protected_fields[bad]), rep("i", length(bad)))
+      stats::setNames(
+        sprintf("%s %s", bad, cz_protected_fields[bad]),
+        rep("i", length(bad))
+      )
     ))
   }
   # validate shapes before any request
   for (nm in names(fields)) {
     v <- fields[[nm]]
     if (nm %in% cz_array_fields) {
-      if (!is.list(v)) cli::cli_abort("{.field {nm}} must be a list (it is replaced as a whole).")
-    } else if (is.null(v) || length(v) != 1 || is.list(v) || is.na(v) || !(is.character(v) || is.numeric(v))) {
-      cli::cli_abort("{.field {nm}} must be a single string (use {.code \"\"} to clear it).")
+      if (!is.list(v)) {
+        cli::cli_abort(
+          "{.field {nm}} must be a list (it is replaced as a whole)."
+        )
+      }
+    } else if (cz_bad_scalar(v)) {
+      cli::cli_abort(
+        "{.field {nm}} must be a single string (use {.code \"\"} to clear it)."
+      )
     }
   }
 
@@ -142,16 +171,32 @@ cz_update_item <- function(
   unknown <- setdiff(names(fields), names(data))
   if (length(unknown)) {
     cli::cli_abort(c(
-      "Not a field of this item's type ({.val {data$itemType}}): {.field {unknown}}.",
-      "i" = "Valid fields: {.field {setdiff(names(data), names(cz_protected_fields))}}."
+      paste0(
+        "Not a field of this item's type ({.val {data$itemType}}): ",
+        "{.field {unknown}}."
+      ),
+      "i" = paste0(
+        "Valid fields: ",
+        "{.field {setdiff(names(data), names(cz_protected_fields))}}."
+      )
     ))
   }
 
-  fields <- Map(function(nm, v) if (nm %in% cz_array_fields) v else as.character(v), names(fields), fields)
+  fields <- Map(
+    function(nm, v) if (nm %in% cz_array_fields) v else as.character(v),
+    names(fields),
+    fields
+  )
   changed <- Filter(function(nm) {
     !identical(cz_canon(data[[nm]]), cz_canon(fields[[nm]]))
   }, names(fields))
-  changes <- stats::setNames(lapply(changed, function(nm) list(before = data[[nm]], after = fields[[nm]])), changed)
+  changes <- stats::setNames(
+    lapply(
+      changed,
+      function(nm) list(before = data[[nm]], after = fields[[nm]])
+    ),
+    changed
+  )
   result <- list(item = id, changes = changes, written = FALSE)
 
   title <- cz_cli_escape(cz_show_value(data$title, 50))
@@ -169,14 +214,25 @@ cz_update_item <- function(
   diff <- stats::setNames(lines, rep("*", length(lines)))
 
   if (dry_run) {
-    cli::cli_inform(c("i" = "Dry run: nothing written. Use {.code dry_run = FALSE} to apply to item {id} ({title}).", diff))
+    cli::cli_inform(c(
+      "i" = paste0(
+        "Dry run: nothing written. Use {.code dry_run = FALSE} to apply to ",
+        "item {id} ({title})."
+      ),
+      diff
+    ))
     return(invisible(result))
   }
 
   cz_request(auth, "items", id) |>
     httr2::req_method("PATCH") |>
-    httr2::req_headers(`If-Unmodified-Since-Version` = as.character(current$version)) |>
-    httr2::req_body_json(lapply(changes, function(ch) ch$after), auto_unbox = TRUE) |>
+    httr2::req_headers(
+      `If-Unmodified-Since-Version` = as.character(current$version)
+    ) |>
+    httr2::req_body_json(
+      lapply(changes, function(ch) ch$after),
+      auto_unbox = TRUE
+    ) |>
     cz_perform()
 
   cli::cli_inform(c("v" = "Updated item {id} ({title}).", diff))

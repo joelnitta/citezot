@@ -48,7 +48,12 @@ cz_fetch_items <- function(
   if (!cache) {
     if (interactive()) {
       cli::cli_inform(
-        c(i = "Tip: {.code options(citezot.cache = TRUE)} caches the library locally so later runs download only what changed."),
+        c(
+          i = paste0(
+            "Tip: {.code options(citezot.cache = TRUE)} caches the library ",
+            "locally so later runs download only what changed."
+          )
+        ),
         .frequency = "once",
         .frequency_id = "citezot_cache_hint"
       )
@@ -86,7 +91,10 @@ cz_fetch_items <- function(
 
 # Name CSL items by their Zotero item key (CSL ids look like "libraryID/KEY").
 cz_name_items <- function(items) {
-  stats::setNames(items, vapply(items, function(i) sub("^.*/", "", i$id), character(1)))
+  stats::setNames(
+    items,
+    vapply(items, function(i) sub("^.*/", "", i$id), character(1))
+  )
 }
 
 # Keys of items permanently deleted or moved to the trash since `version`.
@@ -99,21 +107,32 @@ cz_fetch_removed <- function(auth, version) {
     httr2::req_url_query(format = "keys", since = version) |>
     cz_perform()
   # an empty trash comes back as an empty body
-  trashed <- if (httr2::resp_has_body(trash_resp)) httr2::resp_body_string(trash_resp) else ""
-  keys <- c(as.character(unlist(deleted$items)), strsplit(trashed, "\n", fixed = TRUE)[[1]])
+  trashed <- if (httr2::resp_has_body(trash_resp)) {
+    httr2::resp_body_string(trash_resp)
+  } else {
+    ""
+  }
+  keys <- c(
+    as.character(unlist(deleted$items)),
+    strsplit(trashed, "\n", fixed = TRUE)[[1]]
+  )
   keys[nzchar(keys)]
 }
 
 # Fetch all pages of /items/top as CSL-JSON. Returns
 # list(items, version, unchanged). With `since`, only items changed after that
 # library version are returned, and a library that has not changed at all
-# answers 304 (unchanged = TRUE). If the library is edited while pages are downloading
-# (the Last-Modified-Version header differs between pages) the download is
-# repeated once, then fails.
+# answers 304 (unchanged = TRUE). If the library is edited while pages are
+# downloading (the Last-Modified-Version header differs between pages) the
+# download is repeated once, then fails.
 cz_fetch_pages <- function(auth, page_size, since = NULL, retries = 1) {
   page_req <- function(start) {
     req <- cz_request(auth, "items", "top") |>
-      httr2::req_url_query(format = "csljson", limit = page_size, start = start) |>
+      httr2::req_url_query(
+        format = "csljson",
+        limit = page_size,
+        start = start
+      ) |>
       httr2::req_throttle(rate = 5)
     if (!is.null(since)) req <- httr2::req_url_query(req, since = since)
     req
@@ -136,13 +155,25 @@ cz_fetch_pages <- function(auth, page_size, since = NULL, retries = 1) {
   } else {
     integer(0)
   }
-  rest <- if (length(starts)) cz_perform_parallel(lapply(starts, page_req)) else list()
+  rest <- if (length(starts)) {
+    cz_perform_parallel(lapply(
+      starts,
+      page_req
+    ))
+  } else {
+    list()
+  }
 
   versions <- vapply(c(list(first), rest), cz_resp_version, integer(1))
   versions <- versions[!is.na(versions)]
   if (length(unique(versions)) > 1) {
     if (retries > 0) {
-      return(cz_fetch_pages(auth, page_size, since = since, retries = retries - 1))
+      return(cz_fetch_pages(
+        auth,
+        page_size,
+        since = since,
+        retries = retries - 1
+      ))
     }
     cli::cli_abort(c(
       "The Zotero library changed while it was being downloaded.",

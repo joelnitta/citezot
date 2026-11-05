@@ -39,7 +39,12 @@ cz_find <- function(
     if (!is.null(x)) rlang::check_string(x)
   }
   if (is.null(query) && is.null(doi) && is.null(isbn) && is.null(citekey)) {
-    cli::cli_abort("Give at least one of {.arg query}, {.arg doi}, {.arg isbn} or {.arg citekey}.")
+    cli::cli_abort(
+      paste0(
+        "Give at least one of {.arg query}, {.arg doi}, {.arg isbn} or ",
+        "{.arg citekey}."
+      )
+    )
   }
   if (is.null(items)) items <- cz_fetch_items(auth, cache = cache)
 
@@ -61,8 +66,20 @@ cz_find <- function(
     }
   }
 
-  out <- tab[keep, c("item", "citekey", "author", "year", "title", "doi", "type"), drop = FALSE]
-  out <- out[order(out$citekey, method = "radix", na.last = TRUE), , drop = FALSE]
+  out <- tab[keep, c(
+    "item",
+    "citekey",
+    "author",
+    "year",
+    "title",
+    "doi",
+    "type"
+  ), drop = FALSE]
+  out <- out[order(
+    out$citekey,
+    method = "radix",
+    na.last = TRUE
+  ), , drop = FALSE]
   rownames(out) <- NULL
   out
 }
@@ -75,7 +92,11 @@ cz_norm_doi <- function(x) {
 }
 
 cz_norm_isbn <- function(x) {
-  toupper(gsub("[^0-9Xx]", "", unlist(strsplit(x, "[ ,;]+(?=[0-9])", perl = TRUE))))
+  toupper(gsub(
+    "[^0-9Xx]",
+    "",
+    unlist(strsplit(x, "[ ,;]+(?=[0-9])", perl = TRUE))
+  ))
 }
 
 cz_chr1 <- function(x) {
@@ -89,7 +110,11 @@ cz_items_table <- function(items) {
   names_of <- function(i) {
     people <- i$author
     if (is.null(people) || !length(people)) people <- i$editor
-    vapply(people %||% list(), function(p) cz_chr1(p$family %||% p$literal), character(1))
+    vapply(
+      people %||% list(),
+      function(p) cz_chr1(p$family %||% p$literal),
+      character(1)
+    )
   }
   year_of <- function(i) {
     y <- tryCatch(i$issued$`date-parts`[[1]][[1]], error = function(e) NULL)
@@ -98,7 +123,18 @@ cz_items_table <- function(items) {
   author_label <- function(i) {
     n <- names_of(i)
     n <- n[!is.na(n)]
-    if (!length(n)) NA_character_ else if (length(n) == 1) n else if (length(n) == 2) paste(n, collapse = " & ") else paste(n[1], "et al.")
+    if (!length(n)) {
+      NA_character_
+    } else if (length(n) == 1) {
+      n
+    } else if (length(n) == 2) {
+      paste(
+        n,
+        collapse = " & "
+      )
+    } else {
+      paste(n[1], "et al.")
+    }
   }
   tab <- data.frame(
     item = chr(function(i) sub("^.*/", "", cz_chr1(i$id))),
@@ -134,16 +170,27 @@ cz_items_table <- function(items) {
 #   * a DOI (or doi.org URL)
 #   * an exact pinned citekey
 # Errors if nothing, or more than one item, matches.
-cz_resolve_item <- function(item, auth, cache = getOption("citezot.cache", FALSE), items = NULL) {
+cz_resolve_item <- function(
+  item,
+  auth,
+  cache = getOption("citezot.cache", FALSE),
+  items = NULL
+) {
   if (is.data.frame(item)) {
     if (!"item" %in% names(item) || nrow(item) != 1) {
-      cli::cli_abort("{.arg item} must be a single item: a data frame from {.fn cz_find} needs exactly one row (it has {nrow(item)}).")
+      cli::cli_abort(
+        paste0(
+          "{.arg item} must be a single item: a data frame from {.fn cz_find} ",
+          "needs exactly one row (it has {nrow(item)})."
+        )
+      )
     }
     return(item$item)
   }
   rlang::check_string(item, arg = "item")
   bare <- sub("^[0-9]+/", "", item)
-  if (grepl("^(10\\.[0-9]{4,9}/|https?://(dx\\.)?doi\\.org/|doi:)", item, ignore.case = TRUE)) {
+  doi_re <- "^(10\\.[0-9]{4,9}/|https?://(dx\\.)?doi\\.org/|doi:)"
+  if (grepl(doi_re, item, ignore.case = TRUE)) {
     hits <- cz_find(doi = item, auth = auth, cache = cache, items = items)
     what <- sprintf("DOI %s", item)
   } else if (grepl("^[23456789ABCDEFGHIJKLMNPQRSTUVWXYZ]{8}$", bare)) {
@@ -156,7 +203,15 @@ cz_resolve_item <- function(item, auth, cache = getOption("citezot.cache", FALSE
     cli::cli_abort("No item in the library matches {what}.")
   }
   if (nrow(hits) > 1) {
-    shown <- utils::head(sprintf("%s (%s): %s", hits$item, hits$citekey, substr(hits$title, 1, 50)), 5)
+    shown <- utils::head(
+      sprintf(
+        "%s (%s): %s",
+        hits$item,
+        hits$citekey,
+        substr(hits$title, 1, 50)
+      ),
+      5
+    )
     cli::cli_abort(c(
       "{nrow(hits)} items match {what}; be more specific.",
       stats::setNames(shown, rep("*", length(shown)))

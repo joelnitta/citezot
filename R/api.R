@@ -58,13 +58,19 @@ cz_translate_errors <- function(expr, on_412 = NULL) {
       }
       cli::cli_abort(c(
         "The item changed in Zotero since it was read (HTTP 412).",
-        "i" = "Nothing was written. Re-fetch the item, check the new version, and retry deliberately."
+        "i" = paste0(
+          "Nothing was written. Re-fetch the item, check the new version, and ",
+          "retry deliberately."
+        )
       ), call = NULL)
     },
     httr2_http_403 = function(e) {
       cli::cli_abort(c(
         "Zotero refused the request (HTTP 403).",
-        "i" = "Check that the API key is valid and has the access this call needs (write calls need a key with write access)."
+        "i" = paste0(
+          "Check that the API key is valid and has the access this call needs ",
+          "(write calls need a key with write access)."
+        )
       ), call = NULL)
     }
   )
@@ -93,7 +99,9 @@ cz_wait_backoff <- function() {
     wait <- as.numeric(difftime(until, Sys.time(), units = "secs"))
     .cz_state$backoff_until <- NULL
     if (wait > 0) {
-      cli::cli_inform(c("i" = "Zotero asked for a pause; waiting {round(wait)} second{?s}."))
+      cli::cli_inform(
+        c("i" = "Zotero asked for a pause; waiting {round(wait)} second{?s}.")
+      )
       cz_sleep(wait)
     }
   }
@@ -125,5 +133,9 @@ cz_perform_parallel <- function(reqs) {
 
 # Library version from a response (NA if the header is absent).
 cz_resp_version <- function(resp) {
-  suppressWarnings(as.integer(httr2::resp_header(resp, "Last-Modified-Version", NA)))
+  suppressWarnings(as.integer(httr2::resp_header(
+    resp,
+    "Last-Modified-Version",
+    NA
+  )))
 }

@@ -62,10 +62,20 @@ cz_add <- function(
 
   existing <- cz_find(doi = doi, items = items)
   if (nrow(existing) > 0) {
+    ck <- existing$citekey[1]
+    shown <- if (is.na(ck)) "" else paste0(" (", ck, ")")
     cli::cli_inform(c(
-      "i" = "Already in your library, nothing added: item {existing$item[1]}{if (!is.na(existing$citekey[1])) paste0(' (', existing$citekey[1], ')') else ''}."
+      "i" = paste0(
+        "Already in your library, nothing added: item ",
+        "{existing$item[1]}{shown}."
+      )
     ))
-    return(invisible(list(item = NULL, key = NULL, existing = existing, written = FALSE)))
+    return(invisible(list(
+      item = NULL,
+      key = NULL,
+      existing = existing,
+      written = FALSE
+    )))
   }
   if (!is.null(key) && !auto_key) {
     clash <- cz_find(citekey = key, items = items)
@@ -76,7 +86,14 @@ cz_add <- function(
       ))
     }
   }
-  coll_key <- if (is.null(collection)) NULL else cz_resolve_collection(auth, collection)
+  coll_key <- if (is.null(collection)) {
+    NULL
+  } else {
+    cz_resolve_collection(
+      auth,
+      collection
+    )
+  }
 
   msg <- cz_crossref_fetch(doi)
   type <- cz_crossref_type(msg$type %||% "")
@@ -94,22 +111,40 @@ cz_add <- function(
 
   if (dry_run) {
     cli::cli_inform(c(
-      "i" = "Dry run: nothing written. Use {.code dry_run = FALSE} to add this item.",
+      "i" = paste0(
+        "Dry run: nothing written. Use {.code dry_run = FALSE} to add this ",
+        "item."
+      ),
       lines
     ))
     return(invisible(result))
   }
 
-  token <- rlang::hash(list(Sys.time(), Sys.getpid(), tempfile(), proc.time(), doi))
+  token <- rlang::hash(list(
+    Sys.time(),
+    Sys.getpid(),
+    tempfile(),
+    proc.time(),
+    doi
+  ))
   resp <- cz_request(auth, "items") |>
     httr2::req_method("POST") |>
     httr2::req_headers(`Zotero-Write-Token` = token) |>
     httr2::req_body_json(list(item), auto_unbox = TRUE) |>
     cz_perform(on_412 = c(
-      "Zotero reports this request was already processed (HTTP 412, write token reused).",
-      "i" = "The item was most likely created by an earlier attempt: check your library before retrying."
+      paste0(
+        "Zotero reports this request was already processed (HTTP 412, write ",
+        "token reused)."
+      ),
+      "i" = paste0(
+        "The item was most likely created by an earlier attempt: check your ",
+        "library before retrying."
+      )
     ))
-  new_key <- cz_new_item_key(httr2::resp_body_json(resp, simplifyVector = FALSE))
+  new_key <- cz_new_item_key(httr2::resp_body_json(
+    resp,
+    simplifyVector = FALSE
+  ))
 
   cli::cli_inform(c("v" = "Added item {new_key}.", lines))
   result$key <- new_key
@@ -118,10 +153,14 @@ cz_add <- function(
 }
 
 cz_add_doi_or_abort <- function(id) {
-  if (!grepl("^(10\\.[0-9]{4,9}/|https?://(dx\\.)?doi\\.org/|doi:)", id, ignore.case = TRUE)) {
+  doi_re <- "^(10\\.[0-9]{4,9}/|https?://(dx\\.)?doi\\.org/|doi:)"
+  if (!grepl(doi_re, id, ignore.case = TRUE)) {
     cli::cli_abort(c(
       "{.val {id}} doesn't look like a DOI.",
-      "i" = "Only DOIs are supported so far; ISBN, arXiv and PMID lookups are planned."
+      "i" = paste0(
+        "Only DOIs are supported so far; ISBN, arXiv and PMID lookups are ",
+        "planned."
+      )
     ))
   }
   doi <- cz_norm_doi(id)
@@ -134,12 +173,19 @@ cz_add_doi_or_abort <- function(id) {
 # The key must work as a pandoc citation key, or the item could be pinned but
 # never cited.
 cz_check_key_syntax <- function(key) {
-  ok <- grepl("(*UCP)^[[:alnum:]_][[:alnum:]_:.#$%&+?<>~/-]*$", key, perl = TRUE) &&
+  ok <- grepl(
+    "(*UCP)^[[:alnum:]_][[:alnum:]_:.#$%&+?<>~/-]*$",
+    key,
+    perl = TRUE
+  ) &&
     !grepl("[:.#$%&+?<>~/-]$", key, perl = TRUE)
   if (!ok) {
     cli::cli_abort(c(
       "{.val {key}} can't be used as a pandoc citation key.",
-      "i" = "Start with a letter, digit or underscore; use letters, digits and internal punctuation only."
+      "i" = paste0(
+        "Start with a letter, digit or underscore; use letters, digits and ",
+        "internal punctuation only."
+      )
     ))
   }
 }
@@ -160,7 +206,7 @@ cz_item_template_fields <- function(type) {
   fields
 }
 
-# --- collections ---------------------------------------------------------------
+# --- collections -------------------------------------------------------------
 
 cz_collections <- function(auth) {
   out <- list()
@@ -196,13 +242,16 @@ cz_resolve_collection <- function(auth, x) {
   if (nrow(by_name) > 1) {
     cli::cli_abort(c(
       "{nrow(by_name)} collections are named {.val {x}}; use the key instead.",
-      stats::setNames(sprintf("%s (%s)", by_name$name, by_name$key), rep("*", nrow(by_name)))
+      stats::setNames(
+        sprintf("%s (%s)", by_name$name, by_name$key),
+        rep("*", nrow(by_name))
+      )
     ))
   }
   cli::cli_abort("No collection with the key or exact name {.val {x}}.")
 }
 
-# --- output --------------------------------------------------------------------
+# --- output ------------------------------------------------------------------
 
 cz_describe_new_item <- function(item, coll_key = NULL) {
   creators <- vapply(item$creators %||% list(), function(cr) {
@@ -210,15 +259,22 @@ cz_describe_new_item <- function(item, coll_key = NULL) {
   }, character(1))
   creators <- if (length(creators) > 3) c(creators[1:3], "...") else creators
   one <- function(label, value) {
-    if (is.null(value) || !length(value) || !nzchar(paste(value, collapse = ""))) {
+    if (is.null(value) || !nzchar(paste(value, collapse = ""))) {
       return(NULL)
     }
-    cz_cli_escape(sprintf("%s: %s", label, cz_show_value(paste(value, collapse = "; "), 90)))
+    cz_cli_escape(sprintf(
+      "%s: %s",
+      label,
+      cz_show_value(paste(value, collapse = "; "), 90)
+    ))
   }
-  container <- item$publicationTitle %||% item$bookTitle %||% item$proceedingsTitle %||%
-    item$repository %||% item$university
+  container <- item$publicationTitle %||% item$bookTitle %||%
+    item$proceedingsTitle %||% item$repository %||% item$university
   parts <- c(
-    one("type", item$itemType), one("title", item$title), one("authors", creators),
+    one(
+      "type",
+      item$itemType
+    ), one("title", item$title), one("authors", creators),
     one("date", item$date), one("in", container), one("DOI", item$DOI),
     one("citekey", item$citationKey), one("collection", coll_key)
   )
@@ -235,12 +291,20 @@ cz_new_item_key <- function(body) {
   failed <- body$failed[["0"]]
   if (!is.null(failed)) {
     cli::cli_abort(c(
-      "Zotero did not create the item: {failed$message %||% 'unknown error'} (code {failed$code %||% '?'}).",
+      paste0(
+        "Zotero did not create the item: ",
+        "{failed$message %||% 'unknown error'} (code {failed$code %||% '?'})."
+      ),
       "i" = "Nothing was added."
     ))
   }
   if (length(body$unchanged)) {
     cli::cli_abort("Zotero reports the item as unchanged; nothing was added.")
   }
-  cli::cli_abort("Unexpected response from Zotero when creating the item; check your library.")
+  cli::cli_abort(
+    paste0(
+      "Unexpected response from Zotero when creating the item; check your ",
+      "library."
+    )
+  )
 }

@@ -67,12 +67,21 @@ cz_qmd_keys <- function(
 #' @export
 #' @examples
 #' notes <- tempfile(fileext = ".csv")
-#' writeLines(c("site,comment", "A,defined in Darwin1859", "B,see Ebihara 2006"), notes)
+#' writeLines(
+#'   c("site,comment", "A,defined in Darwin1859", "B,see Ebihara 2006"),
+#'   notes
+#' )
 #' cz_bare_keys(notes) # "Ebihara 2006" does not match
 cz_bare_keys <- function(path) {
-  txt <- paste(readLines(path, warn = FALSE, encoding = "UTF-8"), collapse = "\n")
+  txt <- paste(
+    readLines(path, warn = FALSE, encoding = "UTF-8"),
+    collapse = "\n"
+  )
   m <- gregexpr(
-    "(*UCP)(?<![[:alnum:]])\\p{L}[\\p{L}-]*(19|20)[0-9]{2}[a-z]*(?![[:alnum:]])",
+    paste0(
+      "(*UCP)(?<![[:alnum:]])\\p{L}[\\p{L}-]*",
+      "(19|20)[0-9]{2}[a-z]*(?![[:alnum:]])"
+    ),
     txt,
     perl = TRUE
   )

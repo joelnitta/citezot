@@ -63,7 +63,9 @@ cz_update_bib <- function(
 
   if (is.null(qmd)) qmd <- cz_project_qmds()
   if (!length(qmd)) {
-    cli::cli_abort("No {.file .qmd} or {.file .Rmd} files found. Pass them with {.arg qmd}.")
+    cli::cli_abort(
+      "No {.file .qmd} or {.file .Rmd} files found. Pass them with {.arg qmd}."
+    )
   }
   not_found <- c(qmd, bare)[!file.exists(c(qmd, bare))]
   if (length(not_found)) {
@@ -76,7 +78,7 @@ cz_update_bib <- function(
 
   qmd_keys <- cz_collect_keys(qmd, cz_qmd_keys)
   bare_keys <- cz_collect_keys(bare, cz_bare_keys)
-  # a key the documents need still counts as required if a bare file mentions it too
+  # a key the documents need is still required if a bare file mentions it too
   bare_only <- setdiff(bare_keys, qmd_keys)
   cited <- cz_collect_keys(c(qmd_keys, bare_only), identity)
 
@@ -85,7 +87,12 @@ cz_update_bib <- function(
   dupes <- unique(citekeys[duplicated(citekeys) & !is.na(citekeys)])
   dupes <- intersect(dupes, cited)
   if (length(dupes)) {
-    cli::cli_warn("Several Zotero items have the same citekey (using the first): {.val {dupes}}.")
+    cli::cli_warn(
+      paste0(
+        "Several Zotero items have the same citekey (using the first): ",
+        "{.val {dupes}}."
+      )
+    )
   }
 
   matched <- match(cited, citekeys)
@@ -98,14 +105,32 @@ cz_update_bib <- function(
     if (!allow_incomplete) {
       cli::cli_abort(c(
         "Cited in the documents but not found in Zotero: {.val {missing_qmd}}.",
-        "x" = "{.file {out_show}} was NOT touched, because an incomplete bibliography would break the render.",
-        "i" = "Pin the citekey in Zotero (see {.fn cz_pin_key}), check the spelling, or use {.code allow_incomplete = TRUE} to write what was found."
+        "x" = paste0(
+          "{.file {out_show}} was NOT touched, because an incomplete ",
+          "bibliography would break the render."
+        ),
+        "i" = paste0(
+          "Pin the citekey in Zotero (see {.fn cz_pin_key}), check the ",
+          "spelling, or use {.code allow_incomplete = TRUE} to write what was ",
+          "found."
+        )
       ))
     }
-    cli::cli_warn("Cited in the documents but not found in Zotero: {.val {missing_qmd}}. Writing an incomplete bibliography (allow_incomplete = TRUE).")
+    cli::cli_warn(
+      paste0(
+        "Cited in the documents but not found in Zotero: ",
+        "{.val {missing_qmd}}. Writing an incomplete bibliography ",
+        "(allow_incomplete = TRUE)."
+      )
+    )
   }
   if (length(missing_bare)) {
-    cli::cli_warn("Mentioned in {.file {bare}} but not found in Zotero: {.val {missing_bare}}.")
+    cli::cli_warn(
+      paste0(
+        "Mentioned in {.file {bare}} but not found in Zotero: ",
+        "{.val {missing_bare}}."
+      )
+    )
   }
 
   hit <- matched[!is.na(matched)] # item index for each entry of `found`
@@ -119,8 +144,15 @@ cz_update_bib <- function(
 
   if (!quiet) {
     cli::cli_inform(c(
-      "v" = "{length(found)}/{length(cited)} cited key{?s} found; {.file {out_show}} {if (written) 'updated' else 'already up to date'}.",
-      "i" = "{length(qmd_keys)} from {length(qmd)} document{?s}, {length(bare_only)} only in other files."
+      "v" = paste0(
+        "{length(found)}/{length(cited)} cited key{?s} found; ",
+        "{.file {out_show}} ",
+        "{if (written) 'updated' else 'already up to date'}."
+      ),
+      "i" = paste0(
+        "{length(qmd_keys)} from {length(qmd)} document{?s}, ",
+        "{length(bare_only)} only in other files."
+      )
     ))
   }
   invisible(out)
@@ -158,7 +190,12 @@ cz_resolve_out <- function(qmd, out, quiet = FALSE) {
     return(declared)
   }
   if (!quiet) {
-    cli::cli_inform("No {.code bibliography:} found in the documents; writing {.file references.bib}.")
+    cli::cli_inform(
+      paste0(
+        "No {.code bibliography:} found in the documents; writing ",
+        "{.file references.bib}."
+      )
+    )
   }
   "references.bib"
 }
@@ -176,13 +213,21 @@ cz_resolve_format <- function(out, format) {
     if (is.na(from_ext)) {
       cli::cli_abort(c(
         "Can't tell the output format from {.file {out}}.",
-        "i" = "Use a {.code .bib}, {.code .yaml} or {.code .yml} file name, or set {.arg format}."
+        "i" = paste0(
+          "Use a {.code .bib}, {.code .yaml} or {.code .yml} file name, or ",
+          "set {.arg format}."
+        )
       ))
     }
     return(from_ext)
   }
   if (!is.na(from_ext) && from_ext != format) {
-    cli::cli_abort("{.arg format} is {.val {format}} but {.file {out}} looks like {.val {from_ext}}.")
+    cli::cli_abort(
+      paste0(
+        "{.arg format} is {.val {format}} but {.file {out}} looks like ",
+        "{.val {from_ext}}."
+      )
+    )
   }
   format
 }
@@ -197,7 +242,10 @@ cz_render_yaml <- function(items, keys) {
     item
   }, items, keys)
   items <- unname(items[order(keys, method = "radix")])
-  paste0("---\n", yaml::as.yaml(list(references = items), indent.mapping.sequence = TRUE))
+  paste0(
+    "---\n",
+    yaml::as.yaml(list(references = items), indent.mapping.sequence = TRUE)
+  )
 }
 
 # Write `text` (plus a final newline) to `path` as UTF-8, only if it differs

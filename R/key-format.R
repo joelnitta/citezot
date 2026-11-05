@@ -12,21 +12,46 @@ cz_skip_words <- c(
   "delle", "dem", "den", "der", "des", "det", "die", "dos", "du", "ein", "eine",
   "einem", "einen", "einer", "eines", "el", "en", "et", "for", "from", "gli",
   "i", "il", "in", "inside", "into", "is", "l", "la", "las", "le", "les", "los",
-  "near", "nor", "of", "off", "on", "onto", "or", "over", "per", "plus", "round",
+  "near",
+  "nor",
+  "of",
+  "off",
+  "on",
+  "onto",
+  "or",
+  "over",
+  "per",
+  "plus",
+  "round",
   "s", "sans", "since", "than", "the", "through", "to", "toward", "towards",
   "un", "una", "une", "unter", "up", "upon", "versus", "via", "vom", "von",
   "vor", "with", "within", "without", "yet", "zu", "zum"
 )
 
 cz_key_functions <- c("auth", "year", "shorttitle", "title")
-cz_key_filters <- c("lower", "upper", "fold", "transliterate", "clean", "condense", "nopunct")
+cz_key_filters <- c(
+  "lower",
+  "upper",
+  "fold",
+  "transliterate",
+  "clean",
+  "condense",
+  "nopunct"
+)
 
 # The Better BibTeX default pattern, used when the user gives no formula.
 cz_default_key_format <- "auth.lower + shorttitle(3,3) + year"
 
 cz_fold <- function(x) {
   x <- chartr(cz_fold_from, cz_fold_to, x)
-  for (k in names(cz_fold_multi)) x <- gsub(k, cz_fold_multi[[k]], x, fixed = TRUE)
+  for (k in names(cz_fold_multi)) {
+    x <- gsub(
+      k,
+      cz_fold_multi[[k]],
+      x,
+      fixed = TRUE
+    )
+  }
   x
 }
 
@@ -57,11 +82,20 @@ cz_split_plus <- function(formula) {
 }
 
 cz_unsupported_formula <- function(what, formula) {
+  # nolint start: duplicate_argument_linter.
   cli::cli_abort(c(
     "Unsupported in the key formula {.code {formula}}: {what}.",
-    "i" = "Supported functions: {.code {cz_key_functions}}; filters: {.code {cz_key_filters}}; joined with {.code +}; quoted text is kept as is.",
-    "i" = "Use {.code cz_pin_key()} to set a key by hand, or ask Better BibTeX for the key if Zotero is running." # nolint: duplicate_argument_linter.
+    "i" = paste0(
+      "Supported functions: {.code {cz_key_functions}}; filters: ",
+      "{.code {cz_key_filters}}; joined with {.code +}; quoted text is kept ",
+      "as is."
+    ),
+    "i" = paste0(
+      "Use {.code cz_pin_key()} to set a key by hand, or ask Better BibTeX ",
+      "for the key if Zotero is running."
+    )
   ), call = NULL)
+  # nolint end
 }
 
 #' Parse a key formula into terms
@@ -69,7 +103,10 @@ cz_unsupported_formula <- function(what, formula) {
 cz_parse_key_format <- function(formula) {
   rlang::check_string(formula, arg = "formula")
   if (grepl("\\|\\||&&|;|\\?|\\[|\\]", formula)) {
-    cz_unsupported_formula("alternatives (`||`), conditions, `;` or the old `[...]` syntax", formula)
+    cz_unsupported_formula(
+      "alternatives (`||`), conditions, `;` or the old `[...]` syntax",
+      formula
+    )
   }
   lapply(trimws(cz_split_plus(formula)), function(term) {
     if (!nzchar(term)) cz_unsupported_formula("an empty term", formula)
@@ -77,18 +114,56 @@ cz_parse_key_format <- function(formula) {
     if (length(lit)) {
       return(list(kind = "lit", value = lit[3]))
     }
-    m <- regmatches(term, regexec("^([A-Za-z][A-Za-z0-9]*)(?:\\(([^)]*)\\))?((?:\\.[A-Za-z]+)*)$", term, perl = TRUE))[[1]]
-    if (!length(m)) cz_unsupported_formula(sprintf("the term `%s`", term), formula)
+    m <- regmatches(
+      term,
+      regexec(
+        "^([A-Za-z][A-Za-z0-9]*)(?:\\(([^)]*)\\))?((?:\\.[A-Za-z]+)*)$",
+        term,
+        perl = TRUE
+      )
+    )[[1]]
+    if (!length(m)) {
+      cz_unsupported_formula(
+        sprintf("the term `%s`", term),
+        formula
+      )
+    }
     fn <- m[2]
     if (!fn %in% cz_key_functions) {
       cz_unsupported_formula(sprintf("the function `%s`", fn), formula)
     }
-    filters <- if (nzchar(m[4])) strsplit(sub("^\\.", "", m[4]), ".", fixed = TRUE)[[1]] else character()
+    filters <- if (nzchar(m[4])) {
+      strsplit(
+        sub("^\\.", "", m[4]),
+        ".",
+        fixed = TRUE
+      )[[1]]
+    } else {
+      character()
+    }
     filters <- tolower(filters)
     bad <- setdiff(filters, cz_key_filters)
-    if (length(bad)) cz_unsupported_formula(sprintf("the filter `%s`", bad[1]), formula)
-    args <- if (nzchar(m[3])) suppressWarnings(as.integer(trimws(strsplit(m[3], ",", fixed = TRUE)[[1]]))) else integer()
-    if (anyNA(args)) cz_unsupported_formula(sprintf("the arguments of `%s`", fn), formula)
+    if (length(bad)) {
+      cz_unsupported_formula(
+        sprintf("the filter `%s`", bad[1]),
+        formula
+      )
+    }
+    args <- if (nzchar(m[3])) {
+      suppressWarnings(as.integer(trimws(strsplit(
+        m[3],
+        ",",
+        fixed = TRUE
+      )[[1]])))
+    } else {
+      integer()
+    }
+    if (anyNA(args)) {
+      cz_unsupported_formula(
+        sprintf("the arguments of `%s`", fn),
+        formula
+      )
+    }
     list(kind = "fn", name = fn, args = args, filters = filters)
   })
 }
@@ -106,14 +181,33 @@ cz_key_fields <- function(item) {
     types <- vapply(cr, function(p) p$creatorType %||% "", character(1))
     pick <- cr[types == "author"]
     if (!length(pick)) pick <- cr[types == "editor"]
-    authors <- vapply(pick, function(p) p$lastName %||% p$name %||% "", character(1))
-    return(list(authors = authors, title = item$title %||% "", year = year(item$date %||% "")))
+    authors <- vapply(
+      pick,
+      function(p) p$lastName %||% p$name %||% "",
+      character(1)
+    )
+    return(list(
+      authors = authors,
+      title = item$title %||% "",
+      year = year(item$date %||% "")
+    ))
   }
   people <- item$author
   if (is.null(people) || !length(people)) people <- item$editor
-  authors <- vapply(people %||% list(), function(p) p$family %||% p$literal %||% "", character(1))
-  y <- tryCatch(as.character(item$issued$`date-parts`[[1]][[1]]), error = function(e) "")
-  list(authors = authors, title = cz_chr1(item$title) %||% "", year = if (length(y)) y else "")
+  authors <- vapply(
+    people %||% list(),
+    function(p) p$family %||% p$literal %||% "",
+    character(1)
+  )
+  y <- tryCatch(
+    as.character(item$issued$`date-parts`[[1]][[1]]),
+    error = function(e) ""
+  )
+  list(
+    authors = authors,
+    title = cz_chr1(item$title) %||% "",
+    year = if (length(y)) y else ""
+  )
 }
 
 # Words of a title, as Better BibTeX sees them: HTML tags removed, cut at the
@@ -151,12 +245,19 @@ cz_eval_term <- function(term, fields) {
   out <- switch(term$name,
     auth = if (length(fields$authors)) {
       # Unicode hyphens (U+2010-2012) count as "-" in names
-      gsub("[[:space:]]+", "", gsub("[\u2010\u2011\u2012]", "-", fields$authors[1]))
+      gsub(
+        "[[:space:]]+",
+        "",
+        gsub("[\u2010\u2011\u2012]", "-", fields$authors[1])
+      )
     } else {
       ""
     },
     year = fields$year,
-    title = paste(cz_title_words(fields$title, main_only = FALSE), collapse = ""),
+    title = paste(
+      cz_title_words(fields$title, main_only = FALSE),
+      collapse = ""
+    ),
     shorttitle = {
       n <- if (length(term$args) >= 1) term$args[1] else 3L
       m <- if (length(term$args) >= 2) term$args[2] else 0L
@@ -220,7 +321,9 @@ cz_postfix <- function(i) {
 #'   itemType = "journalArticle",
 #'   title = "A taxonomic revision of Hymenophyllaceae",
 #'   date = "2006",
-#'   creators = list(list(creatorType = "author", firstName = "A", lastName = "Ebihara"))
+#'   creators = list(
+#'     list(creatorType = "author", firstName = "A", lastName = "Ebihara")
+#'   )
 #' )
 #' cz_suggest_key(item, "auth.lower + year + shorttitle(1).lower")
 #' cz_suggest_key(item,
@@ -235,7 +338,10 @@ cz_suggest_key <- function(item, formula = NULL, existing = character()) {
   }
   terms <- cz_parse_key_format(formula)
   fields <- cz_key_fields(item)
-  base <- cz_sanitize_key(paste(vapply(terms, cz_eval_term, character(1), fields = fields), collapse = ""))
+  base <- cz_sanitize_key(paste(
+    vapply(terms, cz_eval_term, character(1), fields = fields),
+    collapse = ""
+  ))
   if (!nzchar(base)) {
     cli::cli_abort(c(
       "The formula {.code {formula}} gave an empty key for this item.",
@@ -284,7 +390,10 @@ cz_bbt_format_from_prefs <- function() {
     return(NULL)
   }
   files <- files[order(file.mtime(files), decreasing = TRUE)]
-  pattern <- "^user_pref\\(\"extensions\\.zotero\\.translators\\.better-bibtex\\.citekeyFormat\",\\s*\"((?:[^\"\\\\]|\\\\.)*)\"\\);"
+  pattern <- paste0(
+    "^user_pref\\(\"extensions\\.zotero\\.translators\\.",
+    "better-bibtex\\.citekeyFormat\",\\s*\"((?:[^\"\\\\]|\\\\.)*)\"\\);"
+  )
   for (f in files) {
     lines <- readLines(f, warn = FALSE, encoding = "UTF-8")
     hit <- regmatches(lines, regexec(pattern, lines, perl = TRUE))
@@ -329,10 +438,21 @@ cz_key_format <- function() {
 cz_announce_format <- function(fmt) {
   msg <- switch(fmt$source,
     option = NULL,
-    "zotero profile" = "Citekey formula {.code {fmt$formula}} read from your Zotero profile (Better BibTeX).",
-    default = "No citekey formula found; using Better BibTeX's default {.code {fmt$formula}}. Set {.code options(citezot.key_format = \"...\")} to choose your own."
+    "zotero profile" = paste0(
+      "Citekey formula {.code {fmt$formula}} read from your Zotero profile ",
+      "(Better BibTeX)."
+    ),
+    default = paste0(
+      "No citekey formula found; using Better BibTeX's default ",
+      "{.code {fmt$formula}}. Set ",
+      "{.code options(citezot.key_format = \"...\")} to choose your own."
+    )
   )
   if (!is.null(msg)) {
-    cli::cli_inform(c(i = msg), .frequency = "once", .frequency_id = paste("citezot_format", fmt$source, fmt$formula))
+    cli::cli_inform(
+      c(i = msg),
+      .frequency = "once",
+      .frequency_id = paste("citezot_format", fmt$source, fmt$formula)
+    )
   }
 }

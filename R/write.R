@@ -49,13 +49,18 @@ cz_pin_key <- function(
   if (nzchar(before) && before != key && !overwrite) {
     cli::cli_abort(c(
       "Item {item_id} already has the pinned key {.val {before}}.",
-      "i" = "Use {.code overwrite = TRUE} to replace it with {.val {key}} (documents citing {.val {before}} will break)."
+      "i" = paste0(
+        "Use {.code overwrite = TRUE} to replace it with {.val {key}} ",
+        "(documents citing {.val {before}} will break)."
+      )
     ))
   }
 
   result <- list(item = item_id, before = before, after = key, written = FALSE)
   if (before == key) {
-    cli::cli_inform(c("i" = "Item {item_id} already has the key {.val {key}}; nothing to do."))
+    cli::cli_inform(
+      c("i" = "Item {item_id} already has the key {.val {key}}; nothing to do.")
+    )
     return(invisible(result))
   }
 
@@ -71,11 +76,15 @@ cz_pin_key <- function(
 
   cz_request(auth, "items", item_id) |>
     httr2::req_method("PATCH") |>
-    httr2::req_headers(`If-Unmodified-Since-Version` = as.character(current$version)) |>
+    httr2::req_headers(
+      `If-Unmodified-Since-Version` = as.character(current$version)
+    ) |>
     httr2::req_body_json(list(citationKey = key)) |>
     cz_perform()
 
-  cli::cli_inform(c("v" = "Item {item_id}: citationKey {.val {shown_before}} -> {.val {key}}"))
+  cli::cli_inform(
+    c("v" = "Item {item_id}: citationKey {.val {shown_before}} -> {.val {key}}")
+  )
   result$written <- TRUE
   invisible(result)
 }

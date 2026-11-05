@@ -10,7 +10,10 @@ cz_cache_dir <- function() {
 }
 
 cz_cache_file <- function(auth) {
-  file.path(cz_cache_dir(), sprintf("%s-%s.rds", auth$library_type, auth$library_id))
+  file.path(
+    cz_cache_dir(),
+    sprintf("%s-%s.rds", auth$library_type, auth$library_id)
+  )
 }
 
 # Returns list(version, items) or NULL if absent/unreadable/invalid. A bad
@@ -67,7 +70,11 @@ cz_cache_write <- function(auth, version, items) {
 #' options(old)
 cz_clear_cache <- function(auth = NULL) {
   files <- if (is.null(auth)) {
-    list.files(cz_cache_dir(), pattern = "^(user|group)-[0-9]+\\.rds$", full.names = TRUE)
+    list.files(
+      cz_cache_dir(),
+      pattern = "^(user|group)-[0-9]+\\.rds$",
+      full.names = TRUE
+    )
   } else {
     f <- cz_cache_file(auth)
     f[file.exists(f)]

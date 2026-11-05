@@ -12,7 +12,10 @@ cz_crossref_fetch <- function(doi) {
   req <- httr2::request("https://api.crossref.org/works") |>
     httr2::req_url_path_append(enc) |>
     httr2::req_user_agent("citezot (R package)") |>
-    httr2::req_retry(max_tries = 3, is_transient = function(resp) httr2::resp_status(resp) %in% c(429, 503)) |>
+    httr2::req_retry(
+      max_tries = 3,
+      is_transient = function(resp) httr2::resp_status(resp) %in% c(429, 503)
+    ) |>
     httr2::req_error(is_error = function(resp) FALSE)
   # Crossref asks for a contact address to use its faster "polite" pool. Only
   # sent if the user sets it; we never send an address on their behalf.
@@ -24,7 +27,10 @@ cz_crossref_fetch <- function(doi) {
   if (status == 404) {
     cli::cli_abort(c(
       "Crossref has no record of the DOI {.val {doi}}.",
-      "i" = "Check the DOI. It may be registered with another agency (e.g. DataCite), which is not supported yet."
+      "i" = paste0(
+        "Check the DOI. It may be registered with another agency (e.g. ",
+        "DataCite), which is not supported yet."
+      )
     ))
   }
   if (status >= 400) {
@@ -73,9 +79,15 @@ cz_strip_markup <- function(x, keep = c("i", "b", "sub", "sup")) {
 
 cz_crossref_date <- function(msg) {
   for (nm in c("issued", "published", "published-print", "published-online")) {
-    parts <- tryCatch(unlist(msg[[nm]]$`date-parts`[[1]]), error = function(e) NULL)
+    parts <- tryCatch(
+      unlist(msg[[nm]]$`date-parts`[[1]]),
+      error = function(e) NULL
+    )
     if (length(parts)) {
-      return(paste(c(sprintf("%04d", parts[1]), sprintf("%02d", parts[-1])), collapse = "-"))
+      return(paste(
+        c(sprintf("%04d", parts[1]), sprintf("%02d", parts[-1])),
+        collapse = "-"
+      ))
     }
   }
   NA_character_
@@ -117,8 +129,14 @@ cz_crossref_creators <- function(msg) {
     }
   }
   c(
-    Filter(Negate(is.null), lapply(msg$author %||% list(), one, type = "author")),
-    Filter(Negate(is.null), lapply(msg$editor %||% list(), one, type = "editor"))
+    Filter(
+      Negate(is.null),
+      lapply(msg$author %||% list(), one, type = "author")
+    ),
+    Filter(
+      Negate(is.null),
+      lapply(msg$editor %||% list(), one, type = "editor")
+    )
   )
 }
 
@@ -143,15 +161,22 @@ cz_join <- function(x, sep = ", ") {
 #' Map Crossref metadata onto Zotero's native item JSON
 #'
 #' @param msg Crossref `message`.
-#' @param valid_fields Names of the fields valid for the item type (from Zotero's
-#'   item template). Mapped fields not in this set are dropped and reported.
+#' @param valid_fields Names of the fields valid for the item type (from
+#'   Zotero's item template). Mapped fields not in this set are dropped and
+#'   reported.
 #' @param type The Zotero item type.
 #' @return `list(item, dropped)`.
 #' @noRd
-cz_crossref_to_item <- function(msg, type, valid_fields, accessed = Sys.time()) {
+cz_crossref_to_item <- function(
+  msg,
+  type,
+  valid_fields,
+  accessed = Sys.time()
+) {
   title <- cz_strip_markup(cz_first(msg$title))
   sub <- cz_strip_markup(cz_first(msg$subtitle))
-  if (!is.na(sub) && nzchar(sub) && !is.na(title) && !grepl(sub, title, fixed = TRUE)) {
+  has_sub <- !is.na(sub) && nzchar(sub) && !is.na(title)
+  if (has_sub && !grepl(sub, title, fixed = TRUE)) {
     title <- paste0(title, ": ", sub)
   }
   container <- cz_strip_markup(cz_first(msg$`container-title`))
@@ -160,10 +185,25 @@ cz_crossref_to_item <- function(msg, type, valid_fields, accessed = Sys.time()) 
 
   wanted <- list(
     title = title,
-    abstractNote = cz_strip_markup(gsub("^\\s*<jats:title>[^<]*</jats:title>", "", msg$abstract %||% NA_character_, perl = TRUE), keep = character()),
+    abstractNote = cz_strip_markup(
+      gsub(
+        "^\\s*<jats:title>[^<]*</jats:title>",
+        "",
+        msg$abstract %||% NA_character_,
+        perl = TRUE
+      ),
+      keep = character()
+    ),
     date = cz_crossref_date(msg),
     DOI = msg$DOI %||% NA_character_,
-    url = if (!is.null(msg$DOI)) paste0("https://doi.org/", msg$DOI) else NA_character_,
+    url = if (!is.null(msg$DOI)) {
+      paste0(
+        "https://doi.org/",
+        msg$DOI
+      )
+    } else {
+      NA_character_
+    },
     language = msg$language %||% NA_character_,
     libraryCatalog = "Crossref",
     accessDate = format(accessed, "%Y-%m-%dT%H:%M:%SZ", tz = "UTC")
@@ -179,7 +219,9 @@ cz_crossref_to_item <- function(msg, type, valid_fields, accessed = Sys.time()) 
       edition = msg$`edition-number`, series = NA_character_
     ),
     bookSection = list(
-      bookTitle = container, publisher = publisher, place = msg$`publisher-location`,
+      bookTitle = container,
+      publisher = publisher,
+      place = msg$`publisher-location`,
       pages = msg$page, ISBN = cz_join(msg$ISBN)
     ),
     conferencePaper = list(
@@ -199,7 +241,9 @@ cz_crossref_to_item <- function(msg, type, valid_fields, accessed = Sys.time()) 
   dropped <- character()
   for (nm in names(wanted)) {
     v <- wanted[[nm]]
-    if (is.null(v) || length(v) != 1 || is.na(v) || !nzchar(as.character(v))) next
+    if (is.null(v) || length(v) != 1 || is.na(v) || !nzchar(as.character(v))) {
+      next
+    }
     if (nm %in% valid_fields) {
       item[[nm]] <- as.character(v)
     } else {
