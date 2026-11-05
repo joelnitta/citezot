@@ -28,6 +28,57 @@ cz_split_bib <- function(txt) {
   stats::setNames(entries, keys)
 }
 
+# Zotero fields may hold HTML-ish markup (`<i>`, `<b>`, `<sub>`, `<sup>`,
+# small caps, `<span class="nocase">`). Citeproc understands it in CSL, but
+# pandoc's BibLaTeX reader does not, so it would show up literally. Turn the
+# tags into the LaTeX commands the reader does understand. Zotero's exporter
+# converts `<i>` and `<sub>` itself but leaves the other tags escaped, as
+# `{\textless}span class="nocase"{\textgreater}`. Tags may arrive raw or
+# escaped (`{\textless}` or `\textless{}`), in any case, with single or
+# double quotes. Every opening tag becomes a `{`-group and every closing tag a
+# `}`, so braces stay balanced even for spans we do not recognize.
+cz_html_to_latex <- function(entry) {
+  lt <- "(?:<|\\{\\\\textless\\}|\\\\textless(?:\\{\\})?)\\s*"
+  gt <- "(?:>|\\{\\\\textgreater\\}|\\\\textgreater(?:\\{\\})?)"
+  tag <- function(body) paste0("(?i)", lt, body, "\\s*", gt)
+  q <- "[\"']"
+  span_attr <- function(re) {
+    tag(paste0("span\\b[^<>\\\\]*?", re, "[^<>\\\\]*?"))
+  }
+  simple <- function(names, cmd) {
+    list(
+      c(tag(paste0("(?:", names, ")")), paste0("\\\\", cmd, "{")),
+      c(tag(paste0("/(?:", names, ")")), "}")
+    )
+  }
+  rules <- c(
+    list(
+      c(span_attr(paste0("class\\s*=\\s*", q, "[^\"']*\\bnocase\\b")), "{"),
+      c(span_attr("font-variant\\s*:\\s*small-caps"), "\\\\textsc{"),
+      c(span_attr("font-style\\s*:\\s*italic"), "\\\\emph{"),
+      c(span_attr("font-weight\\s*:\\s*bold"), "\\\\textbf{"),
+      c(tag("span\\b[^<>\\\\]*?"), "{"),
+      # tags with no LaTeX counterpart are dropped, as are empty `<sup/>`
+      c(tag("/?(?:p|br|div)\\b[^<>\\\\]*?/?"), ""),
+      c(tag("[a-z]+\\b[^<>\\\\]*?/"), ""),
+      c(tag("/span"), "}")
+    ),
+    simple("i|em", "emph"),
+    simple("b|strong", "textbf"),
+    simple("sub", "textsubscript"),
+    simple("sup", "textsuperscript"),
+    simple("sc", "textsc"),
+    simple("u", "underline"),
+    simple("tt|code", "texttt")
+  )
+  for (r in rules) entry <- gsub(r[1], r[2], entry, perl = TRUE)
+  # Zotero cuts `shorttitle` at the first colon, which can split a tag such as
+  # `font-variant:small-caps` in two. Such a fragment cannot be repaired; the
+  # field is optional, so drop the whole line.
+  broken <- "(?m)^[ \\t]*shorttitle\\s*=[^\\n]*(?:\\\\textless|<)[^\\n]*\\n?"
+  gsub(broken, "", entry, perl = TRUE)
+}
+
 # Replace the entry key of a single BibLaTeX entry.
 cz_set_bib_key <- function(entry, key) {
   head_end <- regexpr(",", entry, fixed = TRUE)
@@ -100,5 +151,6 @@ cz_export_bib <- function(auth, ids, keys) {
     }
     out[i] <- cz_set_bib_key(single[[1]], keys[i])
   }
+  out <- vapply(out, cz_html_to_latex, character(1), USE.NAMES = FALSE)
   out[order(keys, method = "radix")]
 }

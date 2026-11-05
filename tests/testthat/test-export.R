@@ -95,3 +95,136 @@ test_that("cz_export_bib errors if Zotero returns nothing for an item", {
     "did not return a BibLaTeX entry"
   )
 })
+
+test_that("cz_html_to_latex converts every supported tag", {
+  cases <- list(
+    c("<i>x</i>", "\\emph{x}"),
+    c("<em>x</em>", "\\emph{x}"),
+    c("<b>x</b>", "\\textbf{x}"),
+    c("<strong>x</strong>", "\\textbf{x}"),
+    c("<sub>x</sub>", "\\textsubscript{x}"),
+    c("<sup>x</sup>", "\\textsuperscript{x}"),
+    c("<sc>x</sc>", "\\textsc{x}"),
+    c("<u>x</u>", "\\underline{x}"),
+    c("<code>x</code>", "\\texttt{x}"),
+    c("<tt>x</tt>", "\\texttt{x}"),
+    c('<span class="nocase">x</span>', "{x}"),
+    c("<span class='nocase'>x</span>", "{x}"),
+    c('<span class="nocase other">x</span>', "{x}"),
+    c('<span style="font-variant:small-caps">x</span>', "\\textsc{x}"),
+    c('<span style="font-variant: small-caps;">x</span>', "\\textsc{x}"),
+    c('<span style="font-style:italic">x</span>', "\\emph{x}"),
+    c('<span style="font-weight:bold">x</span>', "\\textbf{x}"),
+    c('<span lang="la">x</span>', "{x}")
+  )
+  for (case in cases) {
+    expect_identical(cz_html_to_latex(case[1]), case[2], info = case[1])
+  }
+})
+
+test_that("cz_html_to_latex handles case, escaping, nesting and context", {
+  f <- cz_html_to_latex
+  expect_identical(f("<I>x</I> <SUB>2</SUB>"), "\\emph{x} \\textsubscript{2}")
+  expect_identical(f("<i >x</i >"), "\\emph{x}")
+  # escaped angle brackets, as a BibTeX exporter may emit them
+  expect_identical(
+    f("\\textless{}i\\textgreater{}x\\textless{}/i\\textgreater{}"),
+    "\\emph{x}"
+  )
+  expect_identical(
+    f(paste0(
+      "\\textless{}span class=\"nocase\"\\textgreater{}x",
+      "\\textless{}/span\\textgreater{}"
+    )),
+    "{x}"
+  )
+  # nesting and several tags in one field
+  expect_identical(
+    f('<span class="nocase"><i>Azolla</i> in H<sub>2</sub>O</span>'),
+    "{\\emph{Azolla} in H\\textsubscript{2}O}"
+  )
+  expect_identical(
+    f("<b><i>x</i></b>"),
+    "\\textbf{\\emph{x}}"
+  )
+  # a whole entry: only the markup changes
+  entry <- paste0(
+    "@article{Key2020,\n\ttitle = {<i>A</i> and <b>B</b>},\n",
+    "\tauthor = {Doe, Jane},\n\tdate = {2020},\n}"
+  )
+  expect_identical(
+    f(entry),
+    paste0(
+      "@article{Key2020,\n\ttitle = {\\emph{A} and \\textbf{B}},\n",
+      "\tauthor = {Doe, Jane},\n\tdate = {2020},\n}"
+    )
+  )
+})
+
+test_that("cz_html_to_latex handles Zotero's escaped export forms", {
+  f <- cz_html_to_latex
+  lt <- "{\\textless}"
+  gt <- "{\\textgreater}"
+  esc <- function(x) gsub(">", gt, gsub("<", lt, x, fixed = TRUE), fixed = TRUE)
+  # taken from real exports: Zotero leaves these tags (escaped) in titles
+  expect_identical(
+    f(esc('<span class="nocase">x</span>')),
+    "{x}"
+  )
+  expect_identical(
+    f(esc('<span style="font-variant:small-caps;">C</span> olumba')),
+    "\\textsc{C} olumba"
+  )
+  expect_identical(
+    f(esc('<span lang="{EN}-{GB}">x</span>')),
+    "{x}"
+  )
+  expect_identical(
+    f(esc("<p><strong><em>A</em></strong> b</p>")),
+    "\\textbf{\\emph{A}} b"
+  )
+  expect_identical(f(esc("x <sup/>")), "x ")
+  expect_identical(
+    f(paste0("\\textit{", esc('<span style="font-variant:small-caps;">'), "C")),
+    "\\textit{\\textsc{C"
+  )
+})
+
+test_that("cz_html_to_latex drops a shorttitle with a split tag", {
+  entry <- paste0(
+    "@article{K,\n\ttitle = {a {\\textless}span style=\"font-variant:",
+    "small-caps;\"{\\textgreater}B{\\textless}/span{\\textgreater}: c},\n",
+    "\tshorttitle = {a {\\textless}span style=\"font-variant},\n",
+    "\tjournaltitle = {J},\n}"
+  )
+  out <- cz_html_to_latex(entry)
+  expect_false(grepl("shorttitle", out, fixed = TRUE))
+  expect_match(out, "title = {a \\textsc{B}: c},\n\tjournaltitle", fixed = TRUE)
+  # a clean shorttitle stays
+  ok <- "@article{K,\n\tshorttitle = {Short},\n}"
+  expect_identical(cz_html_to_latex(ok), ok)
+})
+
+test_that("cz_html_to_latex leaves text without markup alone", {
+  f <- cz_html_to_latex
+  for (x in c(
+    "plain {title}", "a < b and c > d", "x \\emph{y}", "{\\textsc{x}}",
+    "3 <5, 6> 4", "", "Smith & Jones"
+  )) {
+    expect_identical(f(x), x, info = x)
+  }
+  expect_identical(f(c("<i>a</i>", "b")), c("\\emph{a}", "b"))
+})
+
+test_that("cz_export_bib converts markup in exported entries", {
+  testthat::local_mocked_bindings(
+    cz_bib_requests = function(auth, ids) list(NULL),
+    cz_perform = function(req) NULL,
+    cz_bib_text = function(resp) {
+      entry("Key2020", '<span class=\"nocase\">An <i>open</i> tree</span>')
+    }
+  )
+  out <- cz_export_bib(NULL, "ABC123", "Key2020")
+  expect_match(out, "title = {{An \\emph{open} tree}}", fixed = TRUE)
+  expect_no_match(out, "<")
+})
