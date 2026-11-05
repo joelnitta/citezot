@@ -2,3 +2,5 @@
 ^dev$
 ^CLAUDE\.md$
 ^\.env\.local$
+^doc$
+^Meta$
