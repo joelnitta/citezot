@@ -103,7 +103,7 @@ test_that("a journal article maps onto Zotero fields", {
   expect_length(res$dropped, 0)
 })
 
-test_that("creators: people, organisations and editors", {
+test_that("creators: people, organizations and editors", {
   cr <- cz_crossref_to_item(article, "journalArticle", valid)$item$creators
   expect_identical(
     cr[[1]],

@@ -111,7 +111,7 @@ test_that("criteria combine with AND; no match is an empty table", {
   expect_identical(names(out)[1], "item")
 })
 
-test_that("authors are summarised", {
+test_that("authors are summarized", {
   expect_identical(
     cz_find(citekey = "Weiß2015", items = lib)$author,
     "Weiß et al."

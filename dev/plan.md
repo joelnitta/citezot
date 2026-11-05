@@ -37,7 +37,7 @@ Based on CRAN/GitHub README and manual pages only (code not read; "not documente
 ## Primary use case: writing Quarto docs
 One call produces the `references.yaml` / `references.bib` that the qmd's `bibliography:` points to. `targets` is optional.
 - `format = c("bib", "yaml")` in `cz_update_bib()`; **default is `.bib`** (works with Typst, which doesn't read CSL-YAML; also LaTeX/HTML). Bib route (as built): Zotero's own `format=biblatex` export of just the cited items (`itemKey=`, 50 per request), which already uses the pinned citekeys as entry keys. Entries come back in arbitrary order, so they are matched to items by key, never by position; an entry exported under a different key (e.g. pinned only via Extra) is re-fetched alone and its key rewritten. YAML (CSL-YAML from `csljson`) stays as an option. Default `out` = front-matter `bibliography:` (then `_quarto.yml`), else `references.bib`; format inferred from the extension. Verified live: renders in Quarto html and typst.
-- Argument names: `cz_update_bib(qmd, out, format, bare, allow_incomplete, auth, cache, quiet)`. `qmd` default = all `.qmd`/`.Rmd` under the working directory (skipping hidden/underscore dirs, renv, packrat, node_modules). Honouring the `_quarto.yml` render list is not done yet.
+- Argument names: `cz_update_bib(qmd, out, format, bare, allow_incomplete, auth, cache, quiet)`. `qmd` default = all `.qmd`/`.Rmd` under the working directory (skipping hidden/underscore dirs, renv, packrat, node_modules). Honoring the `_quarto.yml` render list is not done yet.
 - Missing-key error points to `cz_find()`, `cz_add()`, `cz_pin_key()`.
 
 ## Use scenario (sketch)
@@ -125,4 +125,4 @@ Optional automation: Quarto `pre-render` script calling `cz_update_bib()`, or a 
 - License (default MIT); `since=` conditional fetch in v1 or later; how much of the BBT formula language to support.
 
 ## Status (2026-11-04)
-Steps 1-7 are implemented and committed, plus README, NEWS and vignette. Live-verified read paths and the write path (one throwaway item, since trashed). Not built / ideas: ISBN, arXiv and PMID lookups for `cz_add()`; honouring the `_quarto.yml` render list in `cz_update_bib()`; Greek/Cyrillic transliteration for keys; BBT JSON-RPC (see above). Before a release or an rOpenSci submission: re-run `devtools::check(cran = TRUE)`, consider `goodpractice::gp()`, and decide on CRAN versus GitHub-only.
+Steps 1-7 are implemented and committed, plus README, NEWS and vignette. Live-verified read paths and the write path (one throwaway item, since trashed). Not built / ideas: ISBN, arXiv and PMID lookups for `cz_add()`; honoring the `_quarto.yml` render list in `cz_update_bib()`; Greek/Cyrillic transliteration for keys; BBT JSON-RPC (see above). Before a release or an rOpenSci submission: re-run `devtools::check(cran = TRUE)`, consider `goodpractice::gp()`, and decide on CRAN versus GitHub-only.

@@ -103,7 +103,7 @@ cz_chr1 <- function(x) {
   if (is.null(x) || !length(x)) NA_character_ else as.character(x[[1]])
 }
 
-# One row per CSL item, with the columns cz_find() shows plus normalised and
+# One row per CSL item, with the columns cz_find() shows plus normalized and
 # search-only columns.
 cz_items_table <- function(items) {
   chr <- function(f) vapply(items, f, character(1))

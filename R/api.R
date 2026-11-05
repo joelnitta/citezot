@@ -78,7 +78,7 @@ cz_translate_errors <- function(expr, on_412 = NULL) {
 
 # Zotero's `Backoff: <seconds>` header can arrive on any response, including
 # successful ones: finish what is needed, then pause before the next request.
-# Remember the deadline and honour it before the next request is sent.
+# Remember the deadline and honor it before the next request is sent.
 .cz_state <- new.env(parent = emptyenv())
 .cz_state$backoff_until <- NULL
 .cz_state$templates <- list()

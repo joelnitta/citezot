@@ -65,7 +65,7 @@ test_that("accents are folded to ASCII and Unicode hyphens become hyphens", {
   expect_identical(key(native("T", "Łukasiewicz"), "auth.lower"), "lukasiewicz")
 })
 
-test_that("an organisation-only or editors-only item still yields a key", {
+test_that("an organization-only or editors-only item still yields a key", {
   org <- list(
     itemType = "report",
     title = "T",
