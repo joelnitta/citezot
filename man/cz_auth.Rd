@@ -23,9 +23,10 @@ A \code{cz_auth} object, for the \code{auth} argument of other functions.
 }
 \description{
 Resolves the library ID and API key, by default from the environment
-variables \code{ZOTERO_LIBRARY_ID} and \code{ZOTERO_API_KEY}. Load them yourself
-(e.g. from a gitignored \code{.Renviron} or \code{.env.local}); citezot never reads
-files or stores the key. The key is never printed.
+variables \code{ZOTERO_LIBRARY_ID} and \code{ZOTERO_API_KEY}. Set them once with
+\code{\link[=cz_set_auth]{cz_set_auth()}}, or load them yourself (e.g. from a gitignored \code{.Renviron}
+or \code{.env.local}). citezot never reads credential files; only \code{\link[=cz_set_auth]{cz_set_auth()}}
+writes the key, and only when you ask it to. The key is never printed.
 }
 \details{
 Create a key at \url{https://www.zotero.org/settings/keys}; the numeric user ID
