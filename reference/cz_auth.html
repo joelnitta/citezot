@@ -65,7 +65,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script><script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script><script src="../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script><script src="../site_libs/quarto-html/popper.min.js"></script><script src="../site_libs/quarto-html/tippy.umd.min.js"></script><script src="../site_libs/quarto-html/anchor.min.js"></script><link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script><link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-11dfed304549e7d9db55013033367f26.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-8d3ad9c781c51ccd60b292c95058b2c2.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -176,7 +176,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header><p><a href="https://github.com/joelnitta/citezot/blob/main/R/auth.R">R/auth.R</a></p>
 <section id="cz_auth" class="level2"><h2 class="anchored" data-anchor-id="cz_auth">cz_auth</h2>
 </section><section id="description" class="level2"><h2 class="anchored" data-anchor-id="description">Description</h2>
-<p>Resolves the library ID and API key, by default from the environment variables <code>ZOTERO_LIBRARY_ID</code> (or, for a user library, <code>ZOTERO_USER_ID</code>) and <code>ZOTERO_API_KEY</code>. Load them yourself (e.g. from a gitignored <code>.Renviron</code> or <code>.env.local</code>); citezot never reads files or stores the key. The key is never printed.</p>
+<p>Resolves the library ID and API key, by default from the environment variables <code>ZOTERO_LIBRARY_ID</code> and <code>ZOTERO_API_KEY</code>. Load them yourself (e.g. from a gitignored <code>.Renviron</code> or <code>.env.local</code>); citezot never reads files or stores the key. The key is never printed.</p>
 </section><section id="usage" class="level2"><h2 class="anchored" data-anchor-id="usage">Usage</h2>
 <div class="code-copy-outer-scaffold">
 <div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cz_auth</span>(</span>
@@ -199,7 +199,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>library_id</td>
-<td>Numeric user ID (or group ID), as a string or number. If <code>NULL</code> (default), taken from <code>ZOTERO_LIBRARY_ID</code>; for a user library <code>ZOTERO_USER_ID</code> is used as a fallback.</td>
+<td>Numeric user ID (or group ID), as a string or number. If <code>NULL</code> (default), taken from <code>ZOTERO_LIBRARY_ID</code>.</td>
 </tr>
 <tr class="even">
 <td>api_key</td>
@@ -212,7 +212,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 </tbody>
 </table></section><section id="details" class="level2"><h2 class="anchored" data-anchor-id="details">Details</h2>
-<p>Create a key at <a href="https://www.zotero.org/settings/keys" class="uri">https://www.zotero.org/settings/keys</a>; the numeric user ID is on the same page. A read-only key is enough for <code>cz_fetch_items()</code>; use a separate key with write access for functions that change the library.</p>
+<p>Create a key at <a href="https://www.zotero.org/settings/keys" class="uri">https://www.zotero.org/settings/keys</a>; the numeric user ID is on the same page. A read-only key is enough for <code>cz_fetch_items()</code>; only functions that change the library need a key with write access.</p>
 </section><section id="value" class="level2"><h2 class="anchored" data-anchor-id="value">Value</h2>
 <p>A <code>cz_auth</code> object, for the <code>auth</code> argument of other functions.</p>
 </section><section id="examples" class="level2"><h2 class="anchored" data-anchor-id="examples">Examples</h2>

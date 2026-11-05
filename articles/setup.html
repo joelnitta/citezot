@@ -65,7 +65,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script><script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script><script src="../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script><script src="../site_libs/quarto-html/popper.min.js"></script><script src="../site_libs/quarto-html/tippy.umd.min.js"></script><script src="../site_libs/quarto-html/anchor.min.js"></script><link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script><link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-11dfed304549e7d9db55013033367f26.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-8d3ad9c781c51ccd60b292c95058b2c2.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -151,7 +151,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>
 <a href="#create-an-api-key" id="toc-create-an-api-key" class="nav-link active" data-scroll-target="#create-an-api-key">1. Create an API key</a>
   <ul class="collapse">
-<li><a href="#two-keys-are-better-than-one" id="toc-two-keys-are-better-than-one" class="nav-link" data-scroll-target="#two-keys-are-better-than-one">Two keys are better than one</a></li>
+<li><a href="#read-only-or-write-access" id="toc-read-only-or-write-access" class="nav-link" data-scroll-target="#read-only-or-write-access">Read-only or write access</a></li>
   <li><a href="#group-libraries" id="toc-group-libraries" class="nav-link" data-scroll-target="#group-libraries">Group libraries</a></li>
   </ul>
 </li>
@@ -200,14 +200,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ol type="1">
 <li>Sign in at <a href="https://www.zotero.org/settings/keys" class="uri">https://www.zotero.org/settings/keys</a> and choose <strong>Create new private key</strong>.</li>
 <li>Give it a name you will recognise, such as <code>citezot (read only)</code>.</li>
-<li>Under <em>Personal library</em>, tick <strong>Allow library access</strong> and leave <strong>Allow write access</strong> unticked. This is enough for <code>cz_update_bib()</code>, <code>cz_find()</code>, <code>cz_get_item()</code> and <code>cz_fetch_items()</code>.</li>
+<li>Under <em>Personal library</em>, tick <strong>Allow library access</strong>. Leave <strong>Allow write access</strong> unticked unless you want citezot to add or edit items (see below).</li>
 <li>Save the key and <strong>copy it now</strong>. Zotero shows the key only once.</li>
 <li>Note your <strong>numeric user ID</strong>. It is shown on the same page, in the sentence “Your userID for use in API calls is …”. It is <em>not</em> your user name.</li>
 </ol>
-<section id="two-keys-are-better-than-one" class="level3"><h3 class="anchored" data-anchor-id="two-keys-are-better-than-one">Two keys are better than one</h3>
-<p>The functions that change your library (<code>cz_add()</code>, <code>cz_update_item()</code> and <code>cz_pin_key()</code>) need a key with <strong>Allow write access</strong>. Rather than giving that power to every session, create a second key, <code>citezot (write)</code>, and use it only when you are adding or editing items. Everything that writes is a dry run unless you pass <code>dry_run = FALSE</code>, and citezot has no delete, but a key that cannot write is the strongest guarantee.</p>
+<section id="read-only-or-write-access" class="level3"><h3 class="anchored" data-anchor-id="read-only-or-write-access">Read-only or write access</h3>
+<p>A read-only key is enough for <code>cz_update_bib()</code>, <code>cz_find()</code>, <code>cz_get_item()</code> and <code>cz_fetch_items()</code>. Only the functions that change your library (<code>cz_add()</code>, <code>cz_update_item()</code> and <code>cz_pin_key()</code>) need <strong>Allow write access</strong>. Those functions are dry runs unless you pass <code>dry_run = FALSE</code>, and citezot has no delete, but a read-only key is technically the safer choice, because it cannot change your library no matter what. You can edit the key on the same page later to add write access.</p>
 </section><section id="group-libraries" class="level3"><h3 class="anchored" data-anchor-id="group-libraries">Group libraries</h3>
-<p>For a group library, create the key under <em>Group permissions</em> on the same page. The group ID is the number in the group’s URL (<code>https://www.zotero.org/groups/&lt;ID&gt;/&lt;name&gt;</code>). Then use <code>cz_auth(library_type = "group")</code>.</p>
+<p>For a group library, create the key under <em>Group permissions</em> on the same page. The group ID is the number in the group’s URL (<code>https://www.zotero.org/groups/&lt;ID&gt;/&lt;name&gt;</code>). Then set <code>ZOTERO_LIBRARY_ID</code> (below) to that group ID and use <code>cz_auth(library_type = "group")</code>.</p>
 </section></section><section id="tell-r-about-the-key" class="level2"><h2 class="anchored" data-anchor-id="tell-r-about-the-key">2. Tell R about the key</h2>
 <p>citezot reads these environment variables:</p>
 <table class="caption-top table">
@@ -225,12 +225,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>the API key</td>
 </tr>
 <tr class="even">
-<td><code>ZOTERO_USER_ID</code></td>
-<td>the numeric ID of your personal library</td>
-</tr>
-<tr class="odd">
 <td><code>ZOTERO_LIBRARY_ID</code></td>
-<td>optional; used in preference to <code>ZOTERO_USER_ID</code>, and the only name used for group libraries</td>
+<td>the numeric ID of your personal library (your user ID), or of a group library</td>
 </tr>
 </tbody>
 </table>
@@ -242,7 +238,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <pre><code>ZOTERO_API_KEY=xxxxxxxxxxxxxxxxxxxxxxxx
-ZOTERO_USER_ID=1234567</code></pre>
+ZOTERO_LIBRARY_ID=1234567</code></pre>
 <p>Save the file and <strong>restart R</strong>: <code>.Renviron</code> is read only at startup. Then check that citezot can see the credentials. The key is never printed:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
@@ -252,7 +248,6 @@ ZOTERO_USER_ID=1234567</code></pre>
 <button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button>
 </div>
 </div>
-<p>If you switch between a read-only and a write key, use <code>cz_auth(api_key = "...")</code> for the session that needs the other one, or keep the write key in a second variable and pass it explicitly, for example <code>cz_auth(api_key = Sys.getenv("ZOTERO_WRITE_KEY"))</code>, then give that object to the <code>auth</code> argument of the function.</p>
 <p>Do not put the key in a file inside a project. If you must, make sure the file is in <code>.gitignore</code>.</p>
 <section id="what-citezot-does-with-your-key" class="level3"><h3 class="anchored" data-anchor-id="what-citezot-does-with-your-key">What citezot does with your key</h3>
 <ul>

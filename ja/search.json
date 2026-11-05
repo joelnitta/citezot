@@ -319,7 +319,7 @@
     "href": "reference/cz_bare_keys.html#examples",
     "title": "Extract bare (no @) citekey-shaped tokens from a text/data file",
     "section": "Examples",
-    "text": "Examples\n\nnotes &lt;- tempfile(fileext = \".csv\")\nwriteLines(c(\"site,comment\", \"A,defined in Darwin1859\", \"B,see Ebihara 2006\"), notes)\ncz_bare_keys(notes) # \"Ebihara 2006\" does not match\n\ncharacter(0)"
+    "text": "Examples\n\nnotes &lt;- tempfile(fileext = \".csv\")\nwriteLines(\n  c(\"site,comment\", \"A,defined in Darwin1859\", \"B,see Ebihara 2006\"),\n  notes\n)\ncz_bare_keys(notes) # \"Ebihara 2006\" does not match\n\ncharacter(0)"
   },
   {
     "objectID": "reference/cz_add.html",
@@ -375,7 +375,7 @@
     "href": "reference/cz_add.html#examples",
     "title": "Add an item to your Zotero library from a DOI",
     "section": "Examples",
-    "text": "Examples\ncz_add(\"10.3767/000651906X622210\", key = \"Ebihara2006\")        # preview\ncz_add(\"10.3767/000651906X622210\", key = \"Ebihara2006\", dry_run = FALSE)"
+    "text": "Examples\ncz_add(\"10.3767/000651906X622210\", key = \"Ebihara2006\") # preview\ncz_add(\"10.3767/000651906X622210\", key = \"Ebihara2006\", dry_run = FALSE)"
   },
   {
     "objectID": "articles/manuscript.html",
@@ -522,14 +522,14 @@
     "href": "articles/setup.html#api-キーを作成する",
     "title": "citezot のセットアップ",
     "section": "1. API キーを作成する",
-    "text": "1. API キーを作成する\ncitezot は Zotero Web API と通信するため、API キーが必要です。Zotero デスクトップを起動しておく必要はありませんが、ライブラリが zotero.org と同期されている必要があります(Zotero デスクトップの設定→同期)。\n\n\nhttps://www.zotero.org/settings/keys にサインインし、Create new private key を選びます。\nわかりやすい名前を付けます(例: citezot (read only))。\nPersonal library の下で Allow library access にチェックを入れ、Allow write access はチェックを外したままにします。これで cz_update_bib()、cz_find()、cz_get_item()、cz_fetch_items() には十分です。\nキーを保存し、今すぐコピーしてください。Zotero がキーを表示するのは一度だけです。\n数字のユーザー ID を控えます。同じページの「Your userID for use in API calls is …」という文に表示されています。ユーザー名ではありません。\n\n\nキーは 2 つあるほうが安全です\nライブラリを変更する関数(cz_add()、cz_update_item()、cz_pin_key())には、Allow write access を付けたキーが必要です。すべてのセッションにその権限を与えるのではなく、2 つ目のキー citezot (write) を作り、項目を追加・編集するときだけ使いましょう。書き込みを行う操作は dry_run = FALSE を渡さない限りドライランで、citezot には削除機能もありませんが、書き込めないキーを使うことが最も確実な保証です。\n\n\nグループライブラリ\nグループライブラリの場合は、同じページの Group permissions でキーを作成します。グループ ID は、グループの URL(https://www.zotero.org/groups/&lt;ID&gt;/&lt;name&gt;)に含まれる数字です。そのうえで cz_auth(library_type = \"group\") を使います。"
+    "text": "1. API キーを作成する\ncitezot は Zotero Web API と通信するため、API キーが必要です。Zotero デスクトップを起動しておく必要はありませんが、ライブラリが zotero.org と同期されている必要があります(Zotero デスクトップの設定→同期)。\n\n\nhttps://www.zotero.org/settings/keys にサインインし、Create new private key を選びます。\nわかりやすい名前を付けます(例: citezot (read only))。\nPersonal library の下で Allow library access にチェックを入れます。citezot で項目の追加や編集をしたい場合を除き、Allow write access はチェックを外したままにします(後述)。\nキーを保存し、今すぐコピーしてください。Zotero がキーを表示するのは一度だけです。\n数字のユーザー ID を控えます。同じページの「Your userID for use in API calls is …」という文に表示されています。ユーザー名ではありません。\n\n\n読み取り専用か、書き込み権限か\ncz_update_bib()、cz_find()、cz_get_item()、cz_fetch_items() には、読み取り専用のキーで足ります。ライブラリを変更する関数(cz_add()、cz_update_item()、cz_pin_key())だけが Allow write access を必要とします。これらの関数は dry_run = FALSE を渡さない限りドライランで、citezot には削除機能もありませんが、読み取り専用のキーは何が起きてもライブラリを変更できないため、技術的にはより安全です。書き込み権限は、あとで同じページからキーを編集して追加できます。\n\n\nグループライブラリ\nグループライブラリの場合は、同じページの Group permissions でキーを作成します。グループ ID は、グループの URL(https://www.zotero.org/groups/&lt;ID&gt;/&lt;name&gt;)に含まれる数字です。そのうえで、ZOTERO_LIBRARY_ID(下記)にそのグループ ID を設定し、cz_auth(library_type = \"group\") を使います。"
   },
   {
     "objectID": "articles/setup.html#キーを-r-に教える",
     "href": "articles/setup.html#キーを-r-に教える",
     "title": "citezot のセットアップ",
     "section": "2. キーを R に教える",
-    "text": "2. キーを R に教える\ncitezot は次の環境変数を読み取ります。\n\n\n\n\n\n\n\n変数\n内容\n\n\n\n\nZOTERO_API_KEY\nAPI キー\n\n\nZOTERO_USER_ID\n個人ライブラリの数字の ID\n\n\nZOTERO_LIBRARY_ID\n省略可。ZOTERO_USER_ID より優先され、グループライブラリではこの名前のみが使われます\n\n\n\nこれらはユーザーレベルの .Renviron に書いてください。すべてのプロジェクトで使え、誤ってコミットしてしまうこともありません。\n\nusethis::edit_r_environ()   # ~/.Renviron を開く\n\nZOTERO_API_KEY=xxxxxxxxxxxxxxxxxxxxxxxx\nZOTERO_USER_ID=1234567\nファイルを保存して R を再起動してください。.Renviron は起動時にしか読み込まれません。その後、citezot が認証情報を認識できているか確認します。キーが表示されることはありません。\n\nlibrary(citezot)\ncz_auth()\n#&gt; &lt;cz_auth&gt; user library 1234567 (API key hidden)\n\n読み取り専用キーと書き込み用キーを切り替える場合は、もう一方のキーが必要なセッションで cz_auth(api_key = \"...\") を使うか、書き込み用キーを別の変数に入れておき、たとえば cz_auth(api_key = Sys.getenv(\"ZOTERO_WRITE_KEY\")) のように明示的に渡し、そのオブジェクトを関数の auth 引数に与えます。\nキーをプロジェクト内のファイルに書かないでください。どうしても書く場合は、そのファイルを .gitignore に入れてください。\n\ncitezot はキーをどう扱うか\n\nキーは api.zotero.org にのみ、ベアラートークンとして送信します。\nキーを表示、記録、保存することはありません。認証オブジェクトを print() してもキーは隠されます。\n任意のキャッシュ(cz_clear_cache() を参照)に保存されるのは書誌情報のみで、キーは含まれません。"
+    "text": "2. キーを R に教える\ncitezot は次の環境変数を読み取ります。\n\n\n\n\n\n\n\n変数\n内容\n\n\n\n\nZOTERO_API_KEY\nAPI キー\n\n\nZOTERO_LIBRARY_ID\n個人ライブラリ(ユーザー ID)またはグループライブラリの数字の ID\n\n\n\nこれらはユーザーレベルの .Renviron に書いてください。すべてのプロジェクトで使え、誤ってコミットしてしまうこともありません。\n\nusethis::edit_r_environ()   # ~/.Renviron を開く\n\nZOTERO_API_KEY=xxxxxxxxxxxxxxxxxxxxxxxx\nZOTERO_LIBRARY_ID=1234567\nファイルを保存して R を再起動してください。.Renviron は起動時にしか読み込まれません。その後、citezot が認証情報を認識できているか確認します。キーが表示されることはありません。\n\nlibrary(citezot)\ncz_auth()\n#&gt; &lt;cz_auth&gt; user library 1234567 (API key hidden)\n\nキーをプロジェクト内のファイルに書かないでください。どうしても書く場合は、そのファイルを .gitignore に入れてください。\n\ncitezot はキーをどう扱うか\n\nキーは api.zotero.org にのみ、ベアラートークンとして送信します。\nキーを表示、記録、保存することはありません。認証オブジェクトを print() してもキーは隠されます。\n任意のキャッシュ(cz_clear_cache() を参照)に保存されるのは書誌情報のみで、キーは含まれません。"
   },
   {
     "objectID": "articles/setup.html#項目に引用キーがあることを確認する",
@@ -564,7 +564,7 @@
     "href": "reference/cz_auth.html#description",
     "title": "Zotero credentials",
     "section": "Description",
-    "text": "Description\nResolves the library ID and API key, by default from the environment variables ZOTERO_LIBRARY_ID (or, for a user library, ZOTERO_USER_ID) and ZOTERO_API_KEY. Load them yourself (e.g. from a gitignored .Renviron or .env.local); citezot never reads files or stores the key. The key is never printed."
+    "text": "Description\nResolves the library ID and API key, by default from the environment variables ZOTERO_LIBRARY_ID and ZOTERO_API_KEY. Load them yourself (e.g. from a gitignored .Renviron or .env.local); citezot never reads files or stores the key. The key is never printed."
   },
   {
     "objectID": "reference/cz_auth.html#usage",
@@ -578,14 +578,14 @@
     "href": "reference/cz_auth.html#arguments",
     "title": "Zotero credentials",
     "section": "Arguments",
-    "text": "Arguments\n\n\n\n\n\n\n\nArguments\nDescription\n\n\n\n\nlibrary_id\nNumeric user ID (or group ID), as a string or number. If NULL (default), taken from ZOTERO_LIBRARY_ID; for a user library ZOTERO_USER_ID is used as a fallback.\n\n\napi_key\nZotero API key.\n\n\nlibrary_type\n\"user\" (personal library) or \"group\"."
+    "text": "Arguments\n\n\n\n\n\n\n\nArguments\nDescription\n\n\n\n\nlibrary_id\nNumeric user ID (or group ID), as a string or number. If NULL (default), taken from ZOTERO_LIBRARY_ID.\n\n\napi_key\nZotero API key.\n\n\nlibrary_type\n\"user\" (personal library) or \"group\"."
   },
   {
     "objectID": "reference/cz_auth.html#details",
     "href": "reference/cz_auth.html#details",
     "title": "Zotero credentials",
     "section": "Details",
-    "text": "Details\nCreate a key at https://www.zotero.org/settings/keys; the numeric user ID is on the same page. A read-only key is enough for cz_fetch_items(); use a separate key with write access for functions that change the library."
+    "text": "Details\nCreate a key at https://www.zotero.org/settings/keys; the numeric user ID is on the same page. A read-only key is enough for cz_fetch_items(); only functions that change the library need a key with write access."
   },
   {
     "objectID": "reference/cz_auth.html#value",
@@ -858,7 +858,7 @@
     "href": "reference/cz_suggest_key.html#examples",
     "title": "Suggest a citekey for an item",
     "section": "Examples",
-    "text": "Examples\n\nitem &lt;- list(\n  itemType = \"journalArticle\",\n  title = \"A taxonomic revision of Hymenophyllaceae\",\n  date = \"2006\",\n  creators = list(list(creatorType = \"author\", firstName = \"A\", lastName = \"Ebihara\"))\n)\ncz_suggest_key(item, \"auth.lower + year + shorttitle(1).lower\")\n\n[1] \"ebihara2006taxonomic\"\n\ncz_suggest_key(item, existing = \"ebihara2006taxonomic\",\n               formula = \"auth.lower + year + shorttitle(1).lower\")\n\n[1] \"ebihara2006taxonomica\""
+    "text": "Examples\n\nitem &lt;- list(\n  itemType = \"journalArticle\",\n  title = \"A taxonomic revision of Hymenophyllaceae\",\n  date = \"2006\",\n  creators = list(\n    list(creatorType = \"author\", firstName = \"A\", lastName = \"Ebihara\")\n  )\n)\ncz_suggest_key(item, \"auth.lower + year + shorttitle(1).lower\")\n\n[1] \"ebihara2006taxonomic\"\n\ncz_suggest_key(item,\n  existing = \"ebihara2006taxonomic\",\n  formula = \"auth.lower + year + shorttitle(1).lower\"\n)\n\n[1] \"ebihara2006taxonomica\""
   },
   {
     "objectID": "reference/cz_update_item.html",
@@ -914,6 +914,6 @@
     "href": "reference/cz_update_item.html#examples",
     "title": "Update fields of a Zotero item",
     "section": "Examples",
-    "text": "Examples\ncz_update_item(\"Regnier2024\", list(date = \"in press\"))                  # preview\ncz_update_item(\"Regnier2024\", list(date = \"in press\"), dry_run = FALSE) # write"
+    "text": "Examples\ncz_update_item(\"Regnier2024\", list(date = \"in press\")) # preview\ncz_update_item(\"Regnier2024\", list(date = \"in press\"), dry_run = FALSE)"
   }
 ]

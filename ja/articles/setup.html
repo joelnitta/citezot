@@ -65,7 +65,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script><script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script><script src="../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script><script src="../site_libs/quarto-html/popper.min.js"></script><script src="../site_libs/quarto-html/tippy.umd.min.js"></script><script src="../site_libs/quarto-html/anchor.min.js"></script><link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script><link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-11dfed304549e7d9db55013033367f26.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-8d3ad9c781c51ccd60b292c95058b2c2.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -151,7 +151,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>
 <a href="#api-%E3%82%AD%E3%83%BC%E3%82%92%E4%BD%9C%E6%88%90%E3%81%99%E3%82%8B" id="toc-api-キーを作成する" class="nav-link active" data-scroll-target="#api-キーを作成する">1. API キーを作成する</a>
   <ul class="collapse">
-<li><a href="#%E3%82%AD%E3%83%BC%E3%81%AF-2-%E3%81%A4%E3%81%82%E3%82%8B%E3%81%BB%E3%81%86%E3%81%8C%E5%AE%89%E5%85%A8%E3%81%A7%E3%81%99" id="toc-キーは-2-つあるほうが安全です" class="nav-link" data-scroll-target="#キーは-2-つあるほうが安全です">キーは 2 つあるほうが安全です</a></li>
+<li><a href="#%E8%AA%AD%E3%81%BF%E5%8F%96%E3%82%8A%E5%B0%82%E7%94%A8%E3%81%8B%E6%9B%B8%E3%81%8D%E8%BE%BC%E3%81%BF%E6%A8%A9%E9%99%90%E3%81%8B" id="toc-読み取り専用か書き込み権限か" class="nav-link" data-scroll-target="#読み取り専用か書き込み権限か">読み取り専用か、書き込み権限か</a></li>
   <li><a href="#%E3%82%B0%E3%83%AB%E3%83%BC%E3%83%97%E3%83%A9%E3%82%A4%E3%83%96%E3%83%A9%E3%83%AA" id="toc-グループライブラリ" class="nav-link" data-scroll-target="#グループライブラリ">グループライブラリ</a></li>
   </ul>
 </li>
@@ -202,15 +202,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <a href="https://www.zotero.org/settings/keys" class="uri">https://www.zotero.org/settings/keys</a> にサインインし、<strong>Create new private key</strong> を選びます。</li>
 <li>わかりやすい名前を付けます(例: <code>citezot (read only)</code>)。</li>
 <li>
-<em>Personal library</em> の下で <strong>Allow library access</strong> にチェックを入れ、<strong>Allow write access</strong> はチェックを外したままにします。これで <code>cz_update_bib()</code>、<code>cz_find()</code>、<code>cz_get_item()</code>、<code>cz_fetch_items()</code> には十分です。</li>
+<em>Personal library</em> の下で <strong>Allow library access</strong> にチェックを入れます。citezot で項目の追加や編集をしたい場合を除き、<strong>Allow write access</strong> はチェックを外したままにします(後述)。</li>
 <li>キーを保存し、<strong>今すぐコピーしてください</strong>。Zotero がキーを表示するのは一度だけです。</li>
 <li>
 <strong>数字のユーザー ID</strong> を控えます。同じページの「Your userID for use in API calls is …」という文に表示されています。ユーザー名では<em>ありません</em>。</li>
 </ol>
-<section id="キーは-2-つあるほうが安全です" class="level3"><h3 class="anchored" data-anchor-id="キーは-2-つあるほうが安全です">キーは 2 つあるほうが安全です</h3>
-<p>ライブラリを変更する関数(<code>cz_add()</code>、<code>cz_update_item()</code>、<code>cz_pin_key()</code>)には、<strong>Allow write access</strong> を付けたキーが必要です。すべてのセッションにその権限を与えるのではなく、2 つ目のキー <code>citezot (write)</code> を作り、項目を追加・編集するときだけ使いましょう。書き込みを行う操作は <code>dry_run = FALSE</code> を渡さない限りドライランで、citezot には削除機能もありませんが、書き込めないキーを使うことが最も確実な保証です。</p>
+<section id="読み取り専用か書き込み権限か" class="level3"><h3 class="anchored" data-anchor-id="読み取り専用か書き込み権限か">読み取り専用か、書き込み権限か</h3>
+<p><code>cz_update_bib()</code>、<code>cz_find()</code>、<code>cz_get_item()</code>、<code>cz_fetch_items()</code> には、読み取り専用のキーで足ります。ライブラリを変更する関数(<code>cz_add()</code>、<code>cz_update_item()</code>、<code>cz_pin_key()</code>)だけが <strong>Allow write access</strong> を必要とします。これらの関数は <code>dry_run = FALSE</code> を渡さない限りドライランで、citezot には削除機能もありませんが、読み取り専用のキーは何が起きてもライブラリを変更できないため、技術的にはより安全です。書き込み権限は、あとで同じページからキーを編集して追加できます。</p>
 </section><section id="グループライブラリ" class="level3"><h3 class="anchored" data-anchor-id="グループライブラリ">グループライブラリ</h3>
-<p>グループライブラリの場合は、同じページの <em>Group permissions</em> でキーを作成します。グループ ID は、グループの URL(<code>https://www.zotero.org/groups/&lt;ID&gt;/&lt;name&gt;</code>)に含まれる数字です。そのうえで <code>cz_auth(library_type = "group")</code> を使います。</p>
+<p>グループライブラリの場合は、同じページの <em>Group permissions</em> でキーを作成します。グループ ID は、グループの URL(<code>https://www.zotero.org/groups/&lt;ID&gt;/&lt;name&gt;</code>)に含まれる数字です。そのうえで、<code>ZOTERO_LIBRARY_ID</code>(下記)にそのグループ ID を設定し、<code>cz_auth(library_type = "group")</code> を使います。</p>
 </section></section><section id="キーを-r-に教える" class="level2"><h2 class="anchored" data-anchor-id="キーを-r-に教える">2. キーを R に教える</h2>
 <p>citezot は次の環境変数を読み取ります。</p>
 <table class="caption-top table">
@@ -228,12 +228,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td>API キー</td>
 </tr>
 <tr class="even">
-<td><code>ZOTERO_USER_ID</code></td>
-<td>個人ライブラリの数字の ID</td>
-</tr>
-<tr class="odd">
 <td><code>ZOTERO_LIBRARY_ID</code></td>
-<td>省略可。<code>ZOTERO_USER_ID</code> より優先され、グループライブラリではこの名前のみが使われます</td>
+<td>個人ライブラリ(ユーザー ID)またはグループライブラリの数字の ID</td>
 </tr>
 </tbody>
 </table>
@@ -245,7 +241,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <pre><code>ZOTERO_API_KEY=xxxxxxxxxxxxxxxxxxxxxxxx
-ZOTERO_USER_ID=1234567</code></pre>
+ZOTERO_LIBRARY_ID=1234567</code></pre>
 <p>ファイルを保存して <strong>R を再起動</strong>してください。<code>.Renviron</code> は起動時にしか読み込まれません。その後、citezot が認証情報を認識できているか確認します。キーが表示されることはありません。</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
@@ -255,7 +251,6 @@ ZOTERO_USER_ID=1234567</code></pre>
 <button title="コピー" class="code-copy-button"><i class="bi"></i></button>
 </div>
 </div>
-<p>読み取り専用キーと書き込み用キーを切り替える場合は、もう一方のキーが必要なセッションで <code>cz_auth(api_key = "...")</code> を使うか、書き込み用キーを別の変数に入れておき、たとえば <code>cz_auth(api_key = Sys.getenv("ZOTERO_WRITE_KEY"))</code> のように明示的に渡し、そのオブジェクトを関数の <code>auth</code> 引数に与えます。</p>
 <p>キーをプロジェクト内のファイルに書かないでください。どうしても書く場合は、そのファイルを <code>.gitignore</code> に入れてください。</p>
 <section id="citezot-はキーをどう扱うか" class="level3"><h3 class="anchored" data-anchor-id="citezot-はキーをどう扱うか">citezot はキーをどう扱うか</h3>
 <ul>
