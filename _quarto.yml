@@ -1,0 +1,42 @@
+project:
+  type: website
+  output-dir: _site
+  resources: styles.css
+  render:
+    - index.qmd
+    - articles/*.qmd
+    - reference/*.qmd
+
+website:
+  title: "citezot"
+  site-url: https://joelnitta.github.io/citezot/
+  repo-url: https://github.com/joelnitta/citezot
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+    css: styles.css
+
+pkgsite:
+  reference:
+    template: _reference-template.qmd
+    index:
+      contents:
+        - section: Build a bibliography
+          contents: [cz_update_bib, cz_qmd_keys, cz_bare_keys]
+        - section: Connect to Zotero
+          contents: [cz_auth, cz_fetch_items, cz_clear_cache]
+        - section: Find, add and edit items
+          contents: [cz_find, cz_get_item, cz_add, cz_update_item, cz_pin_key]
+        - section: Citekeys
+          contents: [cz_item_key, cz_suggest_key, cz_key_format]
+
+babelquarto:
+  mainlanguage: en
+  languages: ["ja"]
+  languagecodes:
+    - name: en
+      text: "English"
+    - name: ja
+      text: "日本語"

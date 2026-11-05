@@ -1,0 +1,15 @@
+website:
+  title: "citezot"
+  navbar:
+    left:
+      - href: index.qmd
+        text: ホーム
+      - href: articles/setup.qmd
+        text: セットアップ
+      - href: articles/manuscript.qmd
+        text: 論文の執筆
+      - href: reference/index.qmd
+        text: リファレンス
+    right:
+      - icon: github
+        href: https://github.com/joelnitta/citezot

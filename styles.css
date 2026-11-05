@@ -1,0 +1,32 @@
+/* Sidebar on the home page (pkgdown-style links, license, developers) */
+.home-sidebar h3 {
+  font-size: 1.15rem;
+  margin-top: 1.25rem;
+  border-bottom: none;
+}
+.home-sidebar ul {
+  list-style: none;
+  padding-left: 0;
+}
+/* Margin text is smaller by default; match the main text */
+/* Quarto moves the block into #quarto-margin-sidebar (dropping the
+   column-margin class), so match both places. */
+.home-sidebar,
+#quarto-margin-sidebar .home-sidebar,
+#quarto-margin-sidebar .home-sidebar * {
+  font-size: 1rem !important;
+  line-height: 1.5;
+}
+.home-sidebar h3 {
+  font-size: 1.25rem !important;
+}
+#quarto-margin-sidebar .home-sidebar {
+  color: inherit;
+}
+.home-sidebar p {
+  margin-bottom: 0.5rem;
+}
+.home-sidebar img {
+  display: block;
+  margin: 0;
+}

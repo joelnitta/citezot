@@ -1,0 +1,209 @@
+---
+title: "citezot"
+toc: false
+---
+
+::: {.column-margin .home-sidebar}
+### リンク
+
+- [ソースコード](https://github.com/joelnitta/citezot)
+- [バグを報告](https://github.com/joelnitta/citezot/issues)
+
+### ライセンス
+
+[MIT](https://github.com/joelnitta/citezot/blob/main/LICENSE.md)
+
+### 開発者
+
+Joel H. Nitta\
+作者・メンテナー
+
+### ステータス
+
+```{=html}
+<a href="https://github.com/joelnitta/citezot/actions/workflows/R-CMD-check.yaml"><img src="https://github.com/joelnitta/citezot/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a>
+```
+:::
+
+
+
+**citezot** は、[Zotero](https://www.zotero.org) を使って [Quarto](https://quarto.org) や R Markdown の文書に参考文献を引用しやすくするためのパッケージです。
+
+citezot を使うには、通常どおり [Quarto (Pandoc) の記法](https://quarto.org/docs/authoring/citations.html#sec-citations)で本文中に文献を引用します。たとえば `manuscript.qmd` は次のようになります。
+
+``` markdown
+---
+bibliography: references.bib
+---
+
+Species evolve by natural selection [@Darwin1859]. Extant land plants include two major lineages [@Kenrick1997a].
+```
+
+この 2 件の文献は Zotero ライブラリに登録されていて、それぞれの項目に引用キー `Darwin1859` と `Kenrick1997a` が保存されている必要があります。
+
+`cz_update_bib()` を呼ぶと、**引用した文献だけ**を含む [`references.bib` ファイル](https://quarto.org/docs/authoring/citations.html#bibliography-files)が Zotero から直接生成されます。
+
+``` r
+library(citezot)
+cz_update_bib("manuscript.qmd")
+```
+
+    #> ✔ 2/2 cited keys found; 'references.bib' updated.
+    #> ℹ 2 from 1 document, 0 only in other files.
+
+citezot では、項目の検索、DOI からの追加、フィールドの修正もできます([後述](#項目の検索追加修正))。いずれも、実行する前に必ず内容を表示します。
+
+citezot は Zotero Web API と通信するため、Zotero デスクトップを起動していなくても動作します。そのため、サーバー上や、GitHub Actions で自動生成する文書(自動生成の CV など)でも文献を引用できます。
+
+citezot は Zotero とは無関係であり、Zotero の承認を受けたものではありません。
+
+## インストール
+
+citezot は CRAN には登録されていません。GitHub から開発版をインストールしてください。
+
+``` r
+# install.packages("pak")
+pak::pak("joelnitta/citezot")
+```
+
+## セットアップ
+
+Zotero の API キーとユーザー ID(`~/.Renviron` に保存します)が必要で、引用する各項目には引用キーが必要です。項目の追加と編集以外は、**読み取り専用**のキーで足ります。
+
+手順は[セットアップガイド](articles/setup.qmd)を参照してください。
+
+## 使い方
+
+### 参考文献ファイルの生成
+
+``` r
+cz_update_bib("manuscript.qmd") # `bibliography:` で指定されたファイルに書き出す
+cz_update_bib("manuscript.qmd", out = "references.yaml") # BibLaTeX ではなく CSL-YAML 形式
+```
+
+- 出力ファイルは、文書の YAML ヘッダー(または `_quarto.yml`)の `bibliography:` で指定されたものが既定で、指定がなければ `references.bib` です。BibLaTeX を既定にしているのは、Typst を含む Quarto のあらゆる出力形式で使えるためです。
+- 非公式な形で文献に言及しているファイル(たとえば「Darwin1859 で定義」と書かれた CSV のメモ)もスキャンできます: `cz_update_bib(qmd, bare = "data.csv")`
+
+### 参考文献を黙って失うことはありません
+
+文書で引用したキーが Zotero に見つからない場合、`cz_update_bib()` は**処理を中断し、既存のファイルには触れません**。項目が黙って欠落した参考文献ファイルはレンダリングを壊すためです。見つからなかったキーと、その対処法が表示されます。(`allow_incomplete = TRUE` を指定すると、見つかった分だけを書き出します。)
+
+### レンダリングのたびに実行できる速さ
+
+大きなライブラリの取得には、初回はしばらくかかります(約 6,000 件で 20 秒ほど、並列でリクエストします)。キャッシュを有効にすると、2 回目以降は変更分だけをダウンロードし、変更がなければ 0.3 秒ほどで終わります。
+
+``` r
+# .Rprofile に書いておくこともできます
+# キャッシュは tools::R_user_dir("citezot", "cache") に保存されます
+options(citezot.cache = TRUE)
+```
+
+キャッシュは、指定しない限り無効です。キャッシュに保存されるのは書誌情報のみで、API キーは含まれません。`cz_clear_cache()` で削除できます。
+
+## 項目の検索・追加・修正 {#項目の検索追加修正}
+
+ライブラリを変更する操作はすべて、特に指定しない限り**ドライラン**です。読み取りと、実行内容の表示だけを行い、`dry_run = FALSE` を付けるまで何も書き込みません。削除機能はありません。
+
+``` r
+cz_find("darwin origin of species") # 自由テキスト
+cz_find(doi = "10.2307/1796430") # DOI、ISBN、または完全一致する引用キー
+cz_find(citekey = "Darwin1859")
+
+cz_add("10.1016/0022-5193(64)90038-4", key = "auto")
+
+cz_update_item("Darwin1859", list(publisher = "John Murray"))
+```
+
+`item` を受け取る関数には、DOI、Zotero の項目 ID、既存の引用キー、または `cz_find()` が返す 1 行の結果を渡せます。
+
+- `cz_add()` は、Crossref で DOI を検索し、その項目がライブラリにまだないこと(および引用キーが未使用で、pandoc で使える形式であること)を確認したうえで、Zotero 自身のテンプレートから項目タイプに応じた項目を作り、同じリクエストで引用キーを固定します。各リクエストには書き込みトークンが付くため、ネットワークエラー後に再試行しても項目が二重に作られることはありません。現時点では Crossref の DOI のみ対応しています。
+- `cz_update_item()` は、実際に変更されるフィールドだけを、項目のバージョンとともに送信します。その間に別の場所で項目が編集されていた場合、Zotero は拒否し(HTTP 412)、何も上書きされません。作成者、タグ、コレクションは、Zotero の仕様どおり丸ごと置き換えられます。
+- `cz_pin_key()` は、`overwrite = TRUE` を指定しない限り、*別の*固定済みキーを置き換えません。古いキーを引用している文書が壊れるためです。
+
+### 引用キーの生成
+
+`key = "auto"` を指定すると、[Better BibTeX](https://retorque.re/zotero-better-bibtex/citing/#generating-citekeys) 方式の[書式](https://retorque.re/zotero-better-bibtex/citing/formulas/)(たとえば `auth.lower + year + shorttitle(1).lower`。結果は `hamilton1964genetical` のようになります)からキーが作られます。
+
+書式は次の順で決まります。`options(citezot.key_format = "...")`、Better BibTeX が Zotero のプロファイルに保存したパターン(citezot は Zotero の `prefs.js` からこの 1 項目だけを、キーを生成するときにのみ読み取り、セッションごとに一度お知らせします)、そして Better BibTeX の既定のパターンです。同じキーがすでにある場合は、新しいキーの末尾に文字(`a`、`b`、…)が付きます。
+
+書式言語はドキュメント化された一部のみ対応しており、それ以外はキーが変わるのではなくエラーになります。使用中の書式は `cz_key_format()` で確認でき、`cz_suggest_key()` で試せます。
+
+``` r
+item <- list(
+  itemType = "journalArticle",
+  title = "The genetical evolution of social behaviour. I",
+  date = "1964-07",
+  creators = list(list(
+    creatorType = "author",
+    firstName = "W. D.",
+    lastName = "Hamilton"
+  ))
+)
+cz_suggest_key(item, "auth.lower + year + shorttitle(1).lower")
+cz_suggest_key(
+  item,
+  "auth.lower + year + shorttitle(1).lower",
+  existing = "hamilton1964genetical"
+)
+```
+
+## 自動化
+
+`cz_update_bib()` を手作業で実行する代わりに、文書をレンダリングするたびに自動で実行したい場合があります。
+
+`_quarto.yml` に Quarto の `pre-render` ステップを書けば実現できます。
+
+``` yaml
+project:
+  pre-render: Rscript -e 'citezot::cz_update_bib()'
+```
+
+[targets](https://docs.ropensci.org/targets/) を使う場合は、`tar_make()` のたびに必ず再確認されるターゲットを定義できます。
+
+``` r
+tar_target(
+  references,
+  cz_update_bib("manuscript.qmd", quiet = TRUE),
+  format = "file",
+  cue = tar_cue(mode = "always")
+)
+```
+
+## 他のパッケージとの違い
+
+[rbbt](https://github.com/paleolimbot/rbbt) は RStudio、特に執筆中に引用を挿入するアドインを中心に作られています。Zotero デスクトップと Better BibTeX プラグインを起動しておく必要があります。
+
+[zot](https://cran.r-project.org/package=zot) は汎用の Zotero クライアントです。より低レベル(直接的)に動作し、バージョン付きの書き込み、バッチ計画、ファイル添付、ローカルデータベースの読み取り専用クエリなどを備えています。
+
+[c2z](https://cran.r-project.org/package=c2z) は、さまざまなソース(DOI、ISBN、ノルウェーの Cristin 登録簿など)から Zotero に文献をインポートでき、項目の編集、コピー、削除もできます。
+
+**citezot** は、*軽量*(依存パッケージが最小限)で、参考文献の管理が*簡単*(関数 1 回の呼び出しで参考文献ファイルができる)、ライブラリの扱いが*慎重*(書き込みはすべて、指定しない限りドライランで、削除はできない)、そして Zotero が起動していなくても*どの環境でも*動くことを目指しています。
+
+これらの説明は、各パッケージのコードではなくドキュメントに基づいています。最新の状況は各パッケージのページで確認してください。
+
+## 制限事項
+
+- 識別子による項目の検索は、現時点では Crossref の DOI のみ対応しています(ISBN、arXiv、PMID は対応予定です)。
+- citezot では何も削除できません。
+- BibLaTeX の出力は Zotero 自身のエクスポーターによるもの、CSL-YAML はライブラリの CSL-JSON によるものです。したがって、Quarto で表示される内容は Zotero のエクスポーターの出力どおりになります。
+- 照合は項目に保存された引用キーで行われるため、キーのない項目は引用できません。
+
+## 開発
+
+citezot の開発に参加するには、リポジトリをクローンし、開発用の依存パッケージをインストールします(`pak::local_install_dev_deps()`)。コミット前のチェックには [pre-commit](https://pre-commit.com) を使います。一度インストールしてください(たとえば `brew install pre-commit` や `pip install pre-commit`)。そのうえで、クローンしたリポジトリでフックを有効にします。
+
+``` sh
+pre-commit install
+```
+
+- コミットのたびに、フックが [styler](https://styler.r-lib.org) と [lintr](https://lintr.r-lib.org)(tidyverse スタイル、1 行 80 文字。`.lintr` を参照)を実行し、`README.md` が `README.Rmd` から生成されていることを確認します。手動で実行するには `pre-commit run --all-files` を使います。
+- プッシュのたびに、フックが `devtools::check()` を実行し、エラー・警告・ノートがない場合のみプッシュを許可します。
+- テストはネットワークを使いません(`devtools::test()`)。編集するのは `README.md` ではなく `README.Rmd` で、`devtools::build_readme()` でレンダリングします。例の一部は Zotero ライブラリから読み取るため、レンダリングには Zotero の認証情報([セットアップガイド](articles/setup.qmd)を参照)と、例で引用している項目が必要です。レンダリングできない場合は、プルリクエストにその旨を書いてください。
+
+## ヘルプ
+
+ドキュメント(実践的な例を含む)は <https://joelnitta.github.io/citezot/> にあります。バグ報告やアイデアは <https://github.com/joelnitta/citezot/issues> へお寄せください。
+
+## ライセンス
+
+citezot は [MIT ライセンス](https://github.com/joelnitta/citezot/blob/main/LICENSE.md)で公開されています。

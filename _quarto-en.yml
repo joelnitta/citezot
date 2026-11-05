@@ -1,0 +1,14 @@
+website:
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - href: articles/setup.qmd
+        text: Setup
+      - href: articles/manuscript.qmd
+        text: Writing Manuscripts
+      - href: reference/index.qmd
+        text: Reference
+    right:
+      - icon: github
+        href: https://github.com/joelnitta/citezot
