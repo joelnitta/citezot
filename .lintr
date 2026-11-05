@@ -1,0 +1,19 @@
+linters: linters_with_defaults(
+    line_length_linter(80),
+    object_usage_linter = NULL,
+    duplicate_argument_linter(),
+    fixed_regex_linter(),
+    regex_subset_linter(),
+    which_grepl_linter(),
+    if_not_else_linter(),
+    paste_linter(),
+    undesirable_operator_linter(),
+    expect_identical_linter(),
+    expect_named_linter()
+  )
+exclusions: list(
+    "tests/testthat/test-api.R" = list(undesirable_operator_linter = Inf),
+    "tests/testthat/test-lookup-doi.R" = list(undesirable_operator_linter = Inf),
+    "vignettes" = list(line_length_linter = Inf)
+  )
+encoding: "UTF-8"
