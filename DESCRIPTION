@@ -12,6 +12,7 @@ URL: https://joelnitta.github.io/citezot/, https://github.com/joelnitta/citezot
 BugReports: https://github.com/joelnitta/citezot/issues
 Config/roxygen2/version: 8.0.0
 Encoding: UTF-8
+Language: en
 Roxygen: list(markdown = TRUE)
 Depends:
     R (>= 4.1.0)
@@ -20,6 +21,7 @@ Suggests:
     rmarkdown,
     testthat (>= 3.0.0),
     withr
+Config/Needs/website: pkgsite, ropensci-review-tools/babelquarto
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 Imports: 

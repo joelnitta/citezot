@@ -7,7 +7,11 @@
 ^Meta$
 ^\.lintr$
 ^\.pre-commit-config\.yaml$
-^_pkgdown\.yml$
-^docs$
-^pkgdown$
 ^\.github$
+^_quarto.*\.yml$
+^_reference-template\.qmd$
+^index(\.ja)?\.qmd$
+^articles$
+^reference$
+^_site$
+^\.quarto$

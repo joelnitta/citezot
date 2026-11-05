@@ -1,0 +1,38 @@
+---
+title: "{{{{notitle.title}}}}"
+execute:
+  eval: true
+---
+
+[{{{{notitle.source}}}}](https://github.com/joelnitta/citezot/blob/main/{{{{notitle.source}}}})
+
+```{r}
+#| include: false
+library(citezot)
+```
+
+## {{{{notitle.alias}}}}
+
+{{{{title.description}}}}
+
+{{{{title.format}}}}
+
+{{{{title.usage}}}}
+
+{{{{title.arguments}}}}
+
+{{{{title.details}}}}
+
+{{{{title.section}}}}
+
+{{{{title.value}}}}
+
+{{{{title.note}}}}
+
+{{{{title.examples}}}}
+
+{{{{title.seealso}}}}
+
+{{{{title.author}}}}
+
+{{{{title.references}}}}
