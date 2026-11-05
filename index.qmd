@@ -1,11 +1,32 @@
 ---
 title: "citezot"
+toc: false
 ---
 
+::: {.column-margin .home-sidebar}
+### Links
 
-<!-- badges: start -->
+- [Source code](https://github.com/joelnitta/citezot)
+- [Report a bug](https://github.com/joelnitta/citezot/issues)
 
-[![R-CMD-check](https://github.com/joelnitta/citezot/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/joelnitta/citezot/actions/workflows/R-CMD-check.yaml) <!-- badges: end -->
+### License
+
+[MIT](https://github.com/joelnitta/citezot/blob/main/LICENSE.md)
+
+### Developers
+
+Joel H. Nitta\
+Author, maintainer
+
+### Status
+
+```{=html}
+<a href="https://github.com/joelnitta/citezot/actions/workflows/R-CMD-check.yaml"><img src="https://github.com/joelnitta/citezot/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a>
+```
+:::
+
+
+
 
 The goal of **citezot** is to make it easy to cite references in [Quarto](https://quarto.org) or R Markdown documents using [Zotero](https://www.zotero.org).
 

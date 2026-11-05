@@ -1,6 +1,7 @@
 project:
   type: website
   output-dir: _site
+  resources: styles.css
   render:
     - index.qmd
     - articles/*.qmd
@@ -15,6 +16,7 @@ format:
   html:
     theme: cosmo
     toc: true
+    css: styles.css
 
 pkgsite:
   reference:

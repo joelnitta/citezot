@@ -1,10 +1,31 @@
 ---
 title: "citezot"
+toc: false
 ---
 
-<!-- badges: start -->
+::: {.column-margin .home-sidebar}
+### リンク
 
-[![R-CMD-check](https://github.com/joelnitta/citezot/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/joelnitta/citezot/actions/workflows/R-CMD-check.yaml) <!-- badges: end -->
+- [ソースコード](https://github.com/joelnitta/citezot)
+- [バグを報告](https://github.com/joelnitta/citezot/issues)
+
+### ライセンス
+
+[MIT](https://github.com/joelnitta/citezot/blob/main/LICENSE.md)
+
+### 開発者
+
+Joel H. Nitta\
+作者・メンテナー
+
+### ステータス
+
+```{=html}
+<a href="https://github.com/joelnitta/citezot/actions/workflows/R-CMD-check.yaml"><img src="https://github.com/joelnitta/citezot/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a>
+```
+:::
+
+
 
 **citezot** は、[Zotero](https://www.zotero.org) を使って [Quarto](https://quarto.org) や R Markdown の文書に参考文献を引用しやすくするためのパッケージです。
 
