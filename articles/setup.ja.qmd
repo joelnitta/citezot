@@ -76,7 +76,7 @@ citezot は、項目に**保存された引用キー**で項目を引用しま�
 
 項目にキーを付ける方法は 2 つあります。
 
-### Better BibTeX を使う(すでに使っている場合におすすめ)
+### Better BibTeX を使う(推奨)
 
 [Better BibTeX](https://retorque.re/zotero-better-bibtex/installation/) は、選んだ書式からキーを生成し、キーを*固定*して変わらないようにできます。固定されたキーは項目に保存され、citezot が読み取るのはそれです。Zotero デスクトップで項目を選択し、右クリックして *Better BibTeX*→*Pin BibTeX key* を選びます。その後同期すると、キーがアップロードされます。
 

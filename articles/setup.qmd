@@ -76,7 +76,7 @@ citezot cites an item by the **citekey saved on it**. An item without one cannot
 
 There are two ways to get a key onto an item.
 
-### With Better BibTeX (recommended if you already use it)
+### With Better BibTeX (recommended)
 
 [Better BibTeX](https://retorque.re/zotero-better-bibtex/installation/) generates keys from a formula you choose, and can *pin* them so they never change. Pinned keys are saved on the item, which is what citezot reads. In Zotero desktop, select the items, right-click, then *Better BibTeX* and *Pin BibTeX key*. Syncing then uploads the keys.
 
