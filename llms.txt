@@ -64,9 +64,9 @@ You need a Zotero API key and your user ID (kept in `~/.Renviron`), and
 each item you cite needs a citekey. A **read-only** key is enough for
 everything except adding and editing items.
 
-See
-[`vignette("setup")`](https://joelnitta.github.io/citezot/articles/setup.md)
-for step-by-step instructions.
+See the [setup
+guide](https://joelnitta.github.io/citezot/articles/setup.html) for
+step-by-step instructions.
 
 ## Usage
 
@@ -312,10 +312,10 @@ pre-commit install
 - The tests make no network calls (`devtools::test()`). Edit
   `README.Rmd`, not `README.md`, and render it with
   `devtools::build_readme()`. Some of its examples read from a Zotero
-  library, so rendering needs Zotero credentials (see
-  [`vignette("setup")`](https://joelnitta.github.io/citezot/articles/setup.md))
-  and the items cited in the examples; if you cannot render it, say so
-  in your pull request.
+  library, so rendering needs Zotero credentials (see the [setup
+  guide](https://joelnitta.github.io/citezot/articles/setup.html)) and
+  the items cited in the examples; if you cannot render it, say so in
+  your pull request.
 
 ## Getting help
 

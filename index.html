@@ -86,7 +86,7 @@
 <h2 id="setup">Setup<a class="anchor" aria-label="anchor" href="#setup"></a>
 </h2>
 <p>You need a Zotero API key and your user ID (kept in <code>~/.Renviron</code>), and each item you cite needs a citekey. A <strong>read-only</strong> key is enough for everything except adding and editing items.</p>
-<p>See <code><a href="articles/setup.html">vignette("setup")</a></code> for step-by-step instructions.</p>
+<p>See the <a href="https://joelnitta.github.io/citezot/articles/setup.html">setup guide</a> for step-by-step instructions.</p>
 </div>
 <div class="section level2">
 <h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
@@ -242,7 +242,7 @@
 <ul>
 <li>Before every commit, the hooks run <a href="https://styler.r-lib.org" class="external-link">styler</a> and <a href="https://lintr.r-lib.org" class="external-link">lintr</a> (tidyverse style, 80 columns; see <code>.lintr</code>) and check that <code>README.md</code> has been rendered from <code>README.Rmd</code>. Run them by hand with <code>pre-commit run --all-files</code>.</li>
 <li>Before every push, a hook runs <code>devtools::check()</code> and refuses the push unless it has no errors, warnings or notes.</li>
-<li>The tests make no network calls (<code>devtools::test()</code>). Edit <code>README.Rmd</code>, not <code>README.md</code>, and render it with <code>devtools::build_readme()</code>. Some of its examples read from a Zotero library, so rendering needs Zotero credentials (see <code><a href="articles/setup.html">vignette("setup")</a></code>) and the items cited in the examples; if you cannot render it, say so in your pull request.</li>
+<li>The tests make no network calls (<code>devtools::test()</code>). Edit <code>README.Rmd</code>, not <code>README.md</code>, and render it with <code>devtools::build_readme()</code>. Some of its examples read from a Zotero library, so rendering needs Zotero credentials (see the <a href="https://joelnitta.github.io/citezot/articles/setup.html">setup guide</a>) and the items cited in the examples; if you cannot render it, say so in your pull request.</li>
 </ul>
 </div>
 <div class="section level2">
