@@ -8,6 +8,8 @@ Description: Scans Quarto and R Markdown documents for citation keys,
     bibliography file. Also provides dry-run-by-default helpers to find,
     add, and update Zotero items.
 License: MIT + file LICENSE
+URL: https://github.com/joelnitta/citezot
+BugReports: https://github.com/joelnitta/citezot/issues
 Config/roxygen2/version: 8.0.0
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
