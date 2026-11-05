@@ -1,9 +1,35 @@
 # Workflow derived from https://github.com/r-lib/actions/tree/v2/examples
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
+# Only rebuild the site when something it is built from changes. Manual runs
+# (workflow_dispatch) and releases always build.
 on:
   push:
     branches: [main, master]
+    paths:
+      - R/**
+      - man/**
+      - vignettes/**
+      - pkgdown/**
+      - README.Rmd
+      - README.md
+      - NEWS.md
+      - LICENSE.md
+      - DESCRIPTION
+      - _pkgdown.yml
+      - .github/workflows/pkgdown.yaml
   pull_request:
+    paths:
+      - R/**
+      - man/**
+      - vignettes/**
+      - pkgdown/**
+      - README.Rmd
+      - README.md
+      - NEWS.md
+      - LICENSE.md
+      - DESCRIPTION
+      - _pkgdown.yml
+      - .github/workflows/pkgdown.yaml
   release:
     types: [published]
   workflow_dispatch:
