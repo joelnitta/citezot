@@ -65,7 +65,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script><script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script><script src="../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script><script src="../site_libs/quarto-html/popper.min.js"></script><script src="../site_libs/quarto-html/tippy.umd.min.js"></script><script src="../site_libs/quarto-html/anchor.min.js"></script><link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script><link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-8d3ad9c781c51ccd60b292c95058b2c2.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-11dfed304549e7d9db55013033367f26.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -242,16 +242,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 </tbody>
 </table>
-<p>これらは<strong>ユーザーレベル</strong>の <code>.Renviron</code> に書いてください。すべてのプロジェクトで使え、誤ってコミットしてしまうこともありません。</p>
+<p>これらは<strong>ユーザーレベル</strong>の <code>.Renviron</code> に保存してください。すべてのプロジェクトで使え、誤ってコミットしてしまうこともありません。<code>cz_set_auth()</code> を使えば、これを自動で行えます。ID とキーを尋ねられ（コマンド履歴に残りません）、ファイルに書き込み、現在のセッションですぐに使えるようになります。</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>usethis<span class="sc">::</span><span class="fu">edit_r_environ</span>()   <span class="co"># ~/.Renviron を開く</span></span></code></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>citezot<span class="sc">::</span><span class="fu">cz_set_auth</span>()</span></code></pre></div>
 <button title="コピー" class="code-copy-button"><i class="bi"></i></button>
 </div>
 </div>
+<p>自分でファイルを編集したい場合は、<code>usethis::edit_r_environ()</code> を実行して下の 2 行を追加し、保存してから <strong>R を再起動</strong>してください（<code>.Renviron</code> は起動時にしか読み込まれません）。</p>
 <pre><code>ZOTERO_API_KEY=xxxxxxxxxxxxxxxxxxxxxxxx
 ZOTERO_LIBRARY_ID=1234567</code></pre>
-<p>ファイルを保存して <strong>R を再起動</strong>してください。<code>.Renviron</code> は起動時にしか読み込まれません。その後、citezot が認証情報を認識できているか確認します。キーが表示されることはありません。</p>
+<p>どちらの方法でも、citezot が認証情報を認識できているか確認します。キーが表示されることはありません。</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(citezot)</span>

@@ -2,146 +2,154 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://joelnitta.github.io/citezot/ja/reference/index.html</loc>
-    <lastmod>2026-11-05T05:41:12.169Z</lastmod>
+    <lastmod>2026-11-05T05:57:22.867Z</lastmod>
   </url>
   <url>
     <loc>https://joelnitta.github.io/citezot/ja/reference/cz_update_bib.html</loc>
-    <lastmod>2026-11-05T05:41:12.169Z</lastmod>
+    <lastmod>2026-11-05T05:57:22.867Z</lastmod>
   </url>
   <url>
-    <loc>https://joelnitta.github.io/citezot/ja/reference/cz_qmd_keys.html</loc>
-    <lastmod>2026-11-05T05:41:12.169Z</lastmod>
-  </url>
-  <url>
-    <loc>https://joelnitta.github.io/citezot/ja/reference/cz_key_format.html</loc>
-    <lastmod>2026-11-05T05:41:12.169Z</lastmod>
-  </url>
-  <url>
-    <loc>https://joelnitta.github.io/citezot/ja/reference/cz_get_item.html</loc>
-    <lastmod>2026-11-05T05:41:12.169Z</lastmod>
-  </url>
-  <url>
-    <loc>https://joelnitta.github.io/citezot/ja/reference/cz_fetch_items.html</loc>
-    <lastmod>2026-11-05T05:41:12.169Z</lastmod>
-  </url>
-  <url>
-    <loc>https://joelnitta.github.io/citezot/ja/reference/cz_bare_keys.html</loc>
-    <lastmod>2026-11-05T05:41:12.169Z</lastmod>
-  </url>
-  <url>
-    <loc>https://joelnitta.github.io/citezot/ja/reference/cz_add.html</loc>
-    <lastmod>2026-11-05T05:41:12.169Z</lastmod>
-  </url>
-  <url>
-    <loc>https://joelnitta.github.io/citezot/ja/articles/manuscript.html</loc>
-    <lastmod>2026-11-05T05:41:12.168Z</lastmod>
-  </url>
-  <url>
-    <loc>https://joelnitta.github.io/citezot/ja/index.html</loc>
-    <lastmod>2026-11-05T05:41:12.168Z</lastmod>
-  </url>
-  <url>
-    <loc>https://joelnitta.github.io/citezot/ja/articles/setup.html</loc>
-    <lastmod>2026-11-05T05:41:12.168Z</lastmod>
-  </url>
-  <url>
-    <loc>https://joelnitta.github.io/citezot/ja/reference/cz_auth.html</loc>
-    <lastmod>2026-11-05T05:41:12.169Z</lastmod>
-  </url>
-  <url>
-    <loc>https://joelnitta.github.io/citezot/ja/reference/cz_clear_cache.html</loc>
-    <lastmod>2026-11-05T05:41:12.169Z</lastmod>
-  </url>
-  <url>
-    <loc>https://joelnitta.github.io/citezot/ja/reference/cz_find.html</loc>
-    <lastmod>2026-11-05T05:41:12.169Z</lastmod>
-  </url>
-  <url>
-    <loc>https://joelnitta.github.io/citezot/ja/reference/cz_item_key.html</loc>
-    <lastmod>2026-11-05T05:41:12.169Z</lastmod>
+    <loc>https://joelnitta.github.io/citezot/ja/reference/cz_set_auth.html</loc>
+    <lastmod>2026-11-05T05:57:22.867Z</lastmod>
   </url>
   <url>
     <loc>https://joelnitta.github.io/citezot/ja/reference/cz_pin_key.html</loc>
-    <lastmod>2026-11-05T05:41:12.169Z</lastmod>
+    <lastmod>2026-11-05T05:57:22.867Z</lastmod>
+  </url>
+  <url>
+    <loc>https://joelnitta.github.io/citezot/ja/reference/cz_item_key.html</loc>
+    <lastmod>2026-11-05T05:57:22.867Z</lastmod>
+  </url>
+  <url>
+    <loc>https://joelnitta.github.io/citezot/ja/reference/cz_find.html</loc>
+    <lastmod>2026-11-05T05:57:22.867Z</lastmod>
+  </url>
+  <url>
+    <loc>https://joelnitta.github.io/citezot/ja/reference/cz_clear_cache.html</loc>
+    <lastmod>2026-11-05T05:57:22.867Z</lastmod>
+  </url>
+  <url>
+    <loc>https://joelnitta.github.io/citezot/ja/reference/cz_auth.html</loc>
+    <lastmod>2026-11-05T05:57:22.867Z</lastmod>
+  </url>
+  <url>
+    <loc>https://joelnitta.github.io/citezot/ja/articles/setup.html</loc>
+    <lastmod>2026-11-05T05:57:22.866Z</lastmod>
+  </url>
+  <url>
+    <loc>https://joelnitta.github.io/citezot/ja/index.html</loc>
+    <lastmod>2026-11-05T05:57:22.866Z</lastmod>
+  </url>
+  <url>
+    <loc>https://joelnitta.github.io/citezot/ja/articles/manuscript.html</loc>
+    <lastmod>2026-11-05T05:57:22.866Z</lastmod>
+  </url>
+  <url>
+    <loc>https://joelnitta.github.io/citezot/ja/reference/cz_add.html</loc>
+    <lastmod>2026-11-05T05:57:22.867Z</lastmod>
+  </url>
+  <url>
+    <loc>https://joelnitta.github.io/citezot/ja/reference/cz_bare_keys.html</loc>
+    <lastmod>2026-11-05T05:57:22.867Z</lastmod>
+  </url>
+  <url>
+    <loc>https://joelnitta.github.io/citezot/ja/reference/cz_fetch_items.html</loc>
+    <lastmod>2026-11-05T05:57:22.867Z</lastmod>
+  </url>
+  <url>
+    <loc>https://joelnitta.github.io/citezot/ja/reference/cz_get_item.html</loc>
+    <lastmod>2026-11-05T05:57:22.867Z</lastmod>
+  </url>
+  <url>
+    <loc>https://joelnitta.github.io/citezot/ja/reference/cz_key_format.html</loc>
+    <lastmod>2026-11-05T05:57:22.867Z</lastmod>
+  </url>
+  <url>
+    <loc>https://joelnitta.github.io/citezot/ja/reference/cz_qmd_keys.html</loc>
+    <lastmod>2026-11-05T05:57:22.867Z</lastmod>
   </url>
   <url>
     <loc>https://joelnitta.github.io/citezot/ja/reference/cz_suggest_key.html</loc>
-    <lastmod>2026-11-05T05:41:12.169Z</lastmod>
+    <lastmod>2026-11-05T05:57:22.867Z</lastmod>
   </url>
   <url>
     <loc>https://joelnitta.github.io/citezot/ja/reference/cz_update_item.html</loc>
-    <lastmod>2026-11-05T05:41:12.169Z</lastmod>
+    <lastmod>2026-11-05T05:57:22.867Z</lastmod>
   </url>
   <url>
     <loc>https://joelnitta.github.io/citezot/reference/index.html</loc>
-    <lastmod>2026-11-05T05:40:47.593Z</lastmod>
+    <lastmod>2026-11-05T05:56:59.411Z</lastmod>
   </url>
   <url>
     <loc>https://joelnitta.github.io/citezot/reference/cz_update_bib.html</loc>
-    <lastmod>2026-11-05T05:40:47.593Z</lastmod>
+    <lastmod>2026-11-05T05:56:59.411Z</lastmod>
   </url>
   <url>
-    <loc>https://joelnitta.github.io/citezot/reference/cz_qmd_keys.html</loc>
-    <lastmod>2026-11-05T05:40:47.593Z</lastmod>
-  </url>
-  <url>
-    <loc>https://joelnitta.github.io/citezot/reference/cz_key_format.html</loc>
-    <lastmod>2026-11-05T05:40:47.593Z</lastmod>
-  </url>
-  <url>
-    <loc>https://joelnitta.github.io/citezot/reference/cz_get_item.html</loc>
-    <lastmod>2026-11-05T05:40:47.593Z</lastmod>
-  </url>
-  <url>
-    <loc>https://joelnitta.github.io/citezot/reference/cz_fetch_items.html</loc>
-    <lastmod>2026-11-05T05:40:47.593Z</lastmod>
-  </url>
-  <url>
-    <loc>https://joelnitta.github.io/citezot/reference/cz_bare_keys.html</loc>
-    <lastmod>2026-11-05T05:40:47.593Z</lastmod>
-  </url>
-  <url>
-    <loc>https://joelnitta.github.io/citezot/reference/cz_add.html</loc>
-    <lastmod>2026-11-05T05:40:47.593Z</lastmod>
-  </url>
-  <url>
-    <loc>https://joelnitta.github.io/citezot/articles/manuscript.html</loc>
-    <lastmod>2026-11-05T05:40:47.592Z</lastmod>
-  </url>
-  <url>
-    <loc>https://joelnitta.github.io/citezot/index.html</loc>
-    <lastmod>2026-11-05T05:40:47.592Z</lastmod>
-  </url>
-  <url>
-    <loc>https://joelnitta.github.io/citezot/articles/setup.html</loc>
-    <lastmod>2026-11-05T05:40:47.592Z</lastmod>
-  </url>
-  <url>
-    <loc>https://joelnitta.github.io/citezot/reference/cz_auth.html</loc>
-    <lastmod>2026-11-05T05:40:47.593Z</lastmod>
-  </url>
-  <url>
-    <loc>https://joelnitta.github.io/citezot/reference/cz_clear_cache.html</loc>
-    <lastmod>2026-11-05T05:40:47.593Z</lastmod>
-  </url>
-  <url>
-    <loc>https://joelnitta.github.io/citezot/reference/cz_find.html</loc>
-    <lastmod>2026-11-05T05:40:47.593Z</lastmod>
-  </url>
-  <url>
-    <loc>https://joelnitta.github.io/citezot/reference/cz_item_key.html</loc>
-    <lastmod>2026-11-05T05:40:47.593Z</lastmod>
+    <loc>https://joelnitta.github.io/citezot/reference/cz_set_auth.html</loc>
+    <lastmod>2026-11-05T05:56:59.411Z</lastmod>
   </url>
   <url>
     <loc>https://joelnitta.github.io/citezot/reference/cz_pin_key.html</loc>
-    <lastmod>2026-11-05T05:40:47.593Z</lastmod>
+    <lastmod>2026-11-05T05:56:59.411Z</lastmod>
+  </url>
+  <url>
+    <loc>https://joelnitta.github.io/citezot/reference/cz_item_key.html</loc>
+    <lastmod>2026-11-05T05:56:59.411Z</lastmod>
+  </url>
+  <url>
+    <loc>https://joelnitta.github.io/citezot/reference/cz_find.html</loc>
+    <lastmod>2026-11-05T05:56:59.411Z</lastmod>
+  </url>
+  <url>
+    <loc>https://joelnitta.github.io/citezot/reference/cz_clear_cache.html</loc>
+    <lastmod>2026-11-05T05:56:59.411Z</lastmod>
+  </url>
+  <url>
+    <loc>https://joelnitta.github.io/citezot/reference/cz_auth.html</loc>
+    <lastmod>2026-11-05T05:56:59.411Z</lastmod>
+  </url>
+  <url>
+    <loc>https://joelnitta.github.io/citezot/articles/setup.html</loc>
+    <lastmod>2026-11-05T05:56:59.410Z</lastmod>
+  </url>
+  <url>
+    <loc>https://joelnitta.github.io/citezot/index.html</loc>
+    <lastmod>2026-11-05T05:56:59.410Z</lastmod>
+  </url>
+  <url>
+    <loc>https://joelnitta.github.io/citezot/articles/manuscript.html</loc>
+    <lastmod>2026-11-05T05:56:59.410Z</lastmod>
+  </url>
+  <url>
+    <loc>https://joelnitta.github.io/citezot/reference/cz_add.html</loc>
+    <lastmod>2026-11-05T05:56:59.410Z</lastmod>
+  </url>
+  <url>
+    <loc>https://joelnitta.github.io/citezot/reference/cz_bare_keys.html</loc>
+    <lastmod>2026-11-05T05:56:59.411Z</lastmod>
+  </url>
+  <url>
+    <loc>https://joelnitta.github.io/citezot/reference/cz_fetch_items.html</loc>
+    <lastmod>2026-11-05T05:56:59.411Z</lastmod>
+  </url>
+  <url>
+    <loc>https://joelnitta.github.io/citezot/reference/cz_get_item.html</loc>
+    <lastmod>2026-11-05T05:56:59.411Z</lastmod>
+  </url>
+  <url>
+    <loc>https://joelnitta.github.io/citezot/reference/cz_key_format.html</loc>
+    <lastmod>2026-11-05T05:56:59.411Z</lastmod>
+  </url>
+  <url>
+    <loc>https://joelnitta.github.io/citezot/reference/cz_qmd_keys.html</loc>
+    <lastmod>2026-11-05T05:56:59.411Z</lastmod>
   </url>
   <url>
     <loc>https://joelnitta.github.io/citezot/reference/cz_suggest_key.html</loc>
-    <lastmod>2026-11-05T05:40:47.593Z</lastmod>
+    <lastmod>2026-11-05T05:56:59.411Z</lastmod>
   </url>
   <url>
     <loc>https://joelnitta.github.io/citezot/reference/cz_update_item.html</loc>
-    <lastmod>2026-11-05T05:40:47.593Z</lastmod>
+    <lastmod>2026-11-05T05:56:59.411Z</lastmod>
   </url>
 </urlset>

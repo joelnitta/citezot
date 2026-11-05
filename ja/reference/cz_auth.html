@@ -65,7 +65,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script><script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script><script src="../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script><script src="../site_libs/quarto-html/popper.min.js"></script><script src="../site_libs/quarto-html/tippy.umd.min.js"></script><script src="../site_libs/quarto-html/anchor.min.js"></script><link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script><link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-8d3ad9c781c51ccd60b292c95058b2c2.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-11dfed304549e7d9db55013033367f26.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -176,7 +176,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header><p><a href="https://github.com/joelnitta/citezot/blob/main/R/auth.R">R/auth.R</a></p>
 <section id="cz_auth" class="level2"><h2 class="anchored" data-anchor-id="cz_auth">cz_auth</h2>
 </section><section id="description" class="level2"><h2 class="anchored" data-anchor-id="description">Description</h2>
-<p>Resolves the library ID and API key, by default from the environment variables <code>ZOTERO_LIBRARY_ID</code> and <code>ZOTERO_API_KEY</code>. Load them yourself (e.g. from a gitignored <code>.Renviron</code> or <code>.env.local</code>); citezot never reads files or stores the key. The key is never printed.</p>
+<p>Resolves the library ID and API key, by default from the environment variables <code>ZOTERO_LIBRARY_ID</code> and <code>ZOTERO_API_KEY</code>. Set them once with <code>cz_set_auth()</code>, or load them yourself (e.g. from a gitignored <code>.Renviron</code> or <code>.env.local</code>). citezot never reads credential files; only <code>cz_set_auth()</code> writes the key, and only when you ask it to. The key is never printed.</p>
 </section><section id="usage" class="level2"><h2 class="anchored" data-anchor-id="usage">Usage</h2>
 <div class="code-copy-outer-scaffold">
 <div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cz_auth</span>(</span>
