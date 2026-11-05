@@ -65,7 +65,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script><script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script><script src="../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script><script src="../site_libs/quarto-html/popper.min.js"></script><script src="../site_libs/quarto-html/tippy.umd.min.js"></script><script src="../site_libs/quarto-html/anchor.min.js"></script><link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script><link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-11dfed304549e7d9db55013033367f26.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-8d3ad9c781c51ccd60b292c95058b2c2.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -196,14 +196,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>None of the code in this guide is run when the site is built, because it needs your Zotero account.</p>
 <section id="create-an-api-key" class="level2"><h2 class="anchored" data-anchor-id="create-an-api-key">1. Create an API key</h2>
 <p>citezot talks to the Zotero web API, so it needs an API key. Zotero desktop does not have to be running, but your library must be synced to zotero.org (in Zotero desktop: <em>Settings</em>, <em>Sync</em>).</p>
-<!-- TODO: add screenshots of the Zotero keys page -->
 <ol type="1">
 <li>Sign in at <a href="https://www.zotero.org/settings/keys" class="uri">https://www.zotero.org/settings/keys</a> and choose <strong>Create new private key</strong>.</li>
-<li>Give it a name you will recognise, such as <code>citezot (read only)</code>.</li>
-<li>Under <em>Personal library</em>, tick <strong>Allow library access</strong>. Leave <strong>Allow write access</strong> unticked unless you want citezot to add or edit items (see below).</li>
-<li>Save the key and <strong>copy it now</strong>. Zotero shows the key only once.</li>
-<li>Note your <strong>numeric user ID</strong>. It is shown on the same page, in the sentence “Your userID for use in API calls is …”. It is <em>not</em> your user name.</li>
+<li>Note your <strong>numeric user ID</strong>. It is shown on the same page, in the sentence “Your user ID for use in API calls is …”. (It is <em>not</em> your user name.)</li>
 </ol>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="../vignettes/images/zotero-keys-page.png" class="img-fluid figure-img" style="width:80.0%" alt="The Zotero keys page, with the Create new private key button marked 1 and the user ID marked 2."></p>
+<figcaption>Steps 1 and 2: the Zotero keys page.</figcaption></figure>
+</div>
+<ol start="3" type="1">
+<li>Give it a name you will recognize, such as <code>citezot-key</code>.</li>
+<li>Under <em>Personal library</em>, tick <strong>Allow library access</strong> (“Allow third party to access your library”). You need this to use citezot. If you also want to edit your Zotero references through citezot, not just read them, also tick <strong>Allow write access</strong> (“Allow third party to make changes to your library”); <a href="#read-only-or-write-access">see below</a>.</li>
+<li>Save the key and <strong>copy it now</strong>. Zotero shows the key only once.</li>
+</ol>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="../vignettes/images/zotero-new-key.png" class="img-fluid figure-img" style="width:50.0%" alt="The Zotero new key form, with the key name marked 3, the library access and write access checkboxes marked 4, and the Save Key button marked 5."></p>
+<figcaption>Steps 3 to 5: the new key form.</figcaption></figure>
+</div>
 <section id="read-only-or-write-access" class="level3"><h3 class="anchored" data-anchor-id="read-only-or-write-access">Read-only or write access</h3>
 <p>A read-only key is enough for <code>cz_update_bib()</code>, <code>cz_find()</code>, <code>cz_get_item()</code> and <code>cz_fetch_items()</code>. Only the functions that change your library (<code>cz_add()</code>, <code>cz_update_item()</code> and <code>cz_pin_key()</code>) need <strong>Allow write access</strong>. Those functions are dry runs unless you pass <code>dry_run = FALSE</code>, and citezot has no delete, but a read-only key is technically the safer choice, because it cannot change your library no matter what. You can edit the key on the same page later to add write access.</p>
 </section><section id="group-libraries" class="level3"><h3 class="anchored" data-anchor-id="group-libraries">Group libraries</h3>

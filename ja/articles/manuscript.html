@@ -65,7 +65,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script><script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script><script src="../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script><script src="../site_libs/quarto-html/popper.min.js"></script><script src="../site_libs/quarto-html/tippy.umd.min.js"></script><script src="../site_libs/quarto-html/anchor.min.js"></script><link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script><link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-11dfed304549e7d9db55013033367f26.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-8d3ad9c781c51ccd60b292c95058b2c2.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -186,7 +186,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <section id="セットアップ" class="level2"><h2 class="anchored" data-anchor-id="セットアップ">セットアップ</h2>
-<p>始める前に、Zotero の API キー、<code>~/.Renviron</code> に書いたユーザー ID、そして項目の引用キーが必要です。手順は<a href="../articles/setup.html">セットアップガイド</a>にあります。citezot が認証情報を認識できているか確認しましょう(キーが表示されることはありません)。</p>
+<p>始める前に、Zotero の API キー、<code>~/.Renviron</code> に書いたユーザー ID、そして項目の引用キーが必要です。手順は<a href="../articles/setup.html">セットアップガイド</a>にあります。citezot が認証情報を認識できているか確認しましょう（キーが表示されることはありません）。</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cz_auth</span>()</span>
@@ -233,7 +233,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <button title="コピー" class="code-copy-button"><i class="bi"></i></button>
 </div>
 </div>
-<p>あとは、いつもどおり Quarto で文書をレンダリングします(<code>quarto render manuscript.qmd</code>。HTML、PDF、Typst のいずれでも可)。書き出されるのは引用した項目だけで、キー順に、Zotero のエクスポーターから直接得た BibLaTeX 形式になります。CSL-YAML にしたい場合は <code>.yaml</code> の名前を指定します: <code>cz_update_bib("manuscript.qmd", out = "references.yaml")</code></p>
+<p>あとは、いつもどおり Quarto で文書をレンダリングします（<code>quarto render manuscript.qmd</code>。HTML、PDF、Typst のいずれでも可）。書き出されるのは引用した項目だけで、キー順に、Zotero のエクスポーターから直接得た BibLaTeX 形式になります。CSL-YAML にしたい場合は <code>.yaml</code> の名前を指定します: <code>cz_update_bib("manuscript.qmd", out = "references.yaml")</code></p>
 <section id="キーが見つからないとき" class="level3"><h3 class="anchored" data-anchor-id="キーが見つからないとき">キーが見つからないとき</h3>
 <p>本文が <code>@Kent2002</code> を引用しているのに、Zotero にその引用キーを持つ項目がないとします。更新は<strong>中断され、既存のファイルには触れません</strong>。</p>
 <div class="cell">
@@ -279,7 +279,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <button title="コピー" class="code-copy-button"><i class="bi"></i></button>
 </div>
 </div>
-<p>プレビューには、作成される項目のタイトル、著者、日付、キーが表示されます。<code>cz_add()</code> は、まず DOI とキーがライブラリにまだないことを確認します。(現時点では、Crossref に登録された DOI のみ対応しています。)</p>
+<p>プレビューには、作成される項目のタイトル、著者、日付、キーが表示されます。<code>cz_add()</code> は、まず DOI とキーがライブラリにまだないことを確認します。（現時点では、Crossref に登録された DOI のみ対応しています。）</p>
 </li>
 </ol>
 <p>もう一度 <code>cz_update_bib()</code> を実行すれば、文書は完成です。</p>
@@ -295,7 +295,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <button title="コピー" class="code-copy-button"><i class="bi"></i></button>
 </div>
 </div>
-<p>実際に変わるフィールドだけが、項目のバージョンとともに送信されます。citezot が読み取った後に誰か(または Zotero デスクトップ)が項目を編集していた場合、Zotero は HTTP 412 を返し、何も上書きされません。<code>cz_get_item("Regnier2024")</code> で項目を確認してから、もう一度コマンドを実行してください。作成者、タグ、コレクションは丸ごと置き換えられるため、タグを 1 つ追加するには、タグの完全なリストを渡します。識別用のフィールド(<code>key</code>、<code>version</code>、<code>itemType</code>、追加日・更新日)と引用キーはここでは変更できません。キーの変更には <code>cz_pin_key()</code> を使います。</p>
+<p>実際に変わるフィールドだけが、項目のバージョンとともに送信されます。citezot が読み取った後に誰か（または Zotero デスクトップ）が項目を編集していた場合、Zotero は HTTP 412 を返し、何も上書きされません。<code>cz_get_item("Regnier2024")</code> で項目を確認してから、もう一度コマンドを実行してください。作成者、タグ、コレクションは丸ごと置き換えられるため、タグを 1 つ追加するには、タグの完全なリストを渡します。識別用のフィールド（<code>key</code>、<code>version</code>、<code>itemType</code>、追加日・更新日）と引用キーはここでは変更できません。キーの変更には <code>cz_pin_key()</code> を使います。</p>
 </section><section id="引用キー" class="level2"><h2 class="anchored" data-anchor-id="引用キー">引用キー</h2>
 <p>Better BibTeX を使っている場合、キーは <code>auth.lower + year + shorttitle(1).lower</code> のようなパターンに従っています。citezot は、新しい項目に対して同じパターンでキーを生成できます。</p>
 <div class="cell">
@@ -321,8 +321,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <button title="コピー" class="code-copy-button"><i class="bi"></i></button>
 </div>
 </div>
-<p><code>cz_add(..., key = "auto")</code> は <code>cz_key_format()</code> のパターンを使います。<code>citezot.key_format</code> オプションを設定していればそれ、なければ Better BibTeX が Zotero のプロファイルに保存したもの、それもなければ Better BibTeX の既定です。書式言語は一部(<code>auth</code>、<code>year</code>、<code>shorttitle</code>、<code>title</code>、いくつかのフィルター、<code>+</code>)のみ対応しており、それ以外はキーが変わるのではなくエラーになります。Better BibTeX 自体は必要ありません。<code>cz_pin_key()</code> で固定したキーや <code>cz_add()</code> に渡したキーは、どれも使えます。</p>
-<p>タイトル中の単語は Better BibTeX の規則に従います。HTML タグは除かれ、タイトルは最初のコロンまたは文末で切られ、“a” や “the” のような短い機能語は飛ばされ、単語内のハイフンなどの記号は取り除かれます(<code>early-diverging</code> は <code>earlydiverging</code> になります)。</p>
+<p><code>cz_add(..., key = "auto")</code> は <code>cz_key_format()</code> のパターンを使います。<code>citezot.key_format</code> オプションを設定していればそれ、なければ Better BibTeX が Zotero のプロファイルに保存したもの、それもなければ Better BibTeX の既定です。書式言語は一部（<code>auth</code>、<code>year</code>、<code>shorttitle</code>、<code>title</code>、いくつかのフィルター、<code>+</code>）のみ対応しており、それ以外はキーが変わるのではなくエラーになります。Better BibTeX 自体は必要ありません。<code>cz_pin_key()</code> で固定したキーや <code>cz_add()</code> に渡したキーは、どれも使えます。</p>
+<p>タイトル中の単語は Better BibTeX の規則に従います。HTML タグは除かれ、タイトルは最初のコロンまたは文末で切られ、“a” や “the” のような短い機能語は飛ばされ、単語内のハイフンなどの記号は取り除かれます（<code>early-diverging</code> は <code>earlydiverging</code> になります）。</p>
 </section><section id="速度" class="level2"><h2 class="anchored" data-anchor-id="速度">速度</h2>
 <p>大きなライブラリを初めてダウンロードするには数十秒かかります。キャッシュを有効にすると、2 回目以降は変更分だけを取得します。</p>
 <div class="cell">
@@ -364,9 +364,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>
 <strong>更新時の HTTP 412。</strong> 読み取った後に項目が変更されました。<code>cz_get_item()</code> でもう一度確認し、意図して再試行してください。</li>
 <li>
-<strong>項目が Zotero にあるのに、引用キーが「見つからない」。</strong> 項目に引用キーが保存されていない(または別のキーが保存されている)ためです。<code>cz_find()</code> で項目のキーを確認し、<code>cz_pin_key()</code> で設定してください。</li>
+<strong>項目が Zotero にあるのに、引用キーが「見つからない」。</strong> 項目に引用キーが保存されていない（または別のキーが保存されている）ためです。<code>cz_find()</code> で項目のキーを確認し、<code>cz_pin_key()</code> で設定してください。</li>
 <li>
-<strong>変わった文字(<code>??</code> など)を含むキー</strong>は、文書から引用できません。Zotero で直すか、<code>cz_pin_key(..., overwrite = TRUE)</code> で修正してください。</li>
+<strong>変わった文字（<code>??</code> など）を含むキー</strong>は、文書から引用できません。Zotero で直すか、<code>cz_pin_key(..., overwrite = TRUE)</code> で修正してください。</li>
 </ul></section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";

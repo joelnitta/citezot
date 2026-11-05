@@ -65,7 +65,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-html/quarto.js" type="module"></script><script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script><script src="site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script><script src="site_libs/quarto-html/popper.min.js"></script><script src="site_libs/quarto-html/tippy.umd.min.js"></script><script src="site_libs/quarto-html/anchor.min.js"></script><link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script><link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-11dfed304549e7d9db55013033367f26.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-8d3ad9c781c51ccd60b292c95058b2c2.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -177,7 +177,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 </div></div>
 <p><strong>citezot</strong> は、<a href="https://www.zotero.org">Zotero</a> を使って <a href="https://quarto.org">Quarto</a> や R Markdown の文書に参考文献を引用しやすくするためのパッケージです。</p>
-<p>citezot を使うには、通常どおり <a href="https://quarto.org/docs/authoring/citations.html#sec-citations">Quarto (Pandoc) の記法</a>で本文中に文献を引用します。たとえば <code>manuscript.qmd</code> は次のようになります。</p>
+<p>citezot を使うには、通常どおり <a href="https://quarto.org/docs/authoring/citations.html#sec-citations">Quarto（Pandoc）の記法</a>で本文中に文献を引用します。たとえば <code>manuscript.qmd</code> は次のようになります。</p>
 <div class="code-copy-outer-scaffold">
 <div class="sourceCode" id="cb1"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="an">bibliography:</span><span class="co"> references.bib</span></span>
@@ -195,8 +195,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <pre><code>#&gt; ✔ 2/2 cited keys found; 'references.bib' updated.
 #&gt; ℹ 2 from 1 document, 0 only in other files.</code></pre>
-<p>citezot では、項目の検索、DOI からの追加、フィールドの修正もできます(<a href="#%E9%A0%85%E7%9B%AE%E3%81%AE%E6%A4%9C%E7%B4%A2%E8%BF%BD%E5%8A%A0%E4%BF%AE%E6%AD%A3">後述</a>)。いずれも、実行する前に必ず内容を表示します。</p>
-<p>citezot は Zotero Web API と通信するため、Zotero デスクトップを起動していなくても動作します。そのため、サーバー上や、GitHub Actions で自動生成する文書(自動生成の CV など)でも文献を引用できます。</p>
+<p>citezot では、項目の検索、DOI からの追加、フィールドの修正もできます（<a href="#%E9%A0%85%E7%9B%AE%E3%81%AE%E6%A4%9C%E7%B4%A2%E8%BF%BD%E5%8A%A0%E4%BF%AE%E6%AD%A3">後述</a>）。いずれも、実行する前に必ず内容を表示します。</p>
+<p>citezot は Zotero Web API と通信するため、Zotero デスクトップを起動していなくても動作します。そのため、サーバー上や、GitHub Actions で自動生成する文書（自動生成の CV など）でも文献を引用できます。</p>
 <p>citezot は Zotero とは無関係であり、Zotero の承認を受けたものではありません。</p>
 <section id="インストール" class="level2"><h2 class="anchored" data-anchor-id="インストール">インストール</h2>
 <p>citezot は CRAN には登録されていません。GitHub から開発版をインストールしてください。</p>
@@ -206,7 +206,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <button title="コピー" class="code-copy-button"><i class="bi"></i></button>
 </div>
 </section><section id="セットアップ" class="level2"><h2 class="anchored" data-anchor-id="セットアップ">セットアップ</h2>
-<p>Zotero の API キーとユーザー ID(<code>~/.Renviron</code> に保存します)が必要で、引用する各項目には引用キーが必要です。項目の追加と編集以外は、<strong>読み取り専用</strong>のキーで足ります。</p>
+<p>Zotero の API キーとユーザー ID（<code>~/.Renviron</code> に保存します）が必要で、引用する各項目には引用キーが必要です。項目の追加と編集以外は、<strong>読み取り専用</strong>のキーで足ります。</p>
 <p>手順は<a href="./articles/setup.html">セットアップガイド</a>を参照してください。</p>
 </section><section id="使い方" class="level2"><h2 class="anchored" data-anchor-id="使い方">使い方</h2>
 <section id="参考文献ファイルの生成" class="level3"><h3 class="anchored" data-anchor-id="参考文献ファイルの生成">参考文献ファイルの生成</h3>
@@ -216,13 +216,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <button title="コピー" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <ul>
-<li>出力ファイルは、文書の YAML ヘッダー(または <code>_quarto.yml</code>)の <code>bibliography:</code> で指定されたものが既定で、指定がなければ <code>references.bib</code> です。BibLaTeX を既定にしているのは、Typst を含む Quarto のあらゆる出力形式で使えるためです。</li>
-<li>非公式な形で文献に言及しているファイル(たとえば「Darwin1859 で定義」と書かれた CSV のメモ)もスキャンできます: <code>cz_update_bib(qmd, bare = "data.csv")</code>
+<li>出力ファイルは、文書の YAML ヘッダー（または <code>_quarto.yml</code>）の <code>bibliography:</code> で指定されたものが既定で、指定がなければ <code>references.bib</code> です。BibLaTeX を既定にしているのは、Typst を含む Quarto のあらゆる出力形式で使えるためです。</li>
+<li>非公式な形で文献に言及しているファイル（たとえば「Darwin1859 で定義」と書かれた CSV のメモ）もスキャンできます: <code>cz_update_bib(qmd, bare = "data.csv")</code>
 </li>
 </ul></section><section id="参考文献を黙って失うことはありません" class="level3"><h3 class="anchored" data-anchor-id="参考文献を黙って失うことはありません">参考文献を黙って失うことはありません</h3>
-<p>文書で引用したキーが Zotero に見つからない場合、<code>cz_update_bib()</code> は<strong>処理を中断し、既存のファイルには触れません</strong>。項目が黙って欠落した参考文献ファイルはレンダリングを壊すためです。見つからなかったキーと、その対処法が表示されます。(<code>allow_incomplete = TRUE</code> を指定すると、見つかった分だけを書き出します。)</p>
+<p>文書で引用したキーが Zotero に見つからない場合、<code>cz_update_bib()</code> は<strong>処理を中断し、既存のファイルには触れません</strong>。項目が黙って欠落した参考文献ファイルはレンダリングを壊すためです。見つからなかったキーと、その対処法が表示されます。（<code>allow_incomplete = TRUE</code> を指定すると、見つかった分だけを書き出します。）</p>
 </section><section id="レンダリングのたびに実行できる速さ" class="level3"><h3 class="anchored" data-anchor-id="レンダリングのたびに実行できる速さ">レンダリングのたびに実行できる速さ</h3>
-<p>大きなライブラリの取得には、初回はしばらくかかります(約 6,000 件で 20 秒ほど、並列でリクエストします)。キャッシュを有効にすると、2 回目以降は変更分だけをダウンロードし、変更がなければ 0.3 秒ほどで終わります。</p>
+<p>大きなライブラリの取得には、初回はしばらくかかります（約 6,000 件で 20 秒ほど、並列でリクエストします）。キャッシュを有効にすると、2 回目以降は変更分だけをダウンロードし、変更がなければ 0.3 秒ほどで終わります。</p>
 <div class="code-copy-outer-scaffold">
 <div class="sourceCode" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># .Rprofile に書いておくこともできます</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co"># キャッシュは tools::R_user_dir("citezot", "cache") に保存されます</span></span>
@@ -245,15 +245,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><code>item</code> を受け取る関数には、DOI、Zotero の項目 ID、既存の引用キー、または <code>cz_find()</code> が返す 1 行の結果を渡せます。</p>
 <ul>
 <li>
-<code>cz_add()</code> は、Crossref で DOI を検索し、その項目がライブラリにまだないこと(および引用キーが未使用で、pandoc で使える形式であること)を確認したうえで、Zotero 自身のテンプレートから項目タイプに応じた項目を作り、同じリクエストで引用キーを固定します。各リクエストには書き込みトークンが付くため、ネットワークエラー後に再試行しても項目が二重に作られることはありません。現時点では Crossref の DOI のみ対応しています。</li>
+<code>cz_add()</code> は、Crossref で DOI を検索し、その項目がライブラリにまだないこと（および引用キーが未使用で、pandoc で使える形式であること）を確認したうえで、Zotero 自身のテンプレートから項目タイプに応じた項目を作り、同じリクエストで引用キーを固定します。各リクエストには書き込みトークンが付くため、ネットワークエラー後に再試行しても項目が二重に作られることはありません。現時点では Crossref の DOI のみ対応しています。</li>
 <li>
-<code>cz_update_item()</code> は、実際に変更されるフィールドだけを、項目のバージョンとともに送信します。その間に別の場所で項目が編集されていた場合、Zotero は拒否し(HTTP 412)、何も上書きされません。作成者、タグ、コレクションは、Zotero の仕様どおり丸ごと置き換えられます。</li>
+<code>cz_update_item()</code> は、実際に変更されるフィールドだけを、項目のバージョンとともに送信します。その間に別の場所で項目が編集されていた場合、Zotero は拒否し（HTTP 412）、何も上書きされません。作成者、タグ、コレクションは、Zotero の仕様どおり丸ごと置き換えられます。</li>
 <li>
 <code>cz_pin_key()</code> は、<code>overwrite = TRUE</code> を指定しない限り、<em>別の</em>固定済みキーを置き換えません。古いキーを引用している文書が壊れるためです。</li>
 </ul>
 <section id="引用キーの生成" class="level3"><h3 class="anchored" data-anchor-id="引用キーの生成">引用キーの生成</h3>
-<p><code>key = "auto"</code> を指定すると、<a href="https://retorque.re/zotero-better-bibtex/citing/#generating-citekeys">Better BibTeX</a> 方式の<a href="https://retorque.re/zotero-better-bibtex/citing/formulas/">書式</a>(たとえば <code>auth.lower + year + shorttitle(1).lower</code>。結果は <code>hamilton1964genetical</code> のようになります)からキーが作られます。</p>
-<p>書式は次の順で決まります。<code>options(citezot.key_format = "...")</code>、Better BibTeX が Zotero のプロファイルに保存したパターン(citezot は Zotero の <code>prefs.js</code> からこの 1 項目だけを、キーを生成するときにのみ読み取り、セッションごとに一度お知らせします)、そして Better BibTeX の既定のパターンです。同じキーがすでにある場合は、新しいキーの末尾に文字(<code>a</code>、<code>b</code>、…)が付きます。</p>
+<p><code>key = "auto"</code> を指定すると、<a href="https://retorque.re/zotero-better-bibtex/citing/#generating-citekeys">Better BibTeX</a> 方式の<a href="https://retorque.re/zotero-better-bibtex/citing/formulas/">書式</a>（たとえば <code>auth.lower + year + shorttitle(1).lower</code>。結果は <code>hamilton1964genetical</code> のようになります）からキーが作られます。</p>
+<p>書式は次の順で決まります。<code>options(citezot.key_format = "...")</code>、Better BibTeX が Zotero のプロファイルに保存したパターン（citezot は Zotero の <code>prefs.js</code> からこの 1 項目だけを、キーを生成するときにのみ読み取り、セッションごとに一度お知らせします）、そして Better BibTeX の既定のパターンです。同じキーがすでにある場合は、新しいキーの末尾に文字（<code>a</code>、<code>b</code>、…）が付きます。</p>
 <p>書式言語はドキュメント化された一部のみ対応しており、それ以外はキーが変わるのではなくエラーになります。使用中の書式は <code>cz_key_format()</code> で確認でき、<code>cz_suggest_key()</code> で試せます。</p>
 <div class="code-copy-outer-scaffold">
 <div class="sourceCode" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>item <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
@@ -294,28 +294,28 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </section><section id="他のパッケージとの違い" class="level2"><h2 class="anchored" data-anchor-id="他のパッケージとの違い">他のパッケージとの違い</h2>
 <p><a href="https://github.com/paleolimbot/rbbt">rbbt</a> は RStudio、特に執筆中に引用を挿入するアドインを中心に作られています。Zotero デスクトップと Better BibTeX プラグインを起動しておく必要があります。</p>
-<p><a href="https://cran.r-project.org/package=zot">zot</a> は汎用の Zotero クライアントです。より低レベル(直接的)に動作し、バージョン付きの書き込み、バッチ計画、ファイル添付、ローカルデータベースの読み取り専用クエリなどを備えています。</p>
-<p><a href="https://cran.r-project.org/package=c2z">c2z</a> は、さまざまなソース(DOI、ISBN、ノルウェーの Cristin 登録簿など)から Zotero に文献をインポートでき、項目の編集、コピー、削除もできます。</p>
-<p><strong>citezot</strong> は、<em>軽量</em>(依存パッケージが最小限)で、参考文献の管理が<em>簡単</em>(関数 1 回の呼び出しで参考文献ファイルができる)、ライブラリの扱いが<em>慎重</em>(書き込みはすべて、指定しない限りドライランで、削除はできない)、そして Zotero が起動していなくても<em>どの環境でも</em>動くことを目指しています。</p>
+<p><a href="https://cran.r-project.org/package=zot">zot</a> は汎用の Zotero クライアントです。より低レベル（直接的）に動作し、バージョン付きの書き込み、バッチ計画、ファイル添付、ローカルデータベースの読み取り専用クエリなどを備えています。</p>
+<p><a href="https://cran.r-project.org/package=c2z">c2z</a> は、さまざまなソース（DOI、ISBN、ノルウェーの Cristin 登録簿など）から Zotero に文献をインポートでき、項目の編集、コピー、削除もできます。</p>
+<p><strong>citezot</strong> は、<em>軽量</em>（依存パッケージが最小限）で、参考文献の管理が<em>簡単</em>（関数 1 回の呼び出しで参考文献ファイルができる）、ライブラリの扱いが<em>慎重</em>（書き込みはすべて、指定しない限りドライランで、削除はできない）、そして Zotero が起動していなくても<em>どの環境でも</em>動くことを目指しています。</p>
 <p>これらの説明は、各パッケージのコードではなくドキュメントに基づいています。最新の状況は各パッケージのページで確認してください。</p>
 </section><section id="制限事項" class="level2"><h2 class="anchored" data-anchor-id="制限事項">制限事項</h2>
 <ul>
-<li>識別子による項目の検索は、現時点では Crossref の DOI のみ対応しています(ISBN、arXiv、PMID は対応予定です)。</li>
+<li>識別子による項目の検索は、現時点では Crossref の DOI のみ対応しています（ISBN、arXiv、PMID は対応予定です）。</li>
 <li>citezot では何も削除できません。</li>
 <li>BibLaTeX の出力は Zotero 自身のエクスポーターによるもの、CSL-YAML はライブラリの CSL-JSON によるものです。したがって、Quarto で表示される内容は Zotero のエクスポーターの出力どおりになります。</li>
 <li>照合は項目に保存された引用キーで行われるため、キーのない項目は引用できません。</li>
 </ul></section><section id="開発" class="level2"><h2 class="anchored" data-anchor-id="開発">開発</h2>
-<p>citezot の開発に参加するには、リポジトリをクローンし、開発用の依存パッケージをインストールします(<code>pak::local_install_dev_deps()</code>)。コミット前のチェックには <a href="https://pre-commit.com">pre-commit</a> を使います。一度インストールしてください(たとえば <code>brew install pre-commit</code> や <code>pip install pre-commit</code>)。そのうえで、クローンしたリポジトリでフックを有効にします。</p>
+<p>citezot の開発に参加するには、リポジトリをクローンし、開発用の依存パッケージをインストールします（<code>pak::local_install_dev_deps()</code>）。コミット前のチェックには <a href="https://pre-commit.com">pre-commit</a> を使います。一度インストールしてください（たとえば <code>brew install pre-commit</code> や <code>pip install pre-commit</code>）。そのうえで、クローンしたリポジトリでフックを有効にします。</p>
 <div class="code-copy-outer-scaffold">
 <div class="sourceCode" id="cb11"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pre-commit</span> install</span></code></pre></div>
 <button title="コピー" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <ul>
-<li>コミットのたびに、フックが <a href="https://styler.r-lib.org">styler</a> と <a href="https://lintr.r-lib.org">lintr</a>(tidyverse スタイル、1 行 80 文字。<code>.lintr</code> を参照)を実行し、<code>README.md</code> が <code>README.Rmd</code> から生成されていることを確認します。手動で実行するには <code>pre-commit run --all-files</code> を使います。</li>
+<li>コミットのたびに、フックが <a href="https://styler.r-lib.org">styler</a> と <a href="https://lintr.r-lib.org">lintr</a>（tidyverse スタイル、1 行 80 文字。<code>.lintr</code> を参照）を実行し、<code>README.md</code> が <code>README.Rmd</code> から生成されていることを確認します。手動で実行するには <code>pre-commit run --all-files</code> を使います。</li>
 <li>プッシュのたびに、フックが <code>devtools::check()</code> を実行し、エラー・警告・ノートがない場合のみプッシュを許可します。</li>
-<li>テストはネットワークを使いません(<code>devtools::test()</code>)。編集するのは <code>README.md</code> ではなく <code>README.Rmd</code> で、<code>devtools::build_readme()</code> でレンダリングします。例の一部は Zotero ライブラリから読み取るため、レンダリングには Zotero の認証情報(<a href="./articles/setup.html">セットアップガイド</a>を参照)と、例で引用している項目が必要です。レンダリングできない場合は、プルリクエストにその旨を書いてください。</li>
+<li>テストはネットワークを使いません（<code>devtools::test()</code>）。編集するのは <code>README.md</code> ではなく <code>README.Rmd</code> で、<code>devtools::build_readme()</code> でレンダリングします。例の一部は Zotero ライブラリから読み取るため、レンダリングには Zotero の認証情報（<a href="./articles/setup.html">セットアップガイド</a>を参照）と、例で引用している項目が必要です。レンダリングできない場合は、プルリクエストにその旨を書いてください。</li>
 </ul></section><section id="ヘルプ" class="level2"><h2 class="anchored" data-anchor-id="ヘルプ">ヘルプ</h2>
-<p>ドキュメント(実践的な例を含む)は <a href="https://joelnitta.github.io/citezot/" class="uri">https://joelnitta.github.io/citezot/</a> にあります。バグ報告やアイデアは <a href="https://github.com/joelnitta/citezot/issues" class="uri">https://github.com/joelnitta/citezot/issues</a> へお寄せください。</p>
+<p>ドキュメント（実践的な例を含む）は <a href="https://joelnitta.github.io/citezot/" class="uri">https://joelnitta.github.io/citezot/</a> にあります。バグ報告やアイデアは <a href="https://github.com/joelnitta/citezot/issues" class="uri">https://github.com/joelnitta/citezot/issues</a> へお寄せください。</p>
 </section><section id="ライセンス-1" class="level2"><h2 class="anchored" data-anchor-id="ライセンス-1">ライセンス</h2>
 <p>citezot は <a href="https://github.com/joelnitta/citezot/blob/main/LICENSE.md">MIT ライセンス</a>で公開されています。</p>
 

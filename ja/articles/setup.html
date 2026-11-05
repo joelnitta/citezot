@@ -65,7 +65,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script><script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script><script src="../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script><script src="../site_libs/quarto-html/popper.min.js"></script><script src="../site_libs/quarto-html/tippy.umd.min.js"></script><script src="../site_libs/quarto-html/anchor.min.js"></script><link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script><link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-11dfed304549e7d9db55013033367f26.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-8d3ad9c781c51ccd60b292c95058b2c2.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -151,7 +151,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>
 <a href="#api-%E3%82%AD%E3%83%BC%E3%82%92%E4%BD%9C%E6%88%90%E3%81%99%E3%82%8B" id="toc-api-キーを作成する" class="nav-link active" data-scroll-target="#api-キーを作成する">1. API キーを作成する</a>
   <ul class="collapse">
-<li><a href="#%E8%AA%AD%E3%81%BF%E5%8F%96%E3%82%8A%E5%B0%82%E7%94%A8%E3%81%8B%E6%9B%B8%E3%81%8D%E8%BE%BC%E3%81%BF%E6%A8%A9%E9%99%90%E3%81%8B" id="toc-読み取り専用か書き込み権限か" class="nav-link" data-scroll-target="#読み取り専用か書き込み権限か">読み取り専用か、書き込み権限か</a></li>
+<li><a href="#read-only-or-write-access" id="toc-read-only-or-write-access" class="nav-link" data-scroll-target="#read-only-or-write-access">読み取り専用か、書き込み権限か</a></li>
   <li><a href="#%E3%82%B0%E3%83%AB%E3%83%BC%E3%83%97%E3%83%A9%E3%82%A4%E3%83%96%E3%83%A9%E3%83%AA" id="toc-グループライブラリ" class="nav-link" data-scroll-target="#グループライブラリ">グループライブラリ</a></li>
   </ul>
 </li>
@@ -164,7 +164,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li>
 <a href="#%E9%A0%85%E7%9B%AE%E3%81%AB%E5%BC%95%E7%94%A8%E3%82%AD%E3%83%BC%E3%81%8C%E3%81%82%E3%82%8B%E3%81%93%E3%81%A8%E3%82%92%E7%A2%BA%E8%AA%8D%E3%81%99%E3%82%8B" id="toc-項目に引用キーがあることを確認する" class="nav-link" data-scroll-target="#項目に引用キーがあることを確認する">3. 項目に引用キーがあることを確認する</a>
   <ul class="collapse">
-<li><a href="#better-bibtex-%E3%82%92%E4%BD%BF%E3%81%86%E6%8E%A8%E5%A5%A8" id="toc-better-bibtex-を使う推奨" class="nav-link" data-scroll-target="#better-bibtex-を使う推奨">Better BibTeX を使う(推奨)</a></li>
+<li><a href="#better-bibtex-%E3%82%92%E4%BD%BF%E3%81%86%E6%8E%A8%E5%A5%A8" id="toc-better-bibtex-を使う推奨" class="nav-link" data-scroll-target="#better-bibtex-を使う推奨">Better BibTeX を使う（推奨）</a></li>
   <li><a href="#better-bibtex-%E3%82%92%E4%BD%BF%E3%82%8F%E3%81%AA%E3%81%84" id="toc-better-bibtex-を使わない" class="nav-link" data-scroll-target="#better-bibtex-を使わない">Better BibTeX を使わない</a></li>
   </ul>
 </li>
@@ -195,22 +195,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ol>
 <p>このガイドのコードは、Zotero のアカウントが必要なため、サイトのビルド時には実行されません。</p>
 <section id="api-キーを作成する" class="level2"><h2 class="anchored" data-anchor-id="api-キーを作成する">1. API キーを作成する</h2>
-<p>citezot は Zotero Web API と通信するため、API キーが必要です。Zotero デスクトップを起動しておく必要はありませんが、ライブラリが zotero.org と同期されている必要があります(Zotero デスクトップの<em>設定</em>→<em>同期</em>)。</p>
-<!-- TODO: add screenshots of the Zotero keys page -->
+<p>citezot は Zotero Web API と通信するため、API キーが必要です。Zotero デスクトップを起動しておく必要はありませんが、ライブラリが zotero.org と同期されている必要があります（Zotero デスクトップの<em>設定</em>→<em>同期</em>）。</p>
 <ol type="1">
 <li>
 <a href="https://www.zotero.org/settings/keys" class="uri">https://www.zotero.org/settings/keys</a> にサインインし、<strong>Create new private key</strong> を選びます。</li>
-<li>わかりやすい名前を付けます(例: <code>citezot (read only)</code>)。</li>
 <li>
-<em>Personal library</em> の下で <strong>Allow library access</strong> にチェックを入れます。citezot で項目の追加や編集をしたい場合を除き、<strong>Allow write access</strong> はチェックを外したままにします(後述)。</li>
-<li>キーを保存し、<strong>今すぐコピーしてください</strong>。Zotero がキーを表示するのは一度だけです。</li>
-<li>
-<strong>数字のユーザー ID</strong> を控えます。同じページの「Your userID for use in API calls is …」という文に表示されています。ユーザー名では<em>ありません</em>。</li>
+<strong>数字のユーザー ID</strong> を控えます。同じページの「Your user ID for use in API calls is …」という文に表示されています（ユーザー名ではありません）。</li>
 </ol>
-<section id="読み取り専用か書き込み権限か" class="level3"><h3 class="anchored" data-anchor-id="読み取り専用か書き込み権限か">読み取り専用か、書き込み権限か</h3>
-<p><code>cz_update_bib()</code>、<code>cz_find()</code>、<code>cz_get_item()</code>、<code>cz_fetch_items()</code> には、読み取り専用のキーで足ります。ライブラリを変更する関数(<code>cz_add()</code>、<code>cz_update_item()</code>、<code>cz_pin_key()</code>)だけが <strong>Allow write access</strong> を必要とします。これらの関数は <code>dry_run = FALSE</code> を渡さない限りドライランで、citezot には削除機能もありませんが、読み取り専用のキーは何が起きてもライブラリを変更できないため、技術的にはより安全です。書き込み権限は、あとで同じページからキーを編集して追加できます。</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="../vignettes/images/zotero-keys-page.png" class="img-fluid figure-img" style="width:80.0%" alt="Zotero のキーのページ。「Create new private key」ボタンに 1、ユーザー ID に 2 の印が付いている。"></p>
+<figcaption>手順 1〜2: Zotero のキーのページ</figcaption></figure>
+</div>
+<ol start="3" type="1">
+<li>わかりやすい名前を付けます（例: <code>citezot-key</code>）。</li>
+<li>
+<em>Personal library</em> の下で、<strong>Allow library access</strong>（「Allow third party to access your library」）にチェックを入れます。citezot を使うには必須です。citezot で Zotero の文献を読み取るだけでなく編集もしたい場合は、<strong>Allow write access</strong>（「Allow third party to make changes to your library」）にもチェックを入れます（<a href="#read-only-or-write-access">後述</a>）。</li>
+<li>キーを保存し、<strong>今すぐコピーしてください</strong>。Zotero がキーを表示するのは一度だけです。</li>
+</ol>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="../vignettes/images/zotero-new-key.png" class="img-fluid figure-img" style="width:50.0%" alt="Zotero の新しいキーのフォーム。キー名に 3、ライブラリアクセスと書き込みアクセスのチェックボックスに 4、「Save Key」ボタンに 5 の印が付いている。"></p>
+<figcaption>手順 3〜5: 新しいキーのフォーム</figcaption></figure>
+</div>
+<section id="read-only-or-write-access" class="level3"><h3 class="anchored" data-anchor-id="read-only-or-write-access">読み取り専用か、書き込み権限か</h3>
+<p><code>cz_update_bib()</code>、<code>cz_find()</code>、<code>cz_get_item()</code>、<code>cz_fetch_items()</code> には、読み取り専用のキーで足ります。ライブラリを変更する関数（<code>cz_add()</code>、<code>cz_update_item()</code>、<code>cz_pin_key()</code>）だけが <strong>Allow write access</strong> を必要とします。これらの関数は <code>dry_run = FALSE</code> を渡さない限りドライランで、citezot には削除機能もありませんが、読み取り専用のキーは何が起きてもライブラリを変更できないため、技術的にはより安全です。書き込み権限は、あとで同じページからキーを編集して追加できます。</p>
 </section><section id="グループライブラリ" class="level3"><h3 class="anchored" data-anchor-id="グループライブラリ">グループライブラリ</h3>
-<p>グループライブラリの場合は、同じページの <em>Group permissions</em> でキーを作成します。グループ ID は、グループの URL(<code>https://www.zotero.org/groups/&lt;ID&gt;/&lt;name&gt;</code>)に含まれる数字です。そのうえで、<code>ZOTERO_LIBRARY_ID</code>(下記)にそのグループ ID を設定し、<code>cz_auth(library_type = "group")</code> を使います。</p>
+<p>グループライブラリの場合は、同じページの <em>Group permissions</em> でキーを作成します。グループ ID は、グループの URL（<code>https://www.zotero.org/groups/&lt;ID&gt;/&lt;name&gt;</code>）に含まれる数字です。そのうえで、<code>ZOTERO_LIBRARY_ID</code>（下記）にそのグループ ID を設定し、<code>cz_auth(library_type = "group")</code> を使います。</p>
 </section></section><section id="キーを-r-に教える" class="level2"><h2 class="anchored" data-anchor-id="キーを-r-に教える">2. キーを R に教える</h2>
 <p>citezot は次の環境変数を読み取ります。</p>
 <table class="caption-top table">
@@ -229,7 +238,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 <tr class="even">
 <td><code>ZOTERO_LIBRARY_ID</code></td>
-<td>個人ライブラリ(ユーザー ID)またはグループライブラリの数字の ID</td>
+<td>個人ライブラリ（ユーザー ID）またはグループライブラリの数字の ID</td>
 </tr>
 </tbody>
 </table>
@@ -256,11 +265,11 @@ ZOTERO_LIBRARY_ID=1234567</code></pre>
 <ul>
 <li>キーは <code>api.zotero.org</code> にのみ、ベアラートークンとして送信します。</li>
 <li>キーを表示、記録、保存することはありません。認証オブジェクトを <code>print()</code> してもキーは隠されます。</li>
-<li>任意のキャッシュ(<code>cz_clear_cache()</code> を参照)に保存されるのは書誌情報のみで、キーは含まれません。</li>
+<li>任意のキャッシュ（<code>cz_clear_cache()</code> を参照）に保存されるのは書誌情報のみで、キーは含まれません。</li>
 </ul></section></section><section id="項目に引用キーがあることを確認する" class="level2"><h2 class="anchored" data-anchor-id="項目に引用キーがあることを確認する">3. 項目に引用キーがあることを確認する</h2>
 <p>citezot は、項目に<strong>保存された引用キー</strong>で項目を引用します。キーのない項目は引用できず、<code>cz_update_bib()</code> は見つからなかったキーを知らせます。</p>
 <p>項目にキーを付ける方法は 2 つあります。</p>
-<section id="better-bibtex-を使う推奨" class="level3"><h3 class="anchored" data-anchor-id="better-bibtex-を使う推奨">Better BibTeX を使う(推奨)</h3>
+<section id="better-bibtex-を使う推奨" class="level3"><h3 class="anchored" data-anchor-id="better-bibtex-を使う推奨">Better BibTeX を使う（推奨）</h3>
 <p><a href="https://retorque.re/zotero-better-bibtex/installation/">Better BibTeX</a> は、選んだ書式からキーを生成し、キーを<em>固定</em>して変わらないようにできます。固定されたキーは項目に保存され、citezot が読み取るのはそれです。Zotero デスクトップで項目を選択し、右クリックして <em>Better BibTeX</em>→<em>Pin BibTeX key</em> を選びます。その後同期すると、キーがアップロードされます。</p>
 <p>Better BibTeX は必須ではありません。citezot がキーを読み取るのに必要ありません。</p>
 </section><section id="better-bibtex-を使わない" class="level3"><h3 class="anchored" data-anchor-id="better-bibtex-を使わない">Better BibTeX を使わない</h3>
@@ -279,7 +288,7 @@ ZOTERO_LIBRARY_ID=1234567</code></pre>
 <li>
 <strong>「Zotero credentials not found.」</strong> この R セッションで環境変数が設定されていません。<code>Sys.getenv("ZOTERO_API_KEY") != ""</code> を確認し、<code>.Renviron</code> を編集したら R を再起動してください。</li>
 <li>
-<strong>HTTP 403。</strong> キーが無効か、要求した権限がありません(たとえば、読み取り専用キーで項目を追加しようとした場合)。</li>
+<strong>HTTP 403。</strong> キーが無効か、要求した権限がありません（たとえば、読み取り専用キーで項目を追加しようとした場合）。</li>
 <li>
 <strong>存在するライブラリなのに HTTP 404。</strong> ユーザー ID が間違っています。ユーザー名ではなく数字を使ってください。</li>
 <li>
