@@ -321,7 +321,7 @@ pre-commit install
 
 Documentation, including a worked example, is at
 <https://joelnitta.github.io/citezot/> (or
-[`vignette("citezot")`](https://joelnitta.github.io/citezot/articles/citezot.md)
+[`vignette("manuscript")`](https://joelnitta.github.io/citezot/articles/manuscript.md)
 once installed). Please report bugs and ideas at
 <https://github.com/joelnitta/citezot/issues>.
 

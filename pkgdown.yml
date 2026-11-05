@@ -2,9 +2,9 @@ pandoc: 3.8.3
 pkgdown: 2.2.1
 pkgdown_sha: ~
 articles:
-  citezot: citezot.html
+  manuscript: manuscript.html
   setup: setup.html
-last_built: 2026-11-05T02:18Z
+last_built: 2026-11-05T02:39Z
 urls:
   reference: https://joelnitta.github.io/citezot/reference
   article: https://joelnitta.github.io/citezot/articles

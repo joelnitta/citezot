@@ -134,7 +134,7 @@ cz_add("10.1016/0022-5193(64)90038-4", key = "auto")        # or add a new item 
 ```
 
 See
-[`vignette("citezot")`](https://joelnitta.github.io/citezot/articles/citezot.md)
+[`vignette("manuscript")`](https://joelnitta.github.io/citezot/articles/manuscript.md)
 for the full workflow, including how new keys are generated.
 
 ## Troubleshooting
