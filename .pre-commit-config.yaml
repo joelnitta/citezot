@@ -1,6 +1,8 @@
 # Local hooks: they need R with styler and lintr installed, and no network.
-# One-time setup:  pre-commit install
+# One-time setup:  pre-commit install   (installs the commit and push hooks)
 # Run by hand:     pre-commit run --all-files
+#                  pre-commit run --all-files --hook-stage pre-push
+default_install_hook_types: [pre-commit, pre-push]
 repos:
   - repo: local
     hooks:
@@ -35,4 +37,15 @@ repos:
           exit 1; fi'
         language: system
         files: '^README\.Rmd$'
+        pass_filenames: false
+      - id: r-cmd-check
+        name: devtools::check()
+        description: Fails unless R CMD check has no errors, warnings or notes.
+        entry: >-
+          Rscript -e
+          'r <- devtools::check(quiet = TRUE); print(r);
+          if (length(c(r$errors, r$warnings, r$notes)) > 0) quit(status = 1)'
+        language: system
+        stages: [pre-push]
+        always_run: true
         pass_filenames: false
