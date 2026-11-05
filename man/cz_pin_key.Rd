@@ -46,3 +46,9 @@ key) but nothing is written. Set \code{dry_run = FALSE} to write. The write
 sends \code{If-Unmodified-Since-Version}, so if the item changed in the meantime
 Zotero rejects it (HTTP 412) and nothing is overwritten.
 }
+\examples{
+\dontrun{
+cz_pin_key("10.1016/0022-5193(64)90038-4", "Hamilton1964") # dry run
+cz_pin_key("10.1016/0022-5193(64)90038-4", "Hamilton1964", dry_run = FALSE)
+}
+}

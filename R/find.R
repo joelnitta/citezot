@@ -11,7 +11,7 @@
 #' @param doi A DOI, with or without a `https://doi.org/` or `doi:` prefix.
 #' @param isbn An ISBN (hyphens and spaces are ignored).
 #' @param citekey An exact pinned citekey.
-#' @param auth Credentials from [cz_auth()].
+#' @inheritParams cz_fetch_items
 #' @param cache Passed to [cz_fetch_items()].
 #' @param items Items already fetched with [cz_fetch_items()], to avoid
 #'   fetching again.

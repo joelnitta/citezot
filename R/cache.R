@@ -60,6 +60,11 @@ cz_cache_write <- function(auth, version, items) {
 #'
 #' @return Invisibly, the number of files removed.
 #' @export
+#' @examples
+#' # Use an empty temporary cache directory so nothing real is deleted
+#' old <- options(citezot.cache_dir = tempfile("citezot-cache"))
+#' cz_clear_cache()
+#' options(old)
 cz_clear_cache <- function(auth = NULL) {
   files <- if (is.null(auth)) {
     list.files(cz_cache_dir(), pattern = "^(user|group)-[0-9]+\\.rds$", full.names = TRUE)

@@ -17,3 +17,9 @@ Invisibly, the number of files removed.
 Removes cache files created by \code{\link[=cz_fetch_items]{cz_fetch_items()}} when caching is enabled.
 Only citezot's own cache files are removed; nothing in Zotero is touched.
 }
+\examples{
+# Use an empty temporary cache directory so nothing real is deleted
+old <- options(citezot.cache_dir = tempfile("citezot-cache"))
+cz_clear_cache()
+options(old)
+}

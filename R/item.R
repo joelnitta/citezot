@@ -12,11 +12,17 @@ cz_get_native <- function(auth, id) {
 #'
 #' @param item The item: a DOI, Zotero item ID, citekey, or one-row result of
 #'   [cz_find()] (see [cz_pin_key()]).
-#' @param auth Credentials from [cz_auth()].
+#' @inheritParams cz_fetch_items
 #' @param cache Passed to [cz_fetch_items()] when `item` has to be looked up.
 #'
 #' @return A list with `key`, `version`, `data` and other API fields.
 #' @export
+#' @examples
+#' \dontrun{
+#' item <- cz_get_item("Darwin1859")
+#' item$data$title
+#' item$version
+#' }
 cz_get_item <- function(item, auth = cz_auth(), cache = getOption("citezot.cache", FALSE)) {
   cz_get_native(auth, cz_resolve_item(item, auth, cache = cache))
 }
@@ -81,7 +87,7 @@ cz_cli_escape <- function(x) gsub("\\}", "}}", gsub("\\{", "{{", x))
 #'   `list(date = "in press", DOI = "10.1234/abc")`. Names must be fields that
 #'   exist for the item's type; see `names(cz_get_item(item)$data)`.
 #' @param dry_run If `TRUE` (default), show the diff and write nothing.
-#' @param auth Credentials from [cz_auth()] (a key with write access to write).
+#' @inheritParams cz_add
 #' @param cache Passed to [cz_fetch_items()] when `item` has to be looked up.
 #'
 #' @return Invisibly, a list with `item`, `changes` (for each changed field,

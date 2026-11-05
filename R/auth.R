@@ -18,6 +18,10 @@
 #'
 #' @return A `cz_auth` object, for the `auth` argument of other functions.
 #' @export
+#' @examples
+#' # Explicit values (normally these come from environment variables). The key
+#' # is never shown when the object is printed.
+#' cz_auth(library_id = "1234567", api_key = "not-a-real-key")
 cz_auth <- function(
   library_id = NULL,
   api_key = Sys.getenv("ZOTERO_API_KEY"),

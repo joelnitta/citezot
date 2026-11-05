@@ -25,3 +25,13 @@ citation), finds \verb{@key} tokens, then drops Quarto cross-references
 (\verb{@fig-x}, \verb{@tbl-x}, \verb{@eq-x}, ...), which use the same syntax but are not
 bibliography citations.
 }
+\examples{
+qmd <- tempfile(fileext = ".qmd")
+writeLines(c(
+  "Species evolve by natural selection [@Darwin1859]; see @fig-map.",
+  "```{r}",
+  "x@slot  # not a citation",
+  "```"
+), qmd)
+cz_qmd_keys(qmd)
+}

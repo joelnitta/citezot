@@ -16,3 +16,8 @@ The citekey, or \code{NA_character_}.
 Checks the native \code{citation-key} property first, then falls back to a
 \verb{Citation Key:} line in \code{note}.
 }
+\examples{
+cz_item_key(list(`citation-key` = "Darwin1859"))
+cz_item_key(list(note = "Citation Key: Darwin1859"))
+cz_item_key(list(title = "No key pinned"))
+}

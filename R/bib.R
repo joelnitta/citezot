@@ -32,7 +32,7 @@
 #'   tokens such as `Ebihara2006`. Missing ones only warn.
 #' @param allow_incomplete Write the file even if keys cited in `qmd` are not
 #'   found in Zotero.
-#' @param auth Credentials from [cz_auth()].
+#' @inheritParams cz_fetch_items
 #' @param cache Passed to [cz_fetch_items()]: keep a local copy of the library
 #'   so repeat runs are fast. Defaults to `getOption("citezot.cache", FALSE)`.
 #' @param quiet Suppress the summary message.

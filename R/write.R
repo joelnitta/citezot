@@ -18,12 +18,17 @@
 #'   nothing.
 #' @param overwrite Replace a *different* key that is already pinned. Defaults
 #'   to `FALSE`, because changing a pinned key breaks documents citing it.
-#' @param auth Credentials from [cz_auth()].
+#' @inheritParams cz_fetch_items
 #' @param cache Passed to [cz_fetch_items()] when `item` is a DOI or citekey
 #'   that has to be looked up.
 #'
 #' @return Invisibly, a list with `item`, `before`, `after` and `written`.
 #' @export
+#' @examples
+#' \dontrun{
+#' cz_pin_key("10.1016/0022-5193(64)90038-4", "Hamilton1964") # dry run
+#' cz_pin_key("10.1016/0022-5193(64)90038-4", "Hamilton1964", dry_run = FALSE)
+#' }
 cz_pin_key <- function(
   item,
   key,

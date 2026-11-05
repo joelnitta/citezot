@@ -21,3 +21,10 @@ A list with \code{key}, \code{version}, \code{data} and other API fields.
 Returns the item as Zotero stores it (not CSL-JSON): writable fields are in
 \verb{$data}, and \verb{$version} is the item version used for safe updates.
 }
+\examples{
+\dontrun{
+item <- cz_get_item("Darwin1859")
+item$data$title
+item$version
+}
+}

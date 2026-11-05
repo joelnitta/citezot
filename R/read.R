@@ -27,6 +27,14 @@
 #' @return A list of CSL-JSON items (plain lists, `simplifyVector = FALSE`).
 #'   The order is not guaranteed.
 #' @export
+#' @examples
+#' \dontrun{
+#' items <- cz_fetch_items()
+#' length(items)
+#'
+#' # Keep a local copy, so later calls download only what changed
+#' items <- cz_fetch_items(cache = TRUE)
+#' }
 cz_fetch_items <- function(
   auth = cz_auth(),
   page_size = 100,

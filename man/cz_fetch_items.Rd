@@ -45,3 +45,12 @@ written to disk unless you ask, either here or with
 \code{options(citezot.cache = TRUE)}. Use \code{refresh = TRUE} to ignore the cache
 and download everything again, and \code{\link[=cz_clear_cache]{cz_clear_cache()}} to delete it.
 }
+\examples{
+\dontrun{
+items <- cz_fetch_items()
+length(items)
+
+# Keep a local copy, so later calls download only what changed
+items <- cz_fetch_items(cache = TRUE)
+}
+}

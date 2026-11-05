@@ -11,6 +11,15 @@
 #'
 #' @return Sorted character vector of unique citation keys (no leading `@`).
 #' @export
+#' @examples
+#' qmd <- tempfile(fileext = ".qmd")
+#' writeLines(c(
+#'   "Species evolve by natural selection [@Darwin1859]; see @fig-map.",
+#'   "```{r}",
+#'   "x@slot  # not a citation",
+#'   "```"
+#' ), qmd)
+#' cz_qmd_keys(qmd)
 cz_qmd_keys <- function(
   path,
   crossref_prefixes = c(
@@ -56,6 +65,10 @@ cz_qmd_keys <- function(
 #'
 #' @return Sorted character vector of unique citekey-shaped tokens.
 #' @export
+#' @examples
+#' notes <- tempfile(fileext = ".csv")
+#' writeLines(c("site,comment", "A,defined in Darwin1859", "B,see Ebihara 2006"), notes)
+#' cz_bare_keys(notes) # "Ebihara 2006" does not match
 cz_bare_keys <- function(path) {
   txt <- paste(readLines(path, warn = FALSE, encoding = "UTF-8"), collapse = "\n")
   m <- gregexpr(
@@ -75,7 +88,7 @@ cz_bare_keys <- function(path) {
 #' @param note A CSL item's `note` field (character or `NULL`).
 #'
 #' @return The citekey, or `NA_character_`.
-#' @keywords internal
+#' @noRd
 cz_note_key <- function(note) {
   if (is.null(note) || !nzchar(note)) {
     return(NA_character_)
@@ -99,6 +112,10 @@ cz_note_key <- function(note) {
 #'
 #' @return The citekey, or `NA_character_`.
 #' @export
+#' @examples
+#' cz_item_key(list(`citation-key` = "Darwin1859"))
+#' cz_item_key(list(note = "Citation Key: Darwin1859"))
+#' cz_item_key(list(title = "No key pinned"))
 cz_item_key <- function(item) {
   native <- item[["citation-key"]]
   if (!is.null(native) && nzchar(native)) {
@@ -112,7 +129,7 @@ cz_item_key <- function(item) {
 #' @param note A note string or `NULL`.
 #'
 #' @return The cleaned note, or `NULL` if nothing is left.
-#' @keywords internal
+#' @noRd
 cz_strip_key_line <- function(note) {
   if (is.null(note)) {
     return(NULL)

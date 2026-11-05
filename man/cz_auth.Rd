@@ -34,3 +34,8 @@ Create a key at \url{https://www.zotero.org/settings/keys}; the numeric user ID
 is on the same page. A read-only key is enough for \code{\link[=cz_fetch_items]{cz_fetch_items()}};
 use a separate key with write access for functions that change the library.
 }
+\examples{
+# Explicit values (normally these come from environment variables). The key
+# is never shown when the object is printed.
+cz_auth(library_id = "1234567", api_key = "not-a-real-key")
+}
