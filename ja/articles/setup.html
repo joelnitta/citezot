@@ -65,7 +65,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script><script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script><script src="../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script><script src="../site_libs/quarto-html/popper.min.js"></script><script src="../site_libs/quarto-html/tippy.umd.min.js"></script><script src="../site_libs/quarto-html/anchor.min.js"></script><link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script><link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-8d3ad9c781c51ccd60b292c95058b2c2.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-11dfed304549e7d9db55013033367f26.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -164,7 +164,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li>
 <a href="#%E9%A0%85%E7%9B%AE%E3%81%AB%E5%BC%95%E7%94%A8%E3%82%AD%E3%83%BC%E3%81%8C%E3%81%82%E3%82%8B%E3%81%93%E3%81%A8%E3%82%92%E7%A2%BA%E8%AA%8D%E3%81%99%E3%82%8B" id="toc-項目に引用キーがあることを確認する" class="nav-link" data-scroll-target="#項目に引用キーがあることを確認する">3. 項目に引用キーがあることを確認する</a>
   <ul class="collapse">
-<li><a href="#better-bibtex-%E3%82%92%E4%BD%BF%E3%81%86%E3%81%99%E3%81%A7%E3%81%AB%E4%BD%BF%E3%81%A3%E3%81%A6%E3%81%84%E3%82%8B%E5%A0%B4%E5%90%88%E3%81%AB%E3%81%8A%E3%81%99%E3%81%99%E3%82%81" id="toc-better-bibtex-を使うすでに使っている場合におすすめ" class="nav-link" data-scroll-target="#better-bibtex-を使うすでに使っている場合におすすめ">Better BibTeX を使う(すでに使っている場合におすすめ)</a></li>
+<li><a href="#better-bibtex-%E3%82%92%E4%BD%BF%E3%81%86%E6%8E%A8%E5%A5%A8" id="toc-better-bibtex-を使う推奨" class="nav-link" data-scroll-target="#better-bibtex-を使う推奨">Better BibTeX を使う(推奨)</a></li>
   <li><a href="#better-bibtex-%E3%82%92%E4%BD%BF%E3%82%8F%E3%81%AA%E3%81%84" id="toc-better-bibtex-を使わない" class="nav-link" data-scroll-target="#better-bibtex-を使わない">Better BibTeX を使わない</a></li>
   </ul>
 </li>
@@ -260,7 +260,7 @@ ZOTERO_LIBRARY_ID=1234567</code></pre>
 </ul></section></section><section id="項目に引用キーがあることを確認する" class="level2"><h2 class="anchored" data-anchor-id="項目に引用キーがあることを確認する">3. 項目に引用キーがあることを確認する</h2>
 <p>citezot は、項目に<strong>保存された引用キー</strong>で項目を引用します。キーのない項目は引用できず、<code>cz_update_bib()</code> は見つからなかったキーを知らせます。</p>
 <p>項目にキーを付ける方法は 2 つあります。</p>
-<section id="better-bibtex-を使うすでに使っている場合におすすめ" class="level3"><h3 class="anchored" data-anchor-id="better-bibtex-を使うすでに使っている場合におすすめ">Better BibTeX を使う(すでに使っている場合におすすめ)</h3>
+<section id="better-bibtex-を使う推奨" class="level3"><h3 class="anchored" data-anchor-id="better-bibtex-を使う推奨">Better BibTeX を使う(推奨)</h3>
 <p><a href="https://retorque.re/zotero-better-bibtex/installation/">Better BibTeX</a> は、選んだ書式からキーを生成し、キーを<em>固定</em>して変わらないようにできます。固定されたキーは項目に保存され、citezot が読み取るのはそれです。Zotero デスクトップで項目を選択し、右クリックして <em>Better BibTeX</em>→<em>Pin BibTeX key</em> を選びます。その後同期すると、キーがアップロードされます。</p>
 <p>Better BibTeX は必須ではありません。citezot がキーを読み取るのに必要ありません。</p>
 </section><section id="better-bibtex-を使わない" class="level3"><h3 class="anchored" data-anchor-id="better-bibtex-を使わない">Better BibTeX を使わない</h3>

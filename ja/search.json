@@ -536,7 +536,7 @@
     "href": "articles/setup.html#項目に引用キーがあることを確認する",
     "title": "citezot のセットアップ",
     "section": "3. 項目に引用キーがあることを確認する",
-    "text": "3. 項目に引用キーがあることを確認する\ncitezot は、項目に保存された引用キーで項目を引用します。キーのない項目は引用できず、cz_update_bib() は見つからなかったキーを知らせます。\n項目にキーを付ける方法は 2 つあります。\n\nBetter BibTeX を使う(すでに使っている場合におすすめ)\nBetter BibTeX は、選んだ書式からキーを生成し、キーを固定して変わらないようにできます。固定されたキーは項目に保存され、citezot が読み取るのはそれです。Zotero デスクトップで項目を選択し、右クリックして Better BibTeX→Pin BibTeX key を選びます。その後同期すると、キーがアップロードされます。\nBetter BibTeX は必須ではありません。citezot がキーを読み取るのに必要ありません。\n\n\nBetter BibTeX を使わない\nZotero は、各項目の Citation Key フィールドにキーを保存します。Zotero で手動で設定することも、R から設定することもできます。\n\ncz_find(\"darwin origin of species\")             # 項目を探す\ncz_pin_key(\"Darwin1859\", \"Darwin1859\")          # プレビュー。item には cz_find() が解釈できる識別子を指定できます\ncz_add(\"10.1016/0022-5193(64)90038-4\", key = \"auto\")        # または、生成したキーで新しい項目を追加する\n\n新しいキーの生成方法を含む一連の流れは、論文執筆ガイドを参照してください。"
+    "text": "3. 項目に引用キーがあることを確認する\ncitezot は、項目に保存された引用キーで項目を引用します。キーのない項目は引用できず、cz_update_bib() は見つからなかったキーを知らせます。\n項目にキーを付ける方法は 2 つあります。\n\nBetter BibTeX を使う(推奨)\nBetter BibTeX は、選んだ書式からキーを生成し、キーを固定して変わらないようにできます。固定されたキーは項目に保存され、citezot が読み取るのはそれです。Zotero デスクトップで項目を選択し、右クリックして Better BibTeX→Pin BibTeX key を選びます。その後同期すると、キーがアップロードされます。\nBetter BibTeX は必須ではありません。citezot がキーを読み取るのに必要ありません。\n\n\nBetter BibTeX を使わない\nZotero は、各項目の Citation Key フィールドにキーを保存します。Zotero で手動で設定することも、R から設定することもできます。\n\ncz_find(\"darwin origin of species\")             # 項目を探す\ncz_pin_key(\"Darwin1859\", \"Darwin1859\")          # プレビュー。item には cz_find() が解釈できる識別子を指定できます\ncz_add(\"10.1016/0022-5193(64)90038-4\", key = \"auto\")        # または、生成したキーで新しい項目を追加する\n\n新しいキーの生成方法を含む一連の流れは、論文執筆ガイドを参照してください。"
   },
   {
     "objectID": "articles/setup.html#トラブルシューティング",

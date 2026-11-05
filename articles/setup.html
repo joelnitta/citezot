@@ -65,7 +65,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script><script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script><script src="../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script><script src="../site_libs/quarto-html/popper.min.js"></script><script src="../site_libs/quarto-html/tippy.umd.min.js"></script><script src="../site_libs/quarto-html/anchor.min.js"></script><link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script><link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-8d3ad9c781c51ccd60b292c95058b2c2.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-11dfed304549e7d9db55013033367f26.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -164,7 +164,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li>
 <a href="#make-sure-your-items-have-citekeys" id="toc-make-sure-your-items-have-citekeys" class="nav-link" data-scroll-target="#make-sure-your-items-have-citekeys">3. Make sure your items have citekeys</a>
   <ul class="collapse">
-<li><a href="#with-better-bibtex-recommended-if-you-already-use-it" id="toc-with-better-bibtex-recommended-if-you-already-use-it" class="nav-link" data-scroll-target="#with-better-bibtex-recommended-if-you-already-use-it">With Better BibTeX (recommended if you already use it)</a></li>
+<li><a href="#with-better-bibtex-recommended" id="toc-with-better-bibtex-recommended" class="nav-link" data-scroll-target="#with-better-bibtex-recommended">With Better BibTeX (recommended)</a></li>
   <li><a href="#without-better-bibtex" id="toc-without-better-bibtex" class="nav-link" data-scroll-target="#without-better-bibtex">Without Better BibTeX</a></li>
   </ul>
 </li>
@@ -257,7 +257,7 @@ ZOTERO_LIBRARY_ID=1234567</code></pre>
 </ul></section></section><section id="make-sure-your-items-have-citekeys" class="level2"><h2 class="anchored" data-anchor-id="make-sure-your-items-have-citekeys">3. Make sure your items have citekeys</h2>
 <p>citezot cites an item by the <strong>citekey saved on it</strong>. An item without one cannot be cited, and <code>cz_update_bib()</code> will tell you which keys it could not find.</p>
 <p>There are two ways to get a key onto an item.</p>
-<section id="with-better-bibtex-recommended-if-you-already-use-it" class="level3"><h3 class="anchored" data-anchor-id="with-better-bibtex-recommended-if-you-already-use-it">With Better BibTeX (recommended if you already use it)</h3>
+<section id="with-better-bibtex-recommended" class="level3"><h3 class="anchored" data-anchor-id="with-better-bibtex-recommended">With Better BibTeX (recommended)</h3>
 <p><a href="https://retorque.re/zotero-better-bibtex/installation/">Better BibTeX</a> generates keys from a formula you choose, and can <em>pin</em> them so they never change. Pinned keys are saved on the item, which is what citezot reads. In Zotero desktop, select the items, right-click, then <em>Better BibTeX</em> and <em>Pin BibTeX key</em>. Syncing then uploads the keys.</p>
 <p>Better BibTeX is optional. citezot does not need it to read keys.</p>
 </section><section id="without-better-bibtex" class="level3"><h3 class="anchored" data-anchor-id="without-better-bibtex">Without Better BibTeX</h3>
