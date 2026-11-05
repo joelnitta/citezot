@@ -97,10 +97,11 @@ test_that("changes, additions, deletions and trashing are applied incrementally"
   cz_fetch_items(auth, cache = TRUE)
 
   env$version <- 10
-  env$items$K1$title <- "Edited"; env$items$K1$version <- 6 # edited
-  env$items$K9 <- list(version = 7, title = "New")            # added
-  env$deleted <- "K2"                                         # permanently deleted
-  env$trash <- "K3"                                           # moved to trash
+  env$items$K1$title <- "Edited"
+  env$items$K1$version <- 6 # edited
+  env$items$K9 <- list(version = 7, title = "New") # added
+  env$deleted <- "K2" # permanently deleted
+  env$trash <- "K3" # moved to trash
 
   env$log <- character()
   items <- cz_fetch_items(auth, cache = TRUE)
@@ -108,7 +109,7 @@ test_that("changes, additions, deletions and trashing are applied incrementally"
   titles <- setNames(vapply(items, function(i) i$title, ""), vapply(items, function(i) i$`citation-key`, ""))
   expect_equal(titles[["K1"]], "Edited")
   expect_equal(titles[["K4"]], "Title 4") # untouched item came from cache
-  expect_equal(n_requests(env), 3)        # changed items, deleted, trash
+  expect_equal(n_requests(env), 3) # changed items, deleted, trash
 
   # and the cache was updated: next call is a single 304
   env$log <- character()
@@ -122,7 +123,9 @@ test_that("an item restored from the trash reappears", {
   httr2::local_mocked_responses(fake_library(env))
   env$trash <- "K2"
   expect_equal(keys_of(cz_fetch_items(auth, cache = TRUE)), c("K1", "K3"))
-  env$trash <- character(); env$version <- 8; env$items$K2$version <- 8
+  env$trash <- character()
+  env$version <- 8
+  env$items$K2$version <- 8
   expect_equal(keys_of(cz_fetch_items(auth, cache = TRUE)), c("K1", "K2", "K3"))
 })
 
@@ -146,8 +149,10 @@ test_that("a corrupt or foreign cache falls back to a full fetch", {
 
   # valid structure but for a different library -> ignored
   other <- cz_auth("2", "k")
-  saveRDS(list(schema = 1L, library_id = "999", library_type = "user", version = 1L, items = list()),
-          cz_cache_file(other))
+  saveRDS(
+    list(schema = 1L, library_id = "999", library_type = "user", version = 1L, items = list()),
+    cz_cache_file(other)
+  )
   expect_null(cz_cache_read(other))
 })
 

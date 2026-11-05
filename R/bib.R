@@ -165,7 +165,13 @@ cz_resolve_out <- function(qmd, out, quiet = FALSE) {
 
 cz_resolve_format <- function(out, format) {
   ext <- tolower(tools::file_ext(out))
-  from_ext <- switch(ext, bib = , bibtex = "bib", yaml = , yml = "yaml", NA_character_)
+  from_ext <- switch(ext,
+    bib = ,
+    bibtex = "bib",
+    yaml = ,
+    yml = "yaml",
+    NA_character_
+  )
   if (is.null(format)) {
     if (is.na(from_ext)) {
       cli::cli_abort(c(

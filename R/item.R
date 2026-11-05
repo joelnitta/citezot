@@ -95,7 +95,7 @@ cz_cli_escape <- function(x) gsub("\\}", "}}", gsub("\\{", "{{", x))
 #' @export
 #' @examples
 #' \dontrun{
-#' cz_update_item("Regnier2024", list(date = "in press"))                  # preview
+#' cz_update_item("Regnier2024", list(date = "in press")) # preview
 #' cz_update_item("Regnier2024", list(date = "in press"), dry_run = FALSE) # write
 #' }
 cz_update_item <- function(

@@ -157,7 +157,7 @@ test_that("only fully upper-case names are re-cased", {
   expect_equal(cz_fix_caps("WATSON"), "Watson")
   expect_equal(cz_fix_caps("SMITH-JONES"), "Smith-Jones")
   expect_equal(cz_fix_caps("VAN DER BERG"), "Van Der Berg")
-  expect_equal(cz_fix_caps("J. D."), "J. D.")      # initials untouched
+  expect_equal(cz_fix_caps("J. D."), "J. D.") # initials untouched
   expect_equal(cz_fix_caps("J"), "J")
   expect_equal(cz_fix_caps("McDonald"), "McDonald") # mixed case untouched
   expect_equal(cz_fix_caps("Ebihara"), "Ebihara")

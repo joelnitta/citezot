@@ -136,7 +136,8 @@ cz_apply_filter <- function(x, f) {
   switch(f,
     lower = tolower(x),
     upper = toupper(x),
-    fold = , transliterate = cz_fold(x),
+    fold = ,
+    transliterate = cz_fold(x),
     clean = gsub("[^[:alnum:]]", "", cz_fold(x)),
     condense = gsub("[[:space:]]+", "", x),
     nopunct = gsub("[[:punct:]]", "", x)
@@ -222,8 +223,10 @@ cz_postfix <- function(i) {
 #'   creators = list(list(creatorType = "author", firstName = "A", lastName = "Ebihara"))
 #' )
 #' cz_suggest_key(item, "auth.lower + year + shorttitle(1).lower")
-#' cz_suggest_key(item, existing = "ebihara2006taxonomic",
-#'                formula = "auth.lower + year + shorttitle(1).lower")
+#' cz_suggest_key(item,
+#'   existing = "ebihara2006taxonomic",
+#'   formula = "auth.lower + year + shorttitle(1).lower"
+#' )
 cz_suggest_key <- function(item, formula = NULL, existing = character()) {
   if (is.null(formula)) {
     fmt <- cz_key_format()

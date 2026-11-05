@@ -39,7 +39,7 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' cz_add("10.3767/000651906X622210", key = "Ebihara2006")        # preview
+#' cz_add("10.3767/000651906X622210", key = "Ebihara2006") # preview
 #' cz_add("10.3767/000651906X622210", key = "Ebihara2006", dry_run = FALSE)
 #' }
 cz_add <- function(

@@ -9,8 +9,10 @@ crossref_msg <- list(
   volume = "5", issued = list(`date-parts` = list(list(2024, 3))),
   author = list(list(given = "Ann", family = "Author"))
 )
-lib_item <- list(id = "1/AAAAAA22", type = "article-journal", title = "Old",
-                 DOI = "10.1234/old", `citation-key` = "Old2000")
+lib_item <- list(
+  id = "1/AAAAAA22", type = "article-journal", title = "Old",
+  DOI = "10.1234/old", `citation-key` = "Old2000"
+)
 
 # One fake serving Zotero + Crossref. `env` records requests (env$reqs) and
 # can override pieces: env$post (response for POST), env$collections.
@@ -37,7 +39,9 @@ fake <- function(env) {
       return(httr2::response_json(headers = list(`Total-Results` = as.character(length(env$collections))), body = env$collections))
     }
     if (httr2::req_get_method(req) == "POST") {
-      if (is.numeric(env$post)) return(httr2::response(status_code = env$post))
+      if (is.numeric(env$post)) {
+        return(httr2::response(status_code = env$post))
+      }
       return(httr2::response_json(body = env$post))
     }
     stop("unexpected request: ", url)
@@ -110,7 +114,7 @@ test_that("a live add POSTs one item with a write token and returns the new key"
   expect_match(tok, "^[0-9a-f]{32}$")
   expect_null(post[[1]]$headers[["If-Unmodified-Since-Version"]])
   body <- post[[1]]$body$data
-  expect_length(body, 1)                      # an array of one item
+  expect_length(body, 1) # an array of one item
   expect_equal(body[[1]]$citationKey, "Author2024") # pinned in the same request
   expect_equal(res$key, "NEWK2345")
   expect_true(res$written)
@@ -129,20 +133,23 @@ test_that("the write token is unique per call even if the user set a seed", {
 })
 
 test_that("both documented success shapes are understood", {
-  env <- new.env(); env$post <- list(success = list(`0` = "ABCD2345"))
+  env <- new.env()
+  env$post <- list(success = list(`0` = "ABCD2345"))
   setup_add(env)
   res <- suppressMessages(cz_add("10.1234/new", dry_run = FALSE, auth = a))
   expect_equal(res$key, "ABCD2345")
 })
 
 test_that("a failed creation is reported with Zotero's message", {
-  env <- new.env(); env$post <- list(failed = list(`0` = list(code = 400, message = "'foo' is not a valid field")))
+  env <- new.env()
+  env$post <- list(failed = list(`0` = list(code = 400, message = "'foo' is not a valid field")))
   setup_add(env)
   expect_error(cz_add("10.1234/new", dry_run = FALSE, auth = a), "not a valid field")
 })
 
 test_that("a reused write token (412) is explained as probably already done", {
-  env <- new.env(); env$post <- 412
+  env <- new.env()
+  env$post <- 412
   setup_add(env)
   expect_error(cz_add("10.1234/new", dry_run = FALSE, auth = a), "already processed")
 })
@@ -174,7 +181,9 @@ test_that("a Crossref type with no Zotero equivalent becomes a generic document"
   crossref_msg$type <- "peer-review"
   env <- new.env()
   httr2::local_mocked_responses(function(req) {
-    if (grepl("crossref", req$url)) return(httr2::response_json(body = list(message = crossref_msg)))
+    if (grepl("crossref", req$url)) {
+      return(httr2::response_json(body = list(message = crossref_msg)))
+    }
     fake(env)(req)
   })
   res <- suppressMessages(cz_add("10.1234/new", auth = a))

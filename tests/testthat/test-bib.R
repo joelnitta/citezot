@@ -43,7 +43,8 @@ read_all <- function(f) paste(readLines(f, encoding = "UTF-8"), collapse = "\n")
 bytes <- function(f) readBin(f, "raw", file.size(f))
 
 test_that("writes a sorted .bib containing only cited items", {
-  d <- withr::local_tempdir(); env <- new.env()
+  d <- withr::local_tempdir()
+  env <- new.env()
   httr2::local_mocked_responses(mock_zotero(env))
   q <- qmd_file(d, "Cites @Kent2002 and @Weiß2015, plus @Ebihara2006.")
   out <- file.path(d, "refs.bib")
@@ -56,7 +57,8 @@ test_that("writes a sorted .bib containing only cited items", {
 })
 
 test_that("writes CSL-YAML with id = citation-key and the key line stripped", {
-  d <- withr::local_tempdir(); env <- new.env()
+  d <- withr::local_tempdir()
+  env <- new.env()
   httr2::local_mocked_responses(mock_zotero(env))
   q <- qmd_file(d, "@Kent2002 @Ebihara2006")
   out <- file.path(d, "refs.yaml")
@@ -71,7 +73,8 @@ test_that("writes CSL-YAML with id = citation-key and the key line stripped", {
 })
 
 test_that("a key cited in the document but missing errors and leaves the file untouched", {
-  d <- withr::local_tempdir(); env <- new.env()
+  d <- withr::local_tempdir()
+  env <- new.env()
   httr2::local_mocked_responses(mock_zotero(env))
   out <- file.path(d, "refs.bib")
   writeLines("previous good bibliography", out)
@@ -84,7 +87,8 @@ test_that("a key cited in the document but missing errors and leaves the file un
 })
 
 test_that("allow_incomplete = TRUE writes what was found, with a warning", {
-  d <- withr::local_tempdir(); env <- new.env()
+  d <- withr::local_tempdir()
+  env <- new.env()
   httr2::local_mocked_responses(mock_zotero(env))
   q <- qmd_file(d, "@Kent2002 and @Nope1999")
   out <- file.path(d, "refs.bib")
@@ -96,10 +100,12 @@ test_that("allow_incomplete = TRUE writes what was found, with a warning", {
 })
 
 test_that("a key found only in a bare file warns but still writes", {
-  d <- withr::local_tempdir(); env <- new.env()
+  d <- withr::local_tempdir()
+  env <- new.env()
   httr2::local_mocked_responses(mock_zotero(env))
   q <- qmd_file(d, "@Kent2002")
-  csv <- file.path(d, "data.csv"); writeLines("note,defined in Ebihara2006 and Gone1999", csv)
+  csv <- file.path(d, "data.csv")
+  writeLines("note,defined in Ebihara2006 and Gone1999", csv)
   out <- file.path(d, "refs.bib")
   expect_warning(
     cz_update_bib(q, out = out, bare = csv, auth = auth_t, quiet = TRUE),
@@ -111,7 +117,8 @@ test_that("a key found only in a bare file warns but still writes", {
 })
 
 test_that("duplicate citekeys in Zotero warn and use the first", {
-  d <- withr::local_tempdir(); env <- new.env()
+  d <- withr::local_tempdir()
+  env <- new.env()
   items <- lib_items()
   items[[4]]$`citation-key` <- "Kent2002" # ID4 duplicates ID1
   httr2::local_mocked_responses(mock_zotero(env, items))
@@ -122,7 +129,8 @@ test_that("duplicate citekeys in Zotero warn and use the first", {
 })
 
 test_that("out and format come from front matter and extension", {
-  d <- withr::local_tempdir(); env <- new.env()
+  d <- withr::local_tempdir()
+  env <- new.env()
   httr2::local_mocked_responses(mock_zotero(env))
   q <- qmd_file(d, "@Kent2002", front = "bibliography: mine.bib")
   res <- cz_update_bib(q, auth = auth_t, quiet = TRUE)
@@ -131,7 +139,8 @@ test_that("out and format come from front matter and extension", {
 })
 
 test_that("documents naming different bibliographies need an explicit out", {
-  d <- withr::local_tempdir(); env <- new.env()
+  d <- withr::local_tempdir()
+  env <- new.env()
   httr2::local_mocked_responses(mock_zotero(env))
   a <- qmd_file(d, "@Kent2002", front = "bibliography: a.bib", name = "a.qmd")
   b <- qmd_file(d, "@Kent2002", front = "bibliography: b.bib", name = "b.qmd")
@@ -140,7 +149,8 @@ test_that("documents naming different bibliographies need an explicit out", {
 })
 
 test_that("with no bibliography declared it falls back to references.bib", {
-  d <- withr::local_tempdir(); env <- new.env()
+  d <- withr::local_tempdir()
+  env <- new.env()
   httr2::local_mocked_responses(mock_zotero(env))
   withr::local_dir(d)
   q <- qmd_file(d, "@Kent2002")
@@ -158,7 +168,8 @@ test_that("format is inferred from the extension and conflicts are rejected", {
 })
 
 test_that("an unchanged bibliography is not rewritten", {
-  d <- withr::local_tempdir(); env <- new.env()
+  d <- withr::local_tempdir()
+  env <- new.env()
   httr2::local_mocked_responses(mock_zotero(env))
   q <- qmd_file(d, "@Kent2002")
   out <- file.path(d, "refs.bib")
@@ -171,7 +182,8 @@ test_that("an unchanged bibliography is not rewritten", {
 })
 
 test_that("no citations writes an empty bibliography without calling the exporter", {
-  d <- withr::local_tempdir(); env <- new.env()
+  d <- withr::local_tempdir()
+  env <- new.env()
   httr2::local_mocked_responses(mock_zotero(env))
   q <- qmd_file(d, "No citations here.")
   out <- file.path(d, "refs.bib")
@@ -182,7 +194,8 @@ test_that("no citations writes an empty bibliography without calling the exporte
 
 test_that("missing input files and a missing output directory are clear errors", {
   expect_error(cz_update_bib("nope.qmd", out = "x.bib", auth = auth_t), "not found")
-  d <- withr::local_tempdir(); env <- new.env()
+  d <- withr::local_tempdir()
+  env <- new.env()
   httr2::local_mocked_responses(mock_zotero(env))
   q <- qmd_file(d, "@Kent2002")
   expect_error(

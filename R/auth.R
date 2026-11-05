@@ -36,7 +36,7 @@ cz_auth <- function(
   }
   library_id <- as.character(library_id)
   if (length(library_id) != 1 || is.na(library_id) || !nzchar(library_id) ||
-      !rlang::is_string(api_key) || !nzchar(api_key)) {
+    !rlang::is_string(api_key) || !nzchar(api_key)) {
     cli::cli_abort(c(
       "Zotero credentials not found.",
       "i" = "Set {.envvar ZOTERO_LIBRARY_ID} (or {.envvar ZOTERO_USER_ID} for a user library) and {.envvar ZOTERO_API_KEY}, or pass {.arg library_id} and {.arg api_key}.",
