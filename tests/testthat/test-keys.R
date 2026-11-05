@@ -10,7 +10,9 @@ test_that("cz_qmd_keys ignores code fences", {
 })
 
 test_that("cz_qmd_keys drops cross-refs, keeps periods inside keys", {
-  f <- write_tmp("See @fig-a, @tbl-b and @eq-c; also @WatkinsJr.2012 and @Foo2020.")
+  f <- write_tmp(
+    "See @fig-a, @tbl-b and @eq-c; also @WatkinsJr.2012 and @Foo2020."
+  )
   expect_identical(cz_qmd_keys(f), c("Foo2020", "WatkinsJr.2012"))
 })
 
@@ -21,12 +23,18 @@ test_that("cz_qmd_keys ignores emails", {
 
 test_that("cz_qmd_keys cross-ref prefixes are configurable", {
   f <- write_tmp("@fig-a @myref-b @Real2020")
-  expect_identical(cz_qmd_keys(f, crossref_prefixes = "myref"), c("Real2020", "fig-a"))
+  expect_identical(
+    cz_qmd_keys(f, crossref_prefixes = "myref"),
+    c("Real2020", "fig-a")
+  )
 })
 
 test_that("cz_bare_keys matches key shapes only", {
   f <- write_tmp(
-    "Ebihara2006, Boucheron-Dubuisson2024; Dubuisson2013a; Hsu7949; Ebihara 2006",
+    paste(
+      "Ebihara2006, Boucheron-Dubuisson2024; Dubuisson2013a;",
+      "Hsu7949; Ebihara 2006"
+    ),
     ".csv"
   )
   expect_identical(
@@ -37,10 +45,16 @@ test_that("cz_bare_keys matches key shapes only", {
 
 test_that("cz_item_key prefers native field, falls back to note, else NA", {
   expect_identical(
-    cz_item_key(list(`citation-key` = "Native2020", note = "Citation Key: Old2020")),
+    cz_item_key(list(
+      `citation-key` = "Native2020",
+      note = "Citation Key: Old2020"
+    )),
     "Native2020"
   )
-  expect_identical(cz_item_key(list(note = "foo\nCitation Key: Old2020")), "Old2020")
+  expect_identical(
+    cz_item_key(list(note = "foo\nCitation Key: Old2020")),
+    "Old2020"
+  )
   expect_true(is.na(cz_item_key(list(note = "just a note"))))
   expect_true(is.na(cz_item_key(list())))
 })
@@ -52,10 +66,15 @@ test_that("cz_strip_key_line keeps other content, NULL when empty", {
 })
 
 test_that("keys with non-ASCII letters are kept whole", {
-  f <- write_tmp("See @Weiß2015, @Tjørve2008; @Ramírez-Barahona2020 and @Øllgaard2015.")
+  f <- write_tmp(
+    "See @Weiß2015, @Tjørve2008; @Ramírez-Barahona2020 and @Øllgaard2015."
+  )
   expect_identical(
     cz_qmd_keys(f),
-    sort(c("Weiß2015", "Tjørve2008", "Ramírez-Barahona2020", "Øllgaard2015"), method = "radix")
+    sort(
+      c("Weiß2015", "Tjørve2008", "Ramírez-Barahona2020", "Øllgaard2015"),
+      method = "radix"
+    )
   )
 })
 

@@ -2,7 +2,14 @@ entry <- function(key, title = "T") {
   sprintf("@article{%s,\n\ttitle = {%s},\n\tdate = {2020},\n}\n", key, title)
 }
 
-entry_keys <- function(x) sub("(?s)^@article\\{([^,]*),.*$", "\\1", x, perl = TRUE)
+entry_keys <- function(x) {
+  sub(
+    "(?s)^@article\\{([^,]*),.*$",
+    "\\1",
+    x,
+    perl = TRUE
+  )
+}
 
 test_that("cz_split_bib splits entries and names them by key", {
   txt <- paste0(entry("A2020", "One"), "\n", entry("Weiß2015", "Two"), "\n")
@@ -30,7 +37,14 @@ mock_export <- function(env, bib) {
     q <- httr2::url_parse(req$url)$query
     ids <- strsplit(q$itemKey, ",", fixed = TRUE)[[1]]
     stopifnot(q$format == "biblatex", length(ids) <= 50)
-    txt <- paste(vapply(rev(ids), function(id) entry(bib[[id]], paste("Title of", id)), ""), collapse = "\n")
+    txt <- paste(
+      vapply(
+        rev(ids),
+        function(id) entry(bib[[id]], paste("Title of", id)),
+        ""
+      ),
+      collapse = "\n"
+    )
     httr2::response(
       headers = list(`Content-Type` = "application/x-bibtex"),
       body = charToRaw(enc2utf8(txt))
@@ -59,12 +73,16 @@ test_that("cz_export_bib batches 50 items per request", {
   expect_length(env$reqs, 3)
 })
 
-test_that("an entry exported under a different key is re-fetched and rewritten", {
+test_that("an entry exported under another key is re-fetched and rewritten", {
   env <- new.env()
   # item BBB was pinned only via Extra, so Zotero exports it under its own key
   bib <- c(AAA = "Kent2002", BBB = "zotero_made_up_2020")
   httr2::local_mocked_responses(mock_export(env, bib))
-  out <- cz_export_bib(cz_auth("1", "k"), c("AAA", "BBB"), c("Kent2002", "Pinned2020"))
+  out <- cz_export_bib(
+    cz_auth("1", "k"),
+    c("AAA", "BBB"),
+    c("Kent2002", "Pinned2020")
+  )
   expect_identical(entry_keys(out), c("Kent2002", "Pinned2020"))
   expect_match(out[2], "Title of BBB")
   expect_length(env$reqs, 2) # batch + one single-item retry

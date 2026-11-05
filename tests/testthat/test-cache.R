@@ -11,12 +11,25 @@ fake_library <- function(env) {
     hdrs <- list(`Last-Modified-Version` = as.character(env$version))
 
     if (grepl("/deleted$", u$path)) {
-      return(httr2::response_json(headers = hdrs, body = list(items = as.list(env$deleted))))
+      return(httr2::response_json(
+        headers = hdrs,
+        body = list(items = as.list(env$deleted))
+      ))
     }
     if (grepl("/items/trash$", u$path)) {
       # like Zotero, an empty trash gives an empty body
-      body <- if (length(env$trash)) charToRaw(paste(env$trash, collapse = "\n")) else raw()
-      return(httr2::response(headers = c(hdrs, list(`Content-Type` = "text/plain")), body = body))
+      body <- if (length(env$trash)) {
+        charToRaw(paste(
+          env$trash,
+          collapse = "\n"
+        ))
+      } else {
+        raw()
+      }
+      return(httr2::response(
+        headers = c(hdrs, list(`Content-Type` = "text/plain")),
+        body = body
+      ))
     }
 
     since <- if (is.null(q$since)) 0 else as.integer(q$since)
@@ -29,7 +42,8 @@ fake_library <- function(env) {
     }, logical(1))
     live <- env$items[keep]
     start <- as.integer(q$start)
-    idx <- seq_along(live)[seq_along(live) > start & seq_along(live) <= start + as.integer(q$limit)]
+    pos <- seq_along(live)
+    idx <- pos[pos > start & pos <= start + as.integer(q$limit)]
     csl <- lapply(names(live)[idx], function(k) {
       list(id = file.path("1", k), title = live[[k]]$title, `citation-key` = k)
     })
@@ -43,7 +57,10 @@ fake_library <- function(env) {
 new_fake <- function(n = 3) {
   env <- new.env()
   env$items <- setNames(
-    lapply(seq_len(n), function(i) list(version = i, title = paste("Title", i))),
+    lapply(
+      seq_len(n),
+      function(i) list(version = i, title = paste("Title", i))
+    ),
     paste0("K", seq_len(n))
   )
   env$version <- n
@@ -53,12 +70,20 @@ new_fake <- function(n = 3) {
   env
 }
 
-keys_of <- function(items) sort(vapply(items, function(i) i$`citation-key`, ""), method = "radix")
+keys_of <- function(items) {
+  sort(
+    vapply(items, function(i) i$`citation-key`, ""),
+    method = "radix"
+  )
+}
 auth <- cz_auth("1", "secret-api-key")
 n_requests <- function(env) length(env$log)
 
 setup_cache <- function(env = parent.frame()) {
-  withr::local_options(citezot.cache_dir = withr::local_tempdir(.local_envir = env), .local_envir = env)
+  withr::local_options(
+    citezot.cache_dir = withr::local_tempdir(.local_envir = env),
+    .local_envir = env
+  )
 }
 
 test_that("nothing is written to disk unless caching is enabled", {
@@ -90,7 +115,7 @@ test_that("an unchanged library costs a single request", {
   expect_identical(n_requests(env), 1L)
 })
 
-test_that("changes, additions, deletions and trashing are applied incrementally", {
+test_that("changes, additions, deletions and trashing apply incrementally", {
   setup_cache()
   env <- new_fake(5)
   httr2::local_mocked_responses(fake_library(env))
@@ -106,7 +131,10 @@ test_that("changes, additions, deletions and trashing are applied incrementally"
   env$log <- character()
   items <- cz_fetch_items(auth, cache = TRUE)
   expect_identical(keys_of(items), c("K1", "K4", "K5", "K9"))
-  titles <- setNames(vapply(items, function(i) i$title, ""), vapply(items, function(i) i$`citation-key`, ""))
+  titles <- setNames(
+    vapply(items, function(i) i$title, ""),
+    vapply(items, function(i) i$`citation-key`, "")
+  )
   expect_identical(titles[["K1"]], "Edited")
   expect_identical(titles[["K4"]], "Title 4") # untouched item came from cache
   expect_identical(n_requests(env), 3L) # changed items, deleted, trash
@@ -126,7 +154,10 @@ test_that("an item restored from the trash reappears", {
   env$trash <- character()
   env$version <- 8
   env$items$K2$version <- 8
-  expect_identical(keys_of(cz_fetch_items(auth, cache = TRUE)), c("K1", "K2", "K3"))
+  expect_identical(
+    keys_of(cz_fetch_items(auth, cache = TRUE)),
+    c("K1", "K2", "K3")
+  )
 })
 
 test_that("refresh = TRUE ignores the cache", {
@@ -145,12 +176,21 @@ test_that("a corrupt or foreign cache falls back to a full fetch", {
   httr2::local_mocked_responses(fake_library(env))
   dir.create(cz_cache_dir(), recursive = TRUE, showWarnings = FALSE)
   writeLines("not an rds file", cz_cache_file(auth))
-  expect_identical(keys_of(cz_fetch_items(auth, cache = TRUE)), c("K1", "K2", "K3"))
+  expect_identical(
+    keys_of(cz_fetch_items(auth, cache = TRUE)),
+    c("K1", "K2", "K3")
+  )
 
   # valid structure but for a different library -> ignored
   other <- cz_auth("2", "k")
   saveRDS(
-    list(schema = 1L, library_id = "999", library_type = "user", version = 1L, items = list()),
+    list(
+      schema = 1L,
+      library_id = "999",
+      library_type = "user",
+      version = 1L,
+      items = list()
+    ),
     cz_cache_file(other)
   )
   expect_null(cz_cache_read(other))

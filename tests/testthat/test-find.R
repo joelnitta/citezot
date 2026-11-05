@@ -1,4 +1,14 @@
-csl <- function(id, key, title, family = "Smith", doi = NULL, isbn = NULL, year = 2020, ct = "Journal", type = "article-journal") {
+csl <- function(
+  id,
+  key,
+  title,
+  family = "Smith",
+  doi = NULL,
+  isbn = NULL,
+  year = 2020,
+  ct = "Journal",
+  type = "article-journal"
+) {
   x <- list(
     id = file.path("1", id), type = type, title = title, `citation-key` = key,
     author = lapply(family, function(f) list(family = f, given = "A.")),
@@ -10,10 +20,39 @@ csl <- function(id, key, title, family = "Smith", doi = NULL, isbn = NULL, year 
   x
 }
 lib <- list(
-  csl("AAAAAA22", "Ebihara2006", "A taxonomic revision of Hymenophyllaceae", family = "Ebihara", doi = "10.3767/000651906X622210", year = 2006, ct = "Blumea"),
-  csl("BBBBBB33", "Weiß2015", "Damage and decay kinetics of herbarium DNA", family = c("Weiß", "Burbano", "Krause"), doi = "10.1101/023135", year = 2015),
-  csl("CCCCCC44", "iwatsuki2023", "Hymenophyllaceae of Japan", family = c("Iwatsuki", "Ebihara"), isbn = "978-4-8299-1234-5", year = 2023, type = "book"),
-  csl("DDDDDD55", NA_character_, "Item without a pinned key", family = "Nobody", year = 1999)
+  csl(
+    "AAAAAA22",
+    "Ebihara2006",
+    "A taxonomic revision of Hymenophyllaceae",
+    family = "Ebihara",
+    doi = "10.3767/000651906X622210",
+    year = 2006,
+    ct = "Blumea"
+  ),
+  csl(
+    "BBBBBB33",
+    "Weiß2015",
+    "Damage and decay kinetics of herbarium DNA",
+    family = c("Weiß", "Burbano", "Krause"),
+    doi = "10.1101/023135",
+    year = 2015
+  ),
+  csl(
+    "CCCCCC44",
+    "iwatsuki2023",
+    "Hymenophyllaceae of Japan",
+    family = c("Iwatsuki", "Ebihara"),
+    isbn = "978-4-8299-1234-5",
+    year = 2023,
+    type = "book"
+  ),
+  csl(
+    "DDDDDD55",
+    NA_character_,
+    "Item without a pinned key",
+    family = "Nobody",
+    year = 1999
+  )
 )
 lib[[4]]$`citation-key` <- NULL
 
@@ -33,33 +72,54 @@ test_that("cz_find returns a tidy table", {
 })
 
 test_that("DOI matching ignores case and prefixes", {
-  for (d in c("10.3767/000651906x622210", "https://doi.org/10.3767/000651906X622210", "doi:10.3767/000651906X622210")) {
+  for (d in c(
+    "10.3767/000651906x622210",
+    "https://doi.org/10.3767/000651906X622210",
+    "doi:10.3767/000651906X622210"
+  )) {
     expect_identical(cz_find(doi = d, items = lib)$citekey, "Ebihara2006")
   }
 })
 
 test_that("ISBN matching ignores hyphens", {
-  expect_identical(cz_find(isbn = "9784829912345", items = lib)$citekey, "iwatsuki2023")
+  expect_identical(
+    cz_find(isbn = "9784829912345", items = lib)$citekey,
+    "iwatsuki2023"
+  )
 })
 
-test_that("free-text query needs every word, ignores case, and searches authors/journal/year", {
-  expect_identical(cz_find("ebihara revision", items = lib)$citekey, "Ebihara2006")
-  expect_identical(nrow(cz_find("ebihara", items = lib)), 2L) # author of two items
+test_that("free-text query needs every word, ignoring case", {
+  expect_identical(
+    cz_find("ebihara revision", items = lib)$citekey,
+    "Ebihara2006"
+  )
+  # author of two items
+  expect_identical(nrow(cz_find("ebihara", items = lib)), 2L)
   expect_identical(cz_find("blumea 2006", items = lib)$citekey, "Ebihara2006")
-  expect_identical(cz_find("krause", items = lib)$citekey, "Weiß2015") # non-first author
+  # non-first author
+  expect_identical(cz_find("krause", items = lib)$citekey, "Weiß2015")
   expect_identical(nrow(cz_find("ebihara zzzz", items = lib)), 0L)
 })
 
 test_that("criteria combine with AND; no match is an empty table", {
-  expect_identical(nrow(cz_find("hymenophyllaceae", doi = "10.1101/023135", items = lib)), 0L)
+  expect_identical(
+    nrow(cz_find("hymenophyllaceae", doi = "10.1101/023135", items = lib)),
+    0L
+  )
   out <- cz_find("nothing like this", items = lib)
   expect_identical(nrow(out), 0L)
   expect_identical(names(out)[1], "item")
 })
 
 test_that("authors are summarised", {
-  expect_identical(cz_find(citekey = "Weiß2015", items = lib)$author, "Weiß et al.")
-  expect_identical(cz_find(citekey = "iwatsuki2023", items = lib)$author, "Iwatsuki & Ebihara")
+  expect_identical(
+    cz_find(citekey = "Weiß2015", items = lib)$author,
+    "Weiß et al."
+  )
+  expect_identical(
+    cz_find(citekey = "iwatsuki2023", items = lib)$author,
+    "Iwatsuki & Ebihara"
+  )
 })
 
 test_that("items without a pinned key are findable but have NA citekey", {
@@ -70,9 +130,15 @@ test_that("items without a pinned key are findable but have NA citekey", {
 
 test_that("cz_find fetches the library when items are not supplied", {
   httr2::local_mocked_responses(function(req) {
-    httr2::response_json(headers = list(`Total-Results` = "4"), body = list(items = lib))
+    httr2::response_json(
+      headers = list(`Total-Results` = "4"),
+      body = list(items = lib)
+    )
   })
-  expect_identical(cz_find(citekey = "Ebihara2006", auth = cz_auth("1", "k"))$item, "AAAAAA22")
+  expect_identical(
+    cz_find(citekey = "Ebihara2006", auth = cz_auth("1", "k"))$item,
+    "AAAAAA22"
+  )
 })
 
 test_that("an empty library does not break cz_find", {
@@ -83,7 +149,7 @@ test_that("an empty library does not break cz_find", {
 auth_f <- cz_auth("1", "k")
 res <- function(x) cz_resolve_item(x, auth_f, items = lib)
 
-test_that("Zotero item IDs pass straight through (with or without library prefix)", {
+test_that("Zotero item IDs pass straight through, with or without prefix", {
   expect_identical(res("Q62TD7I9"), "Q62TD7I9")
   expect_identical(res("6265773/Q62TD7I9"), "Q62TD7I9")
 })
@@ -103,11 +169,17 @@ test_that("a one-row cz_find() result resolves; other shapes are rejected", {
 test_that("unknown or ambiguous identifiers give clear errors", {
   expect_error(res("NoSuchKey1999"), "No item in the library matches citekey")
   expect_error(res("10.9999/none"), "No item in the library matches DOI")
-  lib2 <- c(lib, list(csl("EEEEEE66", "Ebihara2006", "Duplicate", family = "X")))
-  expect_error(cz_resolve_item("Ebihara2006", auth_f, items = lib2), "2 items match")
+  lib2 <- c(
+    lib,
+    list(csl("EEEEEE66", "Ebihara2006", "Duplicate", family = "X"))
+  )
+  expect_error(
+    cz_resolve_item("Ebihara2006", auth_f, items = lib2),
+    "2 items match"
+  )
 })
 
-test_that("ambiguous-looking lower-case words are treated as citekeys, not IDs", {
+test_that("lower-case look-alikes of item IDs are treated as citekeys", {
   # Zotero IDs are upper case without 0, 1, O, I-lookalikes; 'Kent2002' has 0
   expect_error(res("Kent2002"), "No item in the library matches citekey")
 })

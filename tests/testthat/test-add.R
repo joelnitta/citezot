@@ -1,6 +1,18 @@
 tmpl_fields <- c(
-  "itemType", "title", "creators", "abstractNote", "date", "DOI", "url", "language",
-  "libraryCatalog", "accessDate", "publicationTitle", "volume", "issue", "pages",
+  "itemType",
+  "title",
+  "creators",
+  "abstractNote",
+  "date",
+  "DOI",
+  "url",
+  "language",
+  "libraryCatalog",
+  "accessDate",
+  "publicationTitle",
+  "volume",
+  "issue",
+  "pages",
   "ISSN", "collections", "tags", "relations", "citationKey"
 )
 crossref_msg <- list(
@@ -18,7 +30,10 @@ lib_item <- list(
 # can override pieces: env$post (response for POST), env$collections.
 fake <- function(env) {
   env$reqs <- list()
-  env$post <- env$post %||% list(successful = list(`0` = list(key = "NEWK2345", version = 9)))
+  env$post <- env$post %||% list(successful = list(`0` = list(
+    key = "NEWK2345",
+    version = 9
+  )))
   env$collections <- env$collections %||% list(
     list(key = "COLL2345", data = list(name = "Ferns")),
     list(key = "COLL6789", data = list(name = "Papers"))
@@ -30,13 +45,22 @@ fake <- function(env) {
       return(httr2::response_json(body = list(message = crossref_msg)))
     }
     if (grepl("/items/new", url, fixed = TRUE)) {
-      return(httr2::response_json(body = setNames(as.list(rep("", length(tmpl_fields))), tmpl_fields)))
+      return(httr2::response_json(body = setNames(
+        as.list(rep("", length(tmpl_fields))),
+        tmpl_fields
+      )))
     }
     if (grepl("/items/top", url, fixed = TRUE)) {
-      return(httr2::response_json(headers = list(`Total-Results` = "1"), body = list(items = list(env$lib_item %||% lib_item))))
+      return(httr2::response_json(
+        headers = list(`Total-Results` = "1"),
+        body = list(items = list(env$lib_item %||% lib_item))
+      ))
     }
     if (grepl("/collections", url, fixed = TRUE)) {
-      return(httr2::response_json(headers = list(`Total-Results` = as.character(length(env$collections))), body = env$collections))
+      return(httr2::response_json(
+        headers = list(`Total-Results` = as.character(length(env$collections))),
+        body = env$collections
+      ))
     }
     if (httr2::req_get_method(req) == "POST") {
       if (is.numeric(env$post)) {
@@ -55,7 +79,7 @@ setup_add <- function(env = new.env(), .frame = parent.frame()) {
   env
 }
 
-test_that("non-DOI identifiers are rejected with a pointer to what is supported", {
+test_that("non-DOI identifiers are rejected, saying what is supported", {
   expect_error(cz_add("978-0-262-03384-8", auth = a), "doesn't look like a DOI")
   expect_error(cz_add("Kent2002", auth = a), "doesn't look like a DOI")
 })
@@ -63,7 +87,12 @@ test_that("non-DOI identifiers are rejected with a pointer to what is supported"
 test_that("the default is a dry run: reads and looks up, but never POSTs", {
   env <- setup_add()
   msgs <- testthat::capture_messages(
-    res <- cz_add("https://doi.org/10.1234/new", key = "Author2024", collection = "Ferns", auth = a)
+    res <- cz_add(
+      "https://doi.org/10.1234/new",
+      key = "Author2024",
+      collection = "Ferns",
+      auth = a
+    )
   )
   expect_false(any(vapply(env$reqs, httr2::req_get_method, "") == "POST"))
   expect_false(res$written)
@@ -78,9 +107,13 @@ test_that("the default is a dry run: reads and looks up, but never POSTs", {
   expect_match(txt, "Author2024")
 })
 
-test_that("an item already in the library is not added again, and Crossref is not asked", {
+test_that("an item already in the library is not added again", {
   env <- setup_add()
-  msgs <- testthat::capture_messages(res <- cz_add("10.1234/OLD", dry_run = FALSE, auth = a))
+  msgs <- testthat::capture_messages(res <- cz_add(
+    "10.1234/OLD",
+    dry_run = FALSE,
+    auth = a
+  ))
   expect_match(paste(msgs, collapse = ""), "Already in your library")
   expect_identical(res$existing$citekey, "Old2000")
   expect_false(res$written)
@@ -90,7 +123,10 @@ test_that("an item already in the library is not added again, and Crossref is no
 
 test_that("a citekey already in use is refused before any lookup", {
   env <- setup_add()
-  expect_error(cz_add("10.1234/new", key = "Old2000", auth = a), "already used by item AAAAAA22")
+  expect_error(
+    cz_add("10.1234/new", key = "Old2000", auth = a),
+    "already used by item AAAAAA22"
+  )
   expect_false(any(grepl("crossref", urls(env), fixed = TRUE)))
 })
 
@@ -101,12 +137,21 @@ test_that("keys that pandoc can't cite are refused before any request", {
   }
   expect_length(env$reqs, 0)
   # accents and internal punctuation are fine
-  expect_no_error(suppressMessages(cz_add("10.1234/new", key = "Weiß:2015.a", auth = a)))
+  expect_no_error(suppressMessages(cz_add(
+    "10.1234/new",
+    key = "Weiß:2015.a",
+    auth = a
+  )))
 })
 
-test_that("a live add POSTs one item with a write token and returns the new key", {
+test_that("a live add POSTs one item with a write token", {
   env <- setup_add()
-  res <- suppressMessages(cz_add("10.1234/new", key = "Author2024", dry_run = FALSE, auth = a))
+  res <- suppressMessages(cz_add(
+    "10.1234/new",
+    key = "Author2024",
+    dry_run = FALSE,
+    auth = a
+  ))
   post <- Filter(function(r) httr2::req_get_method(r) == "POST", env$reqs)
   expect_length(post, 1)
   expect_match(post[[1]]$url, "/users/1/items$")
@@ -115,7 +160,8 @@ test_that("a live add POSTs one item with a write token and returns the new key"
   expect_null(post[[1]]$headers[["If-Unmodified-Since-Version"]])
   body <- post[[1]]$body$data
   expect_length(body, 1) # an array of one item
-  expect_identical(body[[1]]$citationKey, "Author2024") # pinned in the same request
+  # pinned in the same request
+  expect_identical(body[[1]]$citationKey, "Author2024")
   expect_identical(res$key, "NEWK2345")
   expect_true(res$written)
 })
@@ -142,30 +188,45 @@ test_that("both documented success shapes are understood", {
 
 test_that("a failed creation is reported with Zotero's message", {
   env <- new.env()
-  env$post <- list(failed = list(`0` = list(code = 400, message = "'foo' is not a valid field")))
+  env$post <- list(failed = list(`0` = list(
+    code = 400,
+    message = "'foo' is not a valid field"
+  )))
   setup_add(env)
-  expect_error(cz_add("10.1234/new", dry_run = FALSE, auth = a), "not a valid field")
+  expect_error(
+    cz_add("10.1234/new", dry_run = FALSE, auth = a),
+    "not a valid field"
+  )
 })
 
 test_that("a reused write token (412) is explained as probably already done", {
   env <- new.env()
   env$post <- 412
   setup_add(env)
-  expect_error(cz_add("10.1234/new", dry_run = FALSE, auth = a), "already processed")
+  expect_error(
+    cz_add("10.1234/new", dry_run = FALSE, auth = a),
+    "already processed"
+  )
 })
 
-test_that("collections resolve by key or exact name; unknown or ambiguous ones error", {
+test_that("collections resolve by key or exact name, else error", {
   env <- setup_add()
   expect_identical(cz_resolve_collection(a, "COLL6789"), "COLL6789")
   expect_identical(cz_resolve_collection(a, "Papers"), "COLL6789")
   expect_error(cz_resolve_collection(a, "papers"), "No collection")
-  env$collections <- list(list(key = "AAAA2222", data = list(name = "Dup")), list(key = "BBBB3333", data = list(name = "Dup")))
+  env$collections <- list(
+    list(key = "AAAA2222", data = list(name = "Dup")),
+    list(key = "BBBB3333", data = list(name = "Dup"))
+  )
   expect_error(cz_resolve_collection(a, "Dup"), "2 collections are named")
 })
 
 test_that("an unknown collection stops before Crossref is queried", {
   env <- setup_add()
-  expect_error(cz_add("10.1234/new", collection = "Nope", auth = a), "No collection")
+  expect_error(
+    cz_add("10.1234/new", collection = "Nope", auth = a),
+    "No collection"
+  )
   expect_false(any(grepl("crossref", urls(env), fixed = TRUE)))
 })
 
@@ -176,7 +237,7 @@ test_that("the item template is fetched once per type per session", {
   expect_identical(sum(grepl("/items/new", urls(env), fixed = TRUE)), 1L)
 })
 
-test_that("a Crossref type with no Zotero equivalent becomes a generic document", {
+test_that("an unmapped Crossref type becomes a generic document", {
   .cz_state$templates <- list()
   crossref_msg$type <- "peer-review"
   env <- new.env()
@@ -196,18 +257,29 @@ test_that("no contact address is sent to Crossref unless the user sets one", {
   expect_false(any(grepl("mailto", urls(env), fixed = TRUE)))
 })
 
-test_that("key = 'auto' generates the key from the formula and shows it in the dry run", {
-  withr::local_options(citezot.key_format = "auth.lower + year + shorttitle(1).lower")
+test_that("key = 'auto' generates the key and shows it in the dry run", {
+  withr::local_options(
+    citezot.key_format = "auth.lower + year + shorttitle(1).lower"
+  )
   env <- setup_add()
-  msgs <- testthat::capture_messages(res <- cz_add("10.1234/new", key = "auto", auth = a))
+  msgs <- testthat::capture_messages(res <- cz_add(
+    "10.1234/new",
+    key = "auto",
+    auth = a
+  ))
   expect_identical(res$item$citationKey, "author2024new")
   expect_match(paste(msgs, collapse = ""), "author2024new")
 })
 
 test_that("an auto key that is already taken gets a letter", {
-  withr::local_options(citezot.key_format = "auth.lower + year + shorttitle(1).lower")
+  withr::local_options(
+    citezot.key_format = "auth.lower + year + shorttitle(1).lower"
+  )
   env <- new.env()
-  env$lib_item <- modifyList(lib_item, list(`citation-key` = "author2024new", DOI = "10.1234/other"))
+  env$lib_item <- modifyList(
+    lib_item,
+    list(`citation-key` = "author2024new", DOI = "10.1234/other")
+  )
   setup_add(env)
   res <- suppressMessages(cz_add("10.1234/new", key = "auto", auth = a))
   expect_identical(res$item$citationKey, "author2024newa")
@@ -216,6 +288,9 @@ test_that("an auto key that is already taken gets a letter", {
 test_that("an unsupported formula stops cz_add before anything is written", {
   withr::local_options(citezot.key_format = "auth || title")
   env <- setup_add()
-  expect_error(cz_add("10.1234/new", key = "auto", dry_run = FALSE, auth = a), "alternatives")
+  expect_error(
+    cz_add("10.1234/new", key = "auto", dry_run = FALSE, auth = a),
+    "alternatives"
+  )
   expect_false(any(vapply(env$reqs, httr2::req_get_method, "") == "POST"))
 })

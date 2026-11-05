@@ -3,8 +3,15 @@ native_item <- function(...) {
     key = "ABCD2345", version = 7, itemType = "journalArticle",
     title = "A {braced} title", date = "2020", DOI = "10.1234/abc", extra = "",
     citationKey = "Kent2002",
-    creators = list(list(creatorType = "author", firstName = "W", lastName = "Kent")),
-    tags = list(list(tag = "fern")), collections = list(), relations = setNames(list(), character(0))
+    creators = list(list(
+      creatorType = "author",
+      firstName = "W",
+      lastName = "Kent"
+    )),
+    tags = list(list(tag = "fern")), collections = list(), relations = setNames(
+      list(),
+      character(0)
+    )
   )
   mods <- list(...)
   data[names(mods)] <- mods
@@ -59,7 +66,8 @@ test_that("a live update sends only changed fields with the version header", {
   expect_identical(meths(env), c("GET", "PATCH"))
   patch <- env$reqs[[2]]
   expect_identical(patch$headers[["If-Unmodified-Since-Version"]], "7")
-  expect_identical(patch_body(env), list(date = "in press", title = "New")) # DOI unchanged -> not sent
+  # DOI unchanged -> not sent
+  expect_identical(patch_body(env), list(date = "in press", title = "New"))
   expect_true(res$written)
 })
 
@@ -67,7 +75,12 @@ test_that("nothing is sent when no value changes", {
   env <- new.env()
   httr2::local_mocked_responses(mock_native(env))
   expect_message(
-    res <- cz_update_item("ABCD2345", list(date = "2020"), dry_run = FALSE, auth = a),
+    res <- cz_update_item(
+      "ABCD2345",
+      list(date = "2020"),
+      dry_run = FALSE,
+      auth = a
+    ),
     "nothing to change"
   )
   expect_identical(meths(env), "GET")
@@ -81,40 +94,82 @@ test_that("array fields are replaced as a whole", {
     "ABCD2345", list(tags = list(list(tag = "fern"), list(tag = "new"))),
     dry_run = FALSE, auth = a
   ))
-  expect_identical(patch_body(env)$tags, list(list(tag = "fern"), list(tag = "new")))
+  expect_identical(
+    patch_body(env)$tags,
+    list(list(tag = "fern"), list(tag = "new"))
+  )
   # same tags in a different element order do not count as a change
   env$reqs <- NULL
-  res <- suppressMessages(cz_update_item("ABCD2345", list(tags = list(list(tag = "fern"))), dry_run = FALSE, auth = a))
+  res <- suppressMessages(cz_update_item(
+    "ABCD2345",
+    list(tags = list(list(tag = "fern"))),
+    dry_run = FALSE,
+    auth = a
+  ))
   expect_false(res$written)
 })
 
-test_that("protected and unknown fields are rejected with guidance, before any write", {
+test_that("protected and unknown fields are rejected before any write", {
   env <- new.env()
   httr2::local_mocked_responses(mock_native(env))
-  expect_error(cz_update_item("ABCD2345", list(citationKey = "X"), auth = a), "cz_pin_key")
-  expect_error(cz_update_item("ABCD2345", list(version = 9), auth = a), "version")
-  expect_error(cz_update_item("ABCD2345", list(itemType = "book"), auth = a), "itemType")
-  expect_error(cz_update_item("ABCD2345", list(ISBN = "123"), dry_run = FALSE, auth = a), "Not a field")
+  expect_error(
+    cz_update_item("ABCD2345", list(citationKey = "X"), auth = a),
+    "cz_pin_key"
+  )
+  expect_error(
+    cz_update_item("ABCD2345", list(version = 9), auth = a),
+    "version"
+  )
+  expect_error(
+    cz_update_item("ABCD2345", list(itemType = "book"), auth = a),
+    "itemType"
+  )
+  expect_error(
+    cz_update_item("ABCD2345", list(ISBN = "123"), dry_run = FALSE, auth = a),
+    "Not a field"
+  )
   expect_false("PATCH" %in% meths(env))
 })
 
 test_that("bad field values are rejected before any request", {
   env <- new.env()
   httr2::local_mocked_responses(mock_native(env))
-  expect_error(cz_update_item("ABCD2345", list(date = NULL), auth = a), "single string")
-  expect_error(cz_update_item("ABCD2345", list(date = c("a", "b")), auth = a), "single string")
-  expect_error(cz_update_item("ABCD2345", list(date = NA_character_), auth = a), "single string")
-  expect_error(cz_update_item("ABCD2345", list(tags = "fern"), auth = a), "must be a list")
+  expect_error(
+    cz_update_item("ABCD2345", list(date = NULL), auth = a),
+    "single string"
+  )
+  expect_error(
+    cz_update_item("ABCD2345", list(date = c("a", "b")), auth = a),
+    "single string"
+  )
+  expect_error(
+    cz_update_item("ABCD2345", list(date = NA_character_), auth = a),
+    "single string"
+  )
+  expect_error(
+    cz_update_item("ABCD2345", list(tags = "fern"), auth = a),
+    "must be a list"
+  )
   expect_error(cz_update_item("ABCD2345", list("x"), auth = a), "named list")
   expect_error(cz_update_item("ABCD2345", list(), auth = a), "named list")
-  expect_error(cz_update_item("ABCD2345", list(date = "a", date = "b"), auth = a), "duplicated") # nolint: duplicate_argument_linter.
+  # nolint start: duplicate_argument_linter.
+  expect_error(
+    cz_update_item("ABCD2345", list(date = "a", date = "b"), auth = a),
+    "duplicated"
+  )
+  # nolint end
   expect_length(env$reqs, 0)
 })
 
-test_that("numbers are sent as strings and fields can be cleared with an empty string", {
+test_that("numbers are sent as strings; an empty string clears a field", {
   env <- new.env()
   httr2::local_mocked_responses(mock_native(env))
-  suppressMessages(cz_update_item("ABCD2345", list(date = 2021, DOI = ""), dry_run = FALSE, auth = a))
+  suppressMessages(cz_update_item(
+    "ABCD2345",
+    list(date = 2021, DOI = ""),
+    dry_run = FALSE,
+    auth = a
+  ))
   expect_identical(patch_body(env), list(date = "2021", DOI = ""))
 })
 

@@ -1,5 +1,9 @@
 test_that("cz_auth reads env vars", {
-  withr::local_envvar(ZOTERO_LIBRARY_ID = "123", ZOTERO_USER_ID = "", ZOTERO_API_KEY = "secret")
+  withr::local_envvar(
+    ZOTERO_LIBRARY_ID = "123",
+    ZOTERO_USER_ID = "",
+    ZOTERO_API_KEY = "secret"
+  )
   a <- cz_auth()
   expect_s3_class(a, "cz_auth")
   expect_identical(a$library_id, "123")
@@ -7,7 +11,11 @@ test_that("cz_auth reads env vars", {
 })
 
 test_that("ZOTERO_USER_ID is a fallback for user libraries only", {
-  withr::local_envvar(ZOTERO_LIBRARY_ID = "", ZOTERO_USER_ID = "55", ZOTERO_API_KEY = "k")
+  withr::local_envvar(
+    ZOTERO_LIBRARY_ID = "",
+    ZOTERO_USER_ID = "55",
+    ZOTERO_API_KEY = "k"
+  )
   expect_identical(cz_auth()$library_id, "55")
   expect_error(cz_auth(library_type = "group"), "credentials not found")
   withr::local_envvar(ZOTERO_LIBRARY_ID = "77")
@@ -19,7 +27,11 @@ test_that("cz_auth accepts a numeric library id", {
 })
 
 test_that("cz_auth errors helpfully when credentials are missing", {
-  withr::local_envvar(ZOTERO_LIBRARY_ID = "", ZOTERO_USER_ID = "", ZOTERO_API_KEY = "")
+  withr::local_envvar(
+    ZOTERO_LIBRARY_ID = "",
+    ZOTERO_USER_ID = "",
+    ZOTERO_API_KEY = ""
+  )
   expect_error(cz_auth(), "credentials not found")
   expect_error(cz_auth("123", ""), "credentials not found")
 })

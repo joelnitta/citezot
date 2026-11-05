@@ -85,5 +85,8 @@ test_that("cz_fetch_items gives up if the library keeps changing", {
     resp$headers[["Last-Modified-Version"]] <- as.character(env$n)
     resp
   })
-  expect_error(cz_fetch_items(cz_auth("1", "k")), "changed while it was being downloaded")
+  expect_error(
+    cz_fetch_items(cz_auth("1", "k")),
+    "changed while it was being downloaded"
+  )
 })

@@ -1,11 +1,19 @@
 test_that("a Backoff header pauses before the next request", {
   slept <- numeric()
-  testthat::local_mocked_bindings(cz_sleep = function(seconds) slept <<- c(slept, seconds))
+  testthat::local_mocked_bindings(cz_sleep = function(seconds) {
+    slept <<- c(
+      slept,
+      seconds
+    )
+  })
   .cz_state$backoff_until <- NULL
   calls <- 0
   httr2::local_mocked_responses(function(req) {
     calls <<- calls + 1
-    httr2::response_json(headers = if (calls == 1) list(Backoff = "5") else list(), body = list())
+    httr2::response_json(
+      headers = if (calls == 1) list(Backoff = "5") else list(),
+      body = list()
+    )
   })
   a <- cz_auth("1", "k")
   suppressMessages({
@@ -25,7 +33,10 @@ test_that("an absurd Backoff is capped", {
   testthat::local_mocked_bindings(cz_sleep = function(seconds) NULL)
   .cz_state$backoff_until <- NULL
   cz_note_backoff(httr2::response(headers = list(Backoff = "100000")))
-  expect_lte(as.numeric(difftime(.cz_state$backoff_until, Sys.time(), units = "secs")), 300)
+  expect_lte(
+    as.numeric(difftime(.cz_state$backoff_until, Sys.time(), units = "secs")),
+    300
+  )
   .cz_state$backoff_until <- NULL
 })
 
