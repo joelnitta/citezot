@@ -51,18 +51,20 @@ citezot reads these environment variables:
 | `ZOTERO_API_KEY` | the API key |
 | `ZOTERO_LIBRARY_ID` | the numeric ID of your personal library (your user ID), or of a group library |
 
-Put them in your **user-level** `.Renviron`, so they are available in every project and cannot be committed by accident:
+Save them to your **user-level** `.Renviron`, so they are available in every project and cannot be committed by accident. `cz_set_auth()` does this for you. It asks for the ID and key (so they never land in your command history), writes the file, and makes them available in the current session straight away:
 
 ```{r}
-usethis::edit_r_environ()   # opens ~/.Renviron
+citezot::cz_set_auth()
 ```
+
+Prefer to edit the file yourself? Run `usethis::edit_r_environ()`, add the two lines below, save, and **restart R** (`.Renviron` is read only at startup):
 
 ```
 ZOTERO_API_KEY=xxxxxxxxxxxxxxxxxxxxxxxx
 ZOTERO_LIBRARY_ID=1234567
 ```
 
-Save the file and **restart R**: `.Renviron` is read only at startup. Then check that citezot can see the credentials. The key is never printed:
+Either way, check that citezot can see the credentials. The key is never printed:
 
 ```{r}
 library(citezot)
