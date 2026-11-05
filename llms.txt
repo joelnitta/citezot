@@ -319,10 +319,11 @@ pre-commit install
 
 ## Getting help
 
-Please report bugs and ideas at
-<https://github.com/joelnitta/citezot/issues>. See
+Documentation, including a worked example, is at
+<https://joelnitta.github.io/citezot/> (or
 [`vignette("citezot")`](https://joelnitta.github.io/citezot/articles/citezot.md)
-for a worked example.
+once installed). Please report bugs and ideas at
+<https://github.com/joelnitta/citezot/issues>.
 
 ## License
 
