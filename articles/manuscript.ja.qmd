@@ -14,7 +14,7 @@ library(citezot)
 
 ## セットアップ
 
-始める前に、Zotero の API キー、`~/.Renviron` に書いたユーザー ID、そして項目の引用キーが必要です。手順は[セットアップガイド](setup.qmd)にあります。citezot が認証情報を認識できているか確認しましょう(キーが表示されることはありません)。
+始める前に、Zotero の API キー、`~/.Renviron` に書いたユーザー ID、そして項目の引用キーが必要です。手順は[セットアップガイド](setup.qmd)にあります。citezot が認証情報を認識できているか確認しましょう（キーが表示されることはありません）。
 
 ```{r}
 cz_auth()
@@ -59,7 +59,7 @@ cz_update_bib("manuscript.qmd")
 #> ✔ 2/2 cited keys found; 'references.bib' updated.
 ```
 
-あとは、いつもどおり Quarto で文書をレンダリングします(`quarto render manuscript.qmd`。HTML、PDF、Typst のいずれでも可)。書き出されるのは引用した項目だけで、キー順に、Zotero のエクスポーターから直接得た BibLaTeX 形式になります。CSL-YAML にしたい場合は `.yaml` の名前を指定します: `cz_update_bib("manuscript.qmd", out = "references.yaml")`
+あとは、いつもどおり Quarto で文書をレンダリングします（`quarto render manuscript.qmd`。HTML、PDF、Typst のいずれでも可）。書き出されるのは引用した項目だけで、キー順に、Zotero のエクスポーターから直接得た BibLaTeX 形式になります。CSL-YAML にしたい場合は `.yaml` の名前を指定します: `cz_update_bib("manuscript.qmd", out = "references.yaml")`
 
 ### キーが見つからないとき
 
@@ -98,7 +98,7 @@ cz_update_bib("manuscript.qmd")
    cz_add("10.1101/gr.229202", key = "Kent2002", dry_run = FALSE) # 作成
    ```
 
-   プレビューには、作成される項目のタイトル、著者、日付、キーが表示されます。`cz_add()` は、まず DOI とキーがライブラリにまだないことを確認します。(現時点では、Crossref に登録された DOI のみ対応しています。)
+   プレビューには、作成される項目のタイトル、著者、日付、キーが表示されます。`cz_add()` は、まず DOI とキーがライブラリにまだないことを確認します。（現時点では、Crossref に登録された DOI のみ対応しています。）
 
 もう一度 `cz_update_bib()` を実行すれば、文書は完成です。
 
@@ -114,7 +114,7 @@ cz_update_item("Regnier2024", list(date = "in press"))
 cz_update_item("Regnier2024", list(date = "in press"), dry_run = FALSE)
 ```
 
-実際に変わるフィールドだけが、項目のバージョンとともに送信されます。citezot が読み取った後に誰か(または Zotero デスクトップ)が項目を編集していた場合、Zotero は HTTP 412 を返し、何も上書きされません。`cz_get_item("Regnier2024")` で項目を確認してから、もう一度コマンドを実行してください。作成者、タグ、コレクションは丸ごと置き換えられるため、タグを 1 つ追加するには、タグの完全なリストを渡します。識別用のフィールド(`key`、`version`、`itemType`、追加日・更新日)と引用キーはここでは変更できません。キーの変更には `cz_pin_key()` を使います。
+実際に変わるフィールドだけが、項目のバージョンとともに送信されます。citezot が読み取った後に誰か（または Zotero デスクトップ）が項目を編集していた場合、Zotero は HTTP 412 を返し、何も上書きされません。`cz_get_item("Regnier2024")` で項目を確認してから、もう一度コマンドを実行してください。作成者、タグ、コレクションは丸ごと置き換えられるため、タグを 1 つ追加するには、タグの完全なリストを渡します。識別用のフィールド（`key`、`version`、`itemType`、追加日・更新日）と引用キーはここでは変更できません。キーの変更には `cz_pin_key()` を使います。
 
 ## 引用キー
 
@@ -138,9 +138,9 @@ cz_suggest_key(item, "auth.lower + year + shorttitle(1).lower",
 cz_suggest_key(item, "auth.lower + shorttitle(3,3) + year")
 ```
 
-`cz_add(..., key = "auto")` は `cz_key_format()` のパターンを使います。`citezot.key_format` オプションを設定していればそれ、なければ Better BibTeX が Zotero のプロファイルに保存したもの、それもなければ Better BibTeX の既定です。書式言語は一部(`auth`、`year`、`shorttitle`、`title`、いくつかのフィルター、`+`)のみ対応しており、それ以外はキーが変わるのではなくエラーになります。Better BibTeX 自体は必要ありません。`cz_pin_key()` で固定したキーや `cz_add()` に渡したキーは、どれも使えます。
+`cz_add(..., key = "auto")` は `cz_key_format()` のパターンを使います。`citezot.key_format` オプションを設定していればそれ、なければ Better BibTeX が Zotero のプロファイルに保存したもの、それもなければ Better BibTeX の既定です。書式言語は一部（`auth`、`year`、`shorttitle`、`title`、いくつかのフィルター、`+`）のみ対応しており、それ以外はキーが変わるのではなくエラーになります。Better BibTeX 自体は必要ありません。`cz_pin_key()` で固定したキーや `cz_add()` に渡したキーは、どれも使えます。
 
-タイトル中の単語は Better BibTeX の規則に従います。HTML タグは除かれ、タイトルは最初のコロンまたは文末で切られ、"a" や "the" のような短い機能語は飛ばされ、単語内のハイフンなどの記号は取り除かれます(`early-diverging` は `earlydiverging` になります)。
+タイトル中の単語は Better BibTeX の規則に従います。HTML タグは除かれ、タイトルは最初のコロンまたは文末で切られ、"a" や "the" のような短い機能語は飛ばされ、単語内のハイフンなどの記号は取り除かれます（`early-diverging` は `earlydiverging` になります）。
 
 ## 速度
 
@@ -182,5 +182,5 @@ tar_target(
 * **「Zotero credentials not found.」** この R セッションで環境変数が設定されていません。`Sys.getenv("ZOTERO_API_KEY") != ""` を確認し、`~/.Renviron` を編集したら R を再起動してください。
 * **HTTP 403。** キーが無効か、必要な権限がありません。書き込みには、書き込み権限のあるキーが必要です。
 * **更新時の HTTP 412。** 読み取った後に項目が変更されました。`cz_get_item()` でもう一度確認し、意図して再試行してください。
-* **項目が Zotero にあるのに、引用キーが「見つからない」。** 項目に引用キーが保存されていない(または別のキーが保存されている)ためです。`cz_find()` で項目のキーを確認し、`cz_pin_key()` で設定してください。
-* **変わった文字(`??` など)を含むキー**は、文書から引用できません。Zotero で直すか、`cz_pin_key(..., overwrite = TRUE)` で修正してください。
+* **項目が Zotero にあるのに、引用キーが「見つからない」。** 項目に引用キーが保存されていない（または別のキーが保存されている）ためです。`cz_find()` で項目のキーを確認し、`cz_pin_key()` で設定してください。
+* **変わった文字（`??` など）を含むキー**は、文書から引用できません。Zotero で直すか、`cz_pin_key(..., overwrite = TRUE)` で修正してください。
