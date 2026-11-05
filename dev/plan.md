@@ -78,13 +78,14 @@ cz_pin_key("Q62TD7I9", "Kent2002", dry_run = FALSE)          # or Zotero's 8-cha
 ```
 Optional automation: Quarto `pre-render` script calling `cz_update_bib()`, or a `targets` target (`tar_file()` + `tar_cue(mode = "always")`).
 
-## Citekey generation for new items (supports BBT users' own formula)
-`cz_suggest_key(item, formula = NULL)`, used by `cz_add(key = "auto")`. Resolution order (details to VERIFY against BBT docs/source during build):
-1. **BBT JSON-RPC** (`http://localhost:23119/better-bibtex/json-rpc`) when Zotero desktop + BBT run: exact key from Joel's real formula. Local, opt-in, never at load/check time.
-2. **Formula read from `prefs.js`** in the Zotero profile (`extensions.zotero.translators.better-bibtex.citekeyFormat`; profile dir via option/auto-detect on macOS/Win/Linux), evaluated by a small R interpreter for a subset of the BBT formula language. Unsupported tokens → clear error pointing to route 1 or 3. Tests start with `auth.lower + year + shorttitle(1).lower`.
-3. **Manual**: `options(citezot.key_format = "auth.lower + year + shorttitle(1).lower")` or `formula=`.
-4. No formula → default author+year(+letter). `dry_run` always shows the key before pinning; collisions checked against existing library keys.
-Pinning goes through the Web API (`citationKey`), so BBT sees it as pinned after sync.
+## Citekey generation (as built)
+`cz_suggest_key(item, formula, existing)` evaluates a documented subset of the Better BibTeX pattern language (auth, year, shorttitle(n, m), title; filters lower, upper, fold, transliterate, clean, condense, nopunct; `+`; quoted literals). Unsupported syntax is an error, never a different key. A taken key gets a letter (a, b, ... aa). `cz_add(key = "auto")` uses it.
+
+`cz_key_format()` picks the formula: `options(citezot.key_format)`, then the `better-bibtex.citekeyFormat` line of the Zotero profile's `prefs.js` (read only on key generation, announced once per session; override location with `citezot.zotero_profile`), then BBT's default `auth.lower + shorttitle(3,3) + year`.
+
+**Validated** on Joel's library: `auth.lower + year + shorttitle(1).lower` reproduces 353/359 (98.3%) of his lower-case keys. The other 6 come from data the items no longer have (BBT does not regenerate pinned keys), so 100% is not attainable. Rules learned: title HTML stripped; title words split on whitespace, "/" and en/em dashes; hyphens and punctuation dropped inside title words; Unicode hyphens in author names kept as "-"; collision letters start at "a".
+
+**BBT JSON-RPC route: NOT built, deliberately.** Probed (read-only): its methods only work on items already in Zotero; none generates a key for item JSON, none exposes the pattern, and `item.regenerate_key` would rewrite pinned keys. Not useful for `cz_add()`.
 
 ## What `cz_add(id, key = NULL, collection = NULL, dry_run = TRUE)` does
 `id` is an identifier; type auto-detected by pattern (override with `type =`). Renamed from `cz_add_doi()`.
@@ -105,7 +106,7 @@ Pinning goes through the Web API (`citationKey`), so BBT sees it as pinned after
 - Docs: README (setup, two-key advice, BBT optional), vignette (Quarto workflow + targets).
 
 ## Order of work
-1. `usethis::create_package()`, `use_testthat(3)`, license, `.Rbuildignore` (ignore `.env.local`, handoff md).
+1. (done) `usethis::create_package()`, `use_testthat(3)`, license, `.Rbuildignore` (ignore `.env.local`, handoff md).
 2. Port pure key functions + tests (cases in handoff §4).
 3. Central request helper, then fetch + pin on top.
 4. Port `cz_update_bib()` with mocked-API tests (missing key leaves file byte-identical, `allow_incomplete`, dup warn, paging `Total-Results` 250 → 3 requests); add bib format.
@@ -122,3 +123,6 @@ Pinning goes through the Web API (`citationKey`), so BBT sees it as pinned after
 
 ## Open items
 - License (default MIT); `since=` conditional fetch in v1 or later; how much of the BBT formula language to support.
+
+## Status (2026-11-04)
+Steps 1-7 are implemented and committed, plus README, NEWS and vignette. Live-verified read paths and the write path (one throwaway item, since trashed). Not built / ideas: ISBN, arXiv and PMID lookups for `cz_add()`; honouring the `_quarto.yml` render list in `cz_update_bib()`; Greek/Cyrillic transliteration for keys; BBT JSON-RPC (see above). Before a release or an rOpenSci submission: re-run `devtools::check(cran = TRUE)`, consider `goodpractice::gp()`, and decide on CRAN versus GitHub-only.
