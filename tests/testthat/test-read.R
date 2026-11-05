@@ -20,7 +20,7 @@ test_that("cz_fetch_items pages through a 250-item library in 3 requests", {
   items <- cz_fetch_items(cz_auth("123", "k"))
   expect_length(env$reqs, 3)
   expect_length(items, 250)
-  expect_equal(items[[250]]$id, "1/K250")
+  expect_identical(items[[250]]$id, "1/K250")
 })
 
 test_that("cz_fetch_items makes one request for small libraries", {
@@ -39,7 +39,7 @@ test_that("cz_fetch_items builds the right request", {
   req <- env$reqs[[1]]
   expect_match(req$url, "^https://api.zotero.org/users/123/items/top\\?")
   expect_match(req$url, "format=csljson")
-  expect_equal(req$headers[["Zotero-API-Version"]], "3")
+  expect_identical(req$headers[["Zotero-API-Version"]], "3")
 
   env <- new.env()
   httr2::local_mocked_responses(mock_library(1, env))
@@ -53,8 +53,8 @@ test_that("cz_fetch_items validates page_size", {
 
 test_that("Retry-After / Backoff headers set the retry delay", {
   resp <- function(h) httr2::response(headers = h)
-  expect_equal(cz_retry_after(resp(list(`Retry-After` = "5"))), 5)
-  expect_equal(cz_retry_after(resp(list(Backoff = "12"))), 12)
+  expect_identical(cz_retry_after(resp(list(`Retry-After` = "5"))), 5)
+  expect_identical(cz_retry_after(resp(list(Backoff = "12"))), 12)
   expect_true(is.na(cz_retry_after(resp(list()))))
 })
 
@@ -72,7 +72,7 @@ test_that("cz_fetch_items retries once if the library changes mid-download", {
   })
   items <- cz_fetch_items(cz_auth("1", "k"))
   expect_length(items, 250)
-  expect_equal(env$n, 6) # 3 requests, discarded, then 3 consistent ones
+  expect_identical(env$n, 6) # 3 requests, discarded, then 3 consistent ones
 })
 
 test_that("cz_fetch_items gives up if the library keeps changing", {

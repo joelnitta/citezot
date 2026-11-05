@@ -31,7 +31,7 @@ fake_library <- function(env) {
     start <- as.integer(q$start)
     idx <- seq_along(live)[seq_along(live) > start & seq_along(live) <= start + as.integer(q$limit)]
     csl <- lapply(names(live)[idx], function(k) {
-      list(id = paste0("1/", k), title = live[[k]]$title, `citation-key` = k)
+      list(id = file.path("1", k), title = live[[k]]$title, `citation-key` = k)
     })
     httr2::response_json(
       headers = c(hdrs, list(`Total-Results` = as.character(length(live)))),
@@ -74,9 +74,9 @@ test_that("first cached fetch is a full download and writes the cache", {
   env <- new_fake()
   httr2::local_mocked_responses(fake_library(env))
   items <- cz_fetch_items(auth, cache = TRUE)
-  expect_equal(keys_of(items), c("K1", "K2", "K3"))
+  expect_identical(keys_of(items), c("K1", "K2", "K3"))
   expect_true(file.exists(cz_cache_file(auth)))
-  expect_false(any(grepl("since=", env$log)))
+  expect_false(any(grepl("since=", env$log, fixed = TRUE)))
 })
 
 test_that("an unchanged library costs a single request", {
@@ -86,8 +86,8 @@ test_that("an unchanged library costs a single request", {
   cz_fetch_items(auth, cache = TRUE)
   env$log <- character()
   items <- cz_fetch_items(auth, cache = TRUE)
-  expect_equal(keys_of(items), c("K1", "K2", "K3"))
-  expect_equal(n_requests(env), 1)
+  expect_identical(keys_of(items), c("K1", "K2", "K3"))
+  expect_identical(n_requests(env), 1L)
 })
 
 test_that("changes, additions, deletions and trashing are applied incrementally", {
@@ -105,16 +105,16 @@ test_that("changes, additions, deletions and trashing are applied incrementally"
 
   env$log <- character()
   items <- cz_fetch_items(auth, cache = TRUE)
-  expect_equal(keys_of(items), c("K1", "K4", "K5", "K9"))
+  expect_identical(keys_of(items), c("K1", "K4", "K5", "K9"))
   titles <- setNames(vapply(items, function(i) i$title, ""), vapply(items, function(i) i$`citation-key`, ""))
-  expect_equal(titles[["K1"]], "Edited")
-  expect_equal(titles[["K4"]], "Title 4") # untouched item came from cache
-  expect_equal(n_requests(env), 3) # changed items, deleted, trash
+  expect_identical(titles[["K1"]], "Edited")
+  expect_identical(titles[["K4"]], "Title 4") # untouched item came from cache
+  expect_identical(n_requests(env), 3L) # changed items, deleted, trash
 
   # and the cache was updated: next call is a single 304
   env$log <- character()
   cz_fetch_items(auth, cache = TRUE)
-  expect_equal(n_requests(env), 1)
+  expect_identical(n_requests(env), 1L)
 })
 
 test_that("an item restored from the trash reappears", {
@@ -122,11 +122,11 @@ test_that("an item restored from the trash reappears", {
   env <- new_fake(3)
   httr2::local_mocked_responses(fake_library(env))
   env$trash <- "K2"
-  expect_equal(keys_of(cz_fetch_items(auth, cache = TRUE)), c("K1", "K3"))
+  expect_identical(keys_of(cz_fetch_items(auth, cache = TRUE)), c("K1", "K3"))
   env$trash <- character()
   env$version <- 8
   env$items$K2$version <- 8
-  expect_equal(keys_of(cz_fetch_items(auth, cache = TRUE)), c("K1", "K2", "K3"))
+  expect_identical(keys_of(cz_fetch_items(auth, cache = TRUE)), c("K1", "K2", "K3"))
 })
 
 test_that("refresh = TRUE ignores the cache", {
@@ -136,7 +136,7 @@ test_that("refresh = TRUE ignores the cache", {
   cz_fetch_items(auth, cache = TRUE)
   env$log <- character()
   cz_fetch_items(auth, cache = TRUE, refresh = TRUE)
-  expect_false(any(grepl("since=", env$log)))
+  expect_false(any(grepl("since=", env$log, fixed = TRUE)))
 })
 
 test_that("a corrupt or foreign cache falls back to a full fetch", {
@@ -145,7 +145,7 @@ test_that("a corrupt or foreign cache falls back to a full fetch", {
   httr2::local_mocked_responses(fake_library(env))
   dir.create(cz_cache_dir(), recursive = TRUE, showWarnings = FALSE)
   writeLines("not an rds file", cz_cache_file(auth))
-  expect_equal(keys_of(cz_fetch_items(auth, cache = TRUE)), c("K1", "K2", "K3"))
+  expect_identical(keys_of(cz_fetch_items(auth, cache = TRUE)), c("K1", "K2", "K3"))
 
   # valid structure but for a different library -> ignored
   other <- cz_auth("2", "k")
@@ -171,10 +171,10 @@ test_that("cz_clear_cache removes only citezot cache files", {
   httr2::local_mocked_responses(fake_library(env))
   cz_fetch_items(auth, cache = TRUE)
   writeLines("keep me", file.path(cz_cache_dir(), "notes.txt"))
-  expect_equal(cz_clear_cache(auth), 1)
+  expect_identical(cz_clear_cache(auth), 1L)
   expect_false(file.exists(cz_cache_file(auth)))
   cz_fetch_items(auth, cache = TRUE)
-  expect_equal(cz_clear_cache(), 1)
+  expect_identical(cz_clear_cache(), 1L)
   expect_true(file.exists(file.path(cz_cache_dir(), "notes.txt")))
 })
 

@@ -21,7 +21,7 @@ test_that("cz_pin_key defaults to a dry run that only reads", {
     res <- cz_pin_key("ABCD2345", "Kent2002", auth = cz_auth("1", "k")),
     "Dry run"
   )
-  expect_equal(methods(env), "GET")
+  expect_identical(methods(env), "GET")
   expect_false(res$written)
 })
 
@@ -31,11 +31,11 @@ test_that("cz_pin_key writes with the version header and strips library prefix",
   res <- suppressMessages(
     cz_pin_key("1/ABCD2345", "Kent2002", dry_run = FALSE, auth = cz_auth("1", "k"))
   )
-  expect_equal(methods(env), c("GET", "PATCH"))
+  expect_identical(methods(env), c("GET", "PATCH"))
   patch <- env$reqs[[2]]
   expect_match(patch$url, "/users/1/items/ABCD2345$")
-  expect_equal(patch$headers[["If-Unmodified-Since-Version"]], "7")
-  expect_equal(patch$body$data, list(citationKey = "Kent2002"))
+  expect_identical(patch$headers[["If-Unmodified-Since-Version"]], "7")
+  expect_identical(patch$body$data, list(citationKey = "Kent2002"))
   expect_true(res$written)
 })
 
@@ -46,12 +46,12 @@ test_that("cz_pin_key refuses to replace a different pinned key unless asked", {
     cz_pin_key("ABCD2345", "New2020", dry_run = FALSE, auth = cz_auth("1", "k")),
     "already has the pinned key"
   )
-  expect_equal(methods(env), "GET")
+  expect_identical(methods(env), "GET")
 
   suppressMessages(
     cz_pin_key("ABCD2345", "New2020", dry_run = FALSE, overwrite = TRUE, auth = cz_auth("1", "k"))
   )
-  expect_equal(methods(env), c("GET", "GET", "PATCH"))
+  expect_identical(methods(env), c("GET", "GET", "PATCH"))
 })
 
 test_that("cz_pin_key does nothing when the key is already pinned", {
@@ -61,7 +61,7 @@ test_that("cz_pin_key does nothing when the key is already pinned", {
     res <- cz_pin_key("ABCD2345", "Same2020", dry_run = FALSE, auth = cz_auth("1", "k")),
     "nothing to do"
   )
-  expect_equal(methods(env), "GET") # no PATCH sent
+  expect_identical(methods(env), "GET") # no PATCH sent
   expect_false(res$written)
 })
 
@@ -91,7 +91,7 @@ test_that("cz_pin_key accepts a DOI, a citekey, or a cz_find() result", {
   env <- new.env()
   item_mock <- mock_item(env, citation_key = "Old2000")
   httr2::local_mocked_responses(function(req) {
-    if (grepl("/items/top", req$url)) {
+    if (grepl("/items/top", req$url, fixed = TRUE)) {
       httr2::response_json(headers = list(`Total-Results` = "1"), body = list(items = lib))
     } else {
       item_mock(req)

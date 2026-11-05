@@ -22,52 +22,52 @@ article <- list(
 )
 
 test_that("Crossref types map to Zotero item types, with a safe fallback", {
-  expect_equal(cz_crossref_type("journal-article"), "journalArticle")
-  expect_equal(cz_crossref_type("book-chapter"), "bookSection")
-  expect_equal(cz_crossref_type("proceedings-article"), "conferencePaper")
-  expect_equal(cz_crossref_type("posted-content"), "preprint")
-  expect_equal(cz_crossref_type("peer-review"), "document")
-  expect_equal(cz_crossref_type("something-new"), "document")
+  expect_identical(cz_crossref_type("journal-article"), "journalArticle")
+  expect_identical(cz_crossref_type("book-chapter"), "bookSection")
+  expect_identical(cz_crossref_type("proceedings-article"), "conferencePaper")
+  expect_identical(cz_crossref_type("posted-content"), "preprint")
+  expect_identical(cz_crossref_type("peer-review"), "document")
+  expect_identical(cz_crossref_type("something-new"), "document")
 })
 
 test_that("markup is stripped except the tags Zotero renders", {
-  expect_equal(
+  expect_identical(
     cz_strip_markup("A <i>b</i> <jats:italic>c</jats:italic> &amp; d &lt;e&gt; <sub>2</sub>"),
     "A <i>b</i> c & d <e> <sub>2</sub>"
   )
-  expect_equal(cz_strip_markup("<p>x <i>y</i></p>", keep = character()), "x y")
+  expect_identical(cz_strip_markup("<p>x <i>y</i></p>", keep = character()), "x y")
   expect_true(is.na(cz_strip_markup(NA_character_)))
 })
 
 test_that("dates keep the precision Crossref gives", {
   d <- function(...) cz_crossref_date(list(issued = list(`date-parts` = list(list(...)))))
-  expect_equal(d(2006, 7, 27), "2006-07-27")
-  expect_equal(d(2006, 7), "2006-07")
-  expect_equal(d(2006), "2006")
-  expect_equal(cz_crossref_date(list(published = list(`date-parts` = list(list(1999))))), "1999")
+  expect_identical(d(2006, 7, 27), "2006-07-27")
+  expect_identical(d(2006, 7), "2006-07")
+  expect_identical(d(2006), "2006")
+  expect_identical(cz_crossref_date(list(published = list(`date-parts` = list(list(1999))))), "1999")
   expect_true(is.na(cz_crossref_date(list())))
 })
 
 test_that("a journal article maps onto Zotero fields", {
   res <- cz_crossref_to_item(article, "journalArticle", valid, accessed = t0)
   it <- res$item
-  expect_equal(it$itemType, "journalArticle")
-  expect_equal(it$title, "A <i>taxonomic</i> revision of Ferns & allies: with notes")
-  expect_equal(it$publicationTitle, "Blumea")
-  expect_equal(it[c("volume", "issue", "pages", "date")], list(volume = "51", issue = "2", pages = "221-280", date = "2006-07-27"))
-  expect_equal(it$ISSN, "0006-5196, 1234-5678") # duplicates removed
-  expect_equal(it$url, "https://doi.org/10.1234/abc")
-  expect_equal(it$abstractNote, "We revise it & more.")
-  expect_equal(it$libraryCatalog, "Crossref")
-  expect_equal(it$accessDate, "2026-01-02T03:04:05Z")
+  expect_identical(it$itemType, "journalArticle")
+  expect_identical(it$title, "A <i>taxonomic</i> revision of Ferns & allies: with notes")
+  expect_identical(it$publicationTitle, "Blumea")
+  expect_identical(it[c("volume", "issue", "pages", "date")], list(volume = "51", issue = "2", pages = "221-280", date = "2006-07-27"))
+  expect_identical(it$ISSN, "0006-5196, 1234-5678") # duplicates removed
+  expect_identical(it$url, "https://doi.org/10.1234/abc")
+  expect_identical(it$abstractNote, "We revise it & more.")
+  expect_identical(it$libraryCatalog, "Crossref")
+  expect_identical(it$accessDate, "2026-01-02T03:04:05Z")
   expect_length(res$dropped, 0)
 })
 
 test_that("creators: people, organisations and editors", {
   cr <- cz_crossref_to_item(article, "journalArticle", valid)$item$creators
-  expect_equal(cr[[1]], list(creatorType = "author", firstName = "Atsushi", lastName = "Ebihara"))
-  expect_equal(cr[[2]], list(creatorType = "author", name = "Some Consortium"))
-  expect_equal(cr[[3]]$creatorType, "editor")
+  expect_identical(cr[[1]], list(creatorType = "author", firstName = "Atsushi", lastName = "Ebihara"))
+  expect_identical(cr[[2]], list(creatorType = "author", name = "Some Consortium"))
+  expect_identical(cr[[3]]$creatorType, "editor")
 })
 
 test_that("fields not valid for the type are dropped and reported, not sent", {
@@ -85,17 +85,17 @@ test_that("empty and missing values are omitted", {
 test_that("book chapters use the container as the book title", {
   ch <- modifyList(article, list(type = "book-chapter", ISBN = list("978-1-23456-789-7"), `publisher-location` = "Berlin"))
   it <- cz_crossref_to_item(ch, "bookSection", valid)$item
-  expect_equal(it$bookTitle, "Blumea")
-  expect_equal(it$place, "Berlin")
-  expect_equal(it$ISBN, "978-1-23456-789-7")
+  expect_identical(it$bookTitle, "Blumea")
+  expect_identical(it$place, "Berlin")
+  expect_identical(it$ISBN, "978-1-23456-789-7")
   expect_null(it$publicationTitle)
 })
 
 test_that("preprints and theses take their repository / institution", {
   pp <- list(type = "posted-content", DOI = "10.1101/1", title = list("P"), institution = list(list(name = "bioRxiv")))
-  expect_equal(cz_crossref_to_item(pp, "preprint", valid)$item$repository, "bioRxiv")
+  expect_identical(cz_crossref_to_item(pp, "preprint", valid)$item$repository, "bioRxiv")
   th <- list(type = "dissertation", DOI = "10.1/x", title = list("T"), publisher = "Uni X")
-  expect_equal(cz_crossref_to_item(th, "thesis", valid)$item$university, "Uni X")
+  expect_identical(cz_crossref_to_item(th, "thesis", valid)$item$university, "Uni X")
 })
 
 test_that("cz_crossref_fetch returns the message and gives a clear error for unknown DOIs", {
@@ -106,7 +106,7 @@ test_that("cz_crossref_fetch returns the message and gives a clear error for unk
       httr2::response(status_code = 404)
     }
   })
-  expect_equal(cz_crossref_fetch("10.1234/abc")$type, "journal-article")
+  expect_identical(cz_crossref_fetch("10.1234/abc")$type, "journal-article")
   expect_error(cz_crossref_fetch("10.9999/missing"), "no record of the DOI")
 })
 
@@ -142,7 +142,7 @@ test_that("empty arrays and missing values from Crossref don't break the mapping
     ISSN = list(), author = list(), institution = list(), page = NULL
   )
   res <- cz_crossref_to_item(msg, "journalArticle", valid)
-  expect_equal(res$item$title, "T")
+  expect_identical(res$item$title, "T")
   expect_null(res$item$publicationTitle)
   expect_null(res$item$creators)
   # and for types that read institution / event
@@ -154,15 +154,15 @@ test_that("empty arrays and missing values from Crossref don't break the mapping
 })
 
 test_that("only fully upper-case names are re-cased", {
-  expect_equal(cz_fix_caps("WATSON"), "Watson")
-  expect_equal(cz_fix_caps("SMITH-JONES"), "Smith-Jones")
-  expect_equal(cz_fix_caps("VAN DER BERG"), "Van Der Berg")
-  expect_equal(cz_fix_caps("J. D."), "J. D.") # initials untouched
-  expect_equal(cz_fix_caps("J"), "J")
-  expect_equal(cz_fix_caps("McDonald"), "McDonald") # mixed case untouched
-  expect_equal(cz_fix_caps("Ebihara"), "Ebihara")
-  expect_equal(cz_fix_caps(""), "")
-  expect_equal(cz_fix_caps("MÜLLER"), "Müller")
+  expect_identical(cz_fix_caps("WATSON"), "Watson")
+  expect_identical(cz_fix_caps("SMITH-JONES"), "Smith-Jones")
+  expect_identical(cz_fix_caps("VAN DER BERG"), "Van Der Berg")
+  expect_identical(cz_fix_caps("J. D."), "J. D.") # initials untouched
+  expect_identical(cz_fix_caps("J"), "J")
+  expect_identical(cz_fix_caps("McDonald"), "McDonald") # mixed case untouched
+  expect_identical(cz_fix_caps("Ebihara"), "Ebihara")
+  expect_identical(cz_fix_caps(""), "")
+  expect_identical(cz_fix_caps("MÜLLER"), "Müller")
   msg <- list(author = list(list(given = "J. D.", family = "WATSON")))
-  expect_equal(cz_crossref_creators(msg)[[1]], list(creatorType = "author", firstName = "J. D.", lastName = "Watson"))
+  expect_identical(cz_crossref_creators(msg)[[1]], list(creatorType = "author", firstName = "J. D.", lastName = "Watson"))
 })

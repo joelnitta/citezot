@@ -29,13 +29,13 @@ fake <- function(env) {
     if (grepl("^https://api.crossref.org", url)) {
       return(httr2::response_json(body = list(message = crossref_msg)))
     }
-    if (grepl("/items/new", url)) {
+    if (grepl("/items/new", url, fixed = TRUE)) {
       return(httr2::response_json(body = setNames(as.list(rep("", length(tmpl_fields))), tmpl_fields)))
     }
-    if (grepl("/items/top", url)) {
+    if (grepl("/items/top", url, fixed = TRUE)) {
       return(httr2::response_json(headers = list(`Total-Results` = "1"), body = list(items = list(env$lib_item %||% lib_item))))
     }
-    if (grepl("/collections", url)) {
+    if (grepl("/collections", url, fixed = TRUE)) {
       return(httr2::response_json(headers = list(`Total-Results` = as.character(length(env$collections))), body = env$collections))
     }
     if (httr2::req_get_method(req) == "POST") {
@@ -67,11 +67,11 @@ test_that("the default is a dry run: reads and looks up, but never POSTs", {
   )
   expect_false(any(vapply(env$reqs, httr2::req_get_method, "") == "POST"))
   expect_false(res$written)
-  expect_equal(res$item$itemType, "journalArticle")
-  expect_equal(res$item$title, "A new paper")
-  expect_equal(res$item$citationKey, "Author2024")
-  expect_equal(res$item$collections, list("COLL2345"))
-  expect_equal(res$item$creators[[1]]$lastName, "Author")
+  expect_identical(res$item$itemType, "journalArticle")
+  expect_identical(res$item$title, "A new paper")
+  expect_identical(res$item$citationKey, "Author2024")
+  expect_identical(res$item$collections, list("COLL2345"))
+  expect_identical(res$item$creators[[1]]$lastName, "Author")
   txt <- paste(msgs, collapse = "")
   expect_match(txt, "Dry run")
   expect_match(txt, "A new paper")
@@ -82,7 +82,7 @@ test_that("an item already in the library is not added again, and Crossref is no
   env <- setup_add()
   msgs <- testthat::capture_messages(res <- cz_add("10.1234/OLD", dry_run = FALSE, auth = a))
   expect_match(paste(msgs, collapse = ""), "Already in your library")
-  expect_equal(res$existing$citekey, "Old2000")
+  expect_identical(res$existing$citekey, "Old2000")
   expect_false(res$written)
   expect_false(any(grepl("crossref|POST", urls(env))))
   expect_false(any(vapply(env$reqs, httr2::req_get_method, "") == "POST"))
@@ -91,7 +91,7 @@ test_that("an item already in the library is not added again, and Crossref is no
 test_that("a citekey already in use is refused before any lookup", {
   env <- setup_add()
   expect_error(cz_add("10.1234/new", key = "Old2000", auth = a), "already used by item AAAAAA22")
-  expect_false(any(grepl("crossref", urls(env))))
+  expect_false(any(grepl("crossref", urls(env), fixed = TRUE)))
 })
 
 test_that("keys that pandoc can't cite are refused before any request", {
@@ -115,8 +115,8 @@ test_that("a live add POSTs one item with a write token and returns the new key"
   expect_null(post[[1]]$headers[["If-Unmodified-Since-Version"]])
   body <- post[[1]]$body$data
   expect_length(body, 1) # an array of one item
-  expect_equal(body[[1]]$citationKey, "Author2024") # pinned in the same request
-  expect_equal(res$key, "NEWK2345")
+  expect_identical(body[[1]]$citationKey, "Author2024") # pinned in the same request
+  expect_identical(res$key, "NEWK2345")
   expect_true(res$written)
 })
 
@@ -137,7 +137,7 @@ test_that("both documented success shapes are understood", {
   env$post <- list(success = list(`0` = "ABCD2345"))
   setup_add(env)
   res <- suppressMessages(cz_add("10.1234/new", dry_run = FALSE, auth = a))
-  expect_equal(res$key, "ABCD2345")
+  expect_identical(res$key, "ABCD2345")
 })
 
 test_that("a failed creation is reported with Zotero's message", {
@@ -156,8 +156,8 @@ test_that("a reused write token (412) is explained as probably already done", {
 
 test_that("collections resolve by key or exact name; unknown or ambiguous ones error", {
   env <- setup_add()
-  expect_equal(cz_resolve_collection(a, "COLL6789"), "COLL6789")
-  expect_equal(cz_resolve_collection(a, "Papers"), "COLL6789")
+  expect_identical(cz_resolve_collection(a, "COLL6789"), "COLL6789")
+  expect_identical(cz_resolve_collection(a, "Papers"), "COLL6789")
   expect_error(cz_resolve_collection(a, "papers"), "No collection")
   env$collections <- list(list(key = "AAAA2222", data = list(name = "Dup")), list(key = "BBBB3333", data = list(name = "Dup")))
   expect_error(cz_resolve_collection(a, "Dup"), "2 collections are named")
@@ -166,14 +166,14 @@ test_that("collections resolve by key or exact name; unknown or ambiguous ones e
 test_that("an unknown collection stops before Crossref is queried", {
   env <- setup_add()
   expect_error(cz_add("10.1234/new", collection = "Nope", auth = a), "No collection")
-  expect_false(any(grepl("crossref", urls(env))))
+  expect_false(any(grepl("crossref", urls(env), fixed = TRUE)))
 })
 
 test_that("the item template is fetched once per type per session", {
   env <- setup_add()
   suppressMessages(cz_add("10.1234/new", auth = a))
   suppressMessages(cz_add("10.1234/new", auth = a))
-  expect_equal(sum(grepl("/items/new", urls(env))), 1)
+  expect_identical(sum(grepl("/items/new", urls(env), fixed = TRUE)), 1L)
 })
 
 test_that("a Crossref type with no Zotero equivalent becomes a generic document", {
@@ -181,26 +181,26 @@ test_that("a Crossref type with no Zotero equivalent becomes a generic document"
   crossref_msg$type <- "peer-review"
   env <- new.env()
   httr2::local_mocked_responses(function(req) {
-    if (grepl("crossref", req$url)) {
+    if (grepl("crossref", req$url, fixed = TRUE)) {
       return(httr2::response_json(body = list(message = crossref_msg)))
     }
     fake(env)(req)
   })
   res <- suppressMessages(cz_add("10.1234/new", auth = a))
-  expect_equal(res$item$itemType, "document")
+  expect_identical(res$item$itemType, "document")
 })
 
 test_that("no contact address is sent to Crossref unless the user sets one", {
   env <- setup_add()
   suppressMessages(cz_add("10.1234/new", auth = a))
-  expect_false(any(grepl("mailto", urls(env))))
+  expect_false(any(grepl("mailto", urls(env), fixed = TRUE)))
 })
 
 test_that("key = 'auto' generates the key from the formula and shows it in the dry run", {
   withr::local_options(citezot.key_format = "auth.lower + year + shorttitle(1).lower")
   env <- setup_add()
   msgs <- testthat::capture_messages(res <- cz_add("10.1234/new", key = "auto", auth = a))
-  expect_equal(res$item$citationKey, "author2024new")
+  expect_identical(res$item$citationKey, "author2024new")
   expect_match(paste(msgs, collapse = ""), "author2024new")
 })
 
@@ -210,7 +210,7 @@ test_that("an auto key that is already taken gets a letter", {
   env$lib_item <- modifyList(lib_item, list(`citation-key` = "author2024new", DOI = "10.1234/other"))
   setup_add(env)
   res <- suppressMessages(cz_add("10.1234/new", key = "auto", auth = a))
-  expect_equal(res$item$citationKey, "author2024newa")
+  expect_identical(res$item$citationKey, "author2024newa")
 })
 
 test_that("an unsupported formula stops cz_add before anything is written", {

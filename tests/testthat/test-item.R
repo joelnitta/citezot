@@ -29,8 +29,8 @@ test_that("cz_get_item returns the native item with its version", {
   env <- new.env()
   httr2::local_mocked_responses(mock_native(env))
   it <- cz_get_item("ABCD2345", auth = a)
-  expect_equal(it$version, 7)
-  expect_equal(it$data$DOI, "10.1234/abc")
+  expect_identical(it$version, 7L)
+  expect_identical(it$data$DOI, "10.1234/abc")
 })
 
 test_that("cz_update_item is a dry run by default and writes nothing", {
@@ -39,9 +39,9 @@ test_that("cz_update_item is a dry run by default and writes nothing", {
   msgs <- testthat::capture_messages(
     res <- cz_update_item("ABCD2345", list(date = "in press"), auth = a)
   )
-  expect_equal(meths(env), "GET")
+  expect_identical(meths(env), "GET")
   expect_false(res$written)
-  expect_equal(res$changes$date, list(before = "2020", after = "in press"))
+  expect_identical(res$changes$date, list(before = "2020", after = "in press"))
   txt <- paste(msgs, collapse = "")
   expect_match(txt, "Dry run")
   expect_match(txt, "2020")
@@ -56,10 +56,10 @@ test_that("a live update sends only changed fields with the version header", {
     "ABCD2345", list(date = "in press", DOI = "10.1234/abc", title = "New"),
     dry_run = FALSE, auth = a
   ))
-  expect_equal(meths(env), c("GET", "PATCH"))
+  expect_identical(meths(env), c("GET", "PATCH"))
   patch <- env$reqs[[2]]
-  expect_equal(patch$headers[["If-Unmodified-Since-Version"]], "7")
-  expect_equal(patch_body(env), list(date = "in press", title = "New")) # DOI unchanged -> not sent
+  expect_identical(patch$headers[["If-Unmodified-Since-Version"]], "7")
+  expect_identical(patch_body(env), list(date = "in press", title = "New")) # DOI unchanged -> not sent
   expect_true(res$written)
 })
 
@@ -70,7 +70,7 @@ test_that("nothing is sent when no value changes", {
     res <- cz_update_item("ABCD2345", list(date = "2020"), dry_run = FALSE, auth = a),
     "nothing to change"
   )
-  expect_equal(meths(env), "GET")
+  expect_identical(meths(env), "GET")
   expect_false(res$written)
 })
 
@@ -81,7 +81,7 @@ test_that("array fields are replaced as a whole", {
     "ABCD2345", list(tags = list(list(tag = "fern"), list(tag = "new"))),
     dry_run = FALSE, auth = a
   ))
-  expect_equal(patch_body(env)$tags, list(list(tag = "fern"), list(tag = "new")))
+  expect_identical(patch_body(env)$tags, list(list(tag = "fern"), list(tag = "new")))
   # same tags in a different element order do not count as a change
   env$reqs <- NULL
   res <- suppressMessages(cz_update_item("ABCD2345", list(tags = list(list(tag = "fern"))), dry_run = FALSE, auth = a))
@@ -107,7 +107,7 @@ test_that("bad field values are rejected before any request", {
   expect_error(cz_update_item("ABCD2345", list(tags = "fern"), auth = a), "must be a list")
   expect_error(cz_update_item("ABCD2345", list("x"), auth = a), "named list")
   expect_error(cz_update_item("ABCD2345", list(), auth = a), "named list")
-  expect_error(cz_update_item("ABCD2345", list(date = "a", date = "b"), auth = a), "duplicated")
+  expect_error(cz_update_item("ABCD2345", list(date = "a", date = "b"), auth = a), "duplicated") # nolint: duplicate_argument_linter.
   expect_length(env$reqs, 0)
 })
 
@@ -115,7 +115,7 @@ test_that("numbers are sent as strings and fields can be cleared with an empty s
   env <- new.env()
   httr2::local_mocked_responses(mock_native(env))
   suppressMessages(cz_update_item("ABCD2345", list(date = 2021, DOI = ""), dry_run = FALSE, auth = a))
-  expect_equal(patch_body(env), list(date = "2021", DOI = ""))
+  expect_identical(patch_body(env), list(date = "2021", DOI = ""))
 })
 
 test_that("a version conflict surfaces a clear error", {

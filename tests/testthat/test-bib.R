@@ -2,7 +2,7 @@
 # serves BibLaTeX (in reverse order, like the real API). `env$reqs` logs requests.
 lib_items <- function() {
   mk <- function(id, key, title, note = NULL) {
-    x <- list(id = paste0("1/", id), type = "article-journal", title = title, `citation-key` = key)
+    x <- list(id = file.path("1", id), type = "article-journal", title = title, `citation-key` = key)
     x$note <- note
     x
   }
@@ -25,7 +25,7 @@ mock_zotero <- function(env, items = lib_items()) {
         body = list(items = items)
       ))
     }
-    ids <- rev(strsplit(u$query$itemKey, ",")[[1]])
+    ids <- rev(strsplit(u$query$itemKey, ",", fixed = TRUE)[[1]])
     txt <- vapply(ids, function(id) {
       sprintf("@article{%s,\n\ttitle = {%s},\n}\n", by_id[[id]]$`citation-key`, by_id[[id]]$title)
     }, "")
@@ -49,10 +49,10 @@ test_that("writes a sorted .bib containing only cited items", {
   q <- qmd_file(d, "Cites @Kent2002 and @Weiß2015, plus @Ebihara2006.")
   out <- file.path(d, "refs.bib")
   res <- cz_update_bib(q, out = out, auth = auth_t, quiet = TRUE)
-  expect_equal(res, out)
+  expect_identical(res, out)
   txt <- read_all(out)
   keys <- regmatches(txt, gregexpr("(?<=@article\\{)[^,]+", txt, perl = TRUE))[[1]]
-  expect_equal(keys, c("Ebihara2006", "Kent2002", "Weiß2015"))
+  expect_identical(keys, c("Ebihara2006", "Kent2002", "Weiß2015"))
   expect_no_match(txt, "Other2000")
 })
 
@@ -64,12 +64,12 @@ test_that("writes CSL-YAML with id = citation-key and the key line stripped", {
   out <- file.path(d, "refs.yaml")
   cz_update_bib(q, out = out, auth = auth_t, quiet = TRUE)
   lines <- readLines(out)
-  expect_equal(lines[1], "---")
+  expect_identical(lines[1], "---")
   y <- yaml::read_yaml(out)
-  expect_equal(vapply(y$references, function(r) r$id, ""), c("Ebihara2006", "Kent2002"))
-  expect_equal(vapply(y$references, function(r) r$`citation-key`, ""), c("Ebihara2006", "Kent2002"))
+  expect_identical(vapply(y$references, function(r) r$id, ""), c("Ebihara2006", "Kent2002"))
+  expect_identical(vapply(y$references, function(r) r$`citation-key`, ""), c("Ebihara2006", "Kent2002"))
   kent <- y$references[[2]]
-  expect_equal(kent$note, "keep me")
+  expect_identical(kent$note, "keep me")
 })
 
 test_that("a key cited in the document but missing errors and leaves the file untouched", {
@@ -83,7 +83,8 @@ test_that("a key cited in the document but missing errors and leaves the file un
   expect_error(cz_update_bib(q, out = out, auth = auth_t, quiet = TRUE), "Nope1999")
   expect_identical(bytes(out), before)
   # and no export request was made for the incomplete bibliography
-  expect_false(any(grepl("biblatex", vapply(env$reqs, function(r) r$url, ""))))
+  urls <- vapply(env$reqs, function(r) r$url, "")
+  expect_false(any(grepl("biblatex", urls, fixed = TRUE)))
 })
 
 test_that("allow_incomplete = TRUE writes what was found, with a warning", {
@@ -125,7 +126,7 @@ test_that("duplicate citekeys in Zotero warn and use the first", {
   q <- qmd_file(d, "@Kent2002")
   out <- file.path(d, "refs.yaml")
   expect_warning(cz_update_bib(q, out = out, auth = auth_t, quiet = TRUE), "same citekey")
-  expect_equal(yaml::read_yaml(out)$references[[1]]$title, "BLAT")
+  expect_identical(yaml::read_yaml(out)$references[[1]]$title, "BLAT")
 })
 
 test_that("out and format come from front matter and extension", {
@@ -134,7 +135,7 @@ test_that("out and format come from front matter and extension", {
   httr2::local_mocked_responses(mock_zotero(env))
   q <- qmd_file(d, "@Kent2002", front = "bibliography: mine.bib")
   res <- cz_update_bib(q, auth = auth_t, quiet = TRUE)
-  expect_equal(basename(res), "mine.bib")
+  expect_identical(basename(res), "mine.bib")
   expect_true(file.exists(file.path(d, "mine.bib")))
 })
 
@@ -160,9 +161,9 @@ test_that("with no bibliography declared it falls back to references.bib", {
 })
 
 test_that("format is inferred from the extension and conflicts are rejected", {
-  expect_equal(cz_resolve_format("a.bib", NULL), "bib")
-  expect_equal(cz_resolve_format("a.yml", NULL), "yaml")
-  expect_equal(cz_resolve_format("a.txt", "yaml"), "yaml")
+  expect_identical(cz_resolve_format("a.bib", NULL), "bib")
+  expect_identical(cz_resolve_format("a.yml", NULL), "yaml")
+  expect_identical(cz_resolve_format("a.txt", "yaml"), "yaml")
   expect_error(cz_resolve_format("a.txt", NULL), "Can't tell")
   expect_error(cz_resolve_format("a.bib", "yaml"), "looks like")
 })
@@ -178,7 +179,7 @@ test_that("an unchanged bibliography is not rewritten", {
   Sys.setFileTime(out, old)
   msgs <- testthat::capture_messages(cz_update_bib(q, out = out, auth = auth_t))
   expect_match(paste(msgs, collapse = ""), "already up to date")
-  expect_equal(as.numeric(file.mtime(out)), as.numeric(old))
+  expect_identical(as.numeric(file.mtime(out)), as.numeric(old))
 })
 
 test_that("no citations writes an empty bibliography without calling the exporter", {
@@ -189,7 +190,8 @@ test_that("no citations writes an empty bibliography without calling the exporte
   out <- file.path(d, "refs.bib")
   cz_update_bib(q, out = out, auth = auth_t, quiet = TRUE)
   expect_true(file.exists(out))
-  expect_false(any(grepl("biblatex", vapply(env$reqs, function(r) r$url, ""))))
+  urls <- vapply(env$reqs, function(r) r$url, "")
+  expect_false(any(grepl("biblatex", urls, fixed = TRUE)))
 })
 
 test_that("missing input files and a missing output directory are clear errors", {
@@ -207,6 +209,6 @@ test_that("missing input files and a missing output directory are clear errors",
 test_that("cz_rel_path shortens paths inside the working directory only", {
   d <- withr::local_tempdir()
   withr::local_dir(d)
-  expect_equal(cz_rel_path(file.path(normalizePath(d), "sub", "x.bib")), "sub/x.bib")
-  expect_equal(cz_rel_path("/elsewhere/x.bib"), "/elsewhere/x.bib")
+  expect_identical(cz_rel_path(file.path(normalizePath(d), "sub", "x.bib")), "sub/x.bib")
+  expect_identical(cz_rel_path("/elsewhere/x.bib"), "/elsewhere/x.bib")
 })
