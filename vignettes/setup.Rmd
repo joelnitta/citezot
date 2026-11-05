@@ -23,15 +23,18 @@ None of the code in this vignette is run when the vignette is built, because it 
 
 citezot talks to the Zotero web API, so it needs an API key. Zotero desktop does not have to be running, but your library must be synced to zotero.org (in Zotero desktop: *Settings*, *Sync*).
 
-<!-- TODO: add screenshots of the Zotero keys page -->
-
 1. Sign in at <https://www.zotero.org/settings/keys> and choose **Create new private key**.
-2. Give it a name you will recognise, such as `citezot (read only)`.
-3. Under *Personal library*, tick **Allow library access**. Leave **Allow write access** unticked unless you want citezot to add or edit items (see below).
-4. Save the key and **copy it now**. Zotero shows the key only once.
-5. Note your **numeric user ID**. It is shown on the same page, in the sentence "Your userID for use in API calls is ...". It is *not* your user name.
+2. Note your **numeric user ID**. It is shown on the same page, in the sentence "Your user ID for use in API calls is ...". (It is *not* your user name.)
 
-### Read-only or write access
+![Steps 1 and 2: the Zotero keys page.](images/zotero-keys-page.png){width=80%}
+
+3. Give it a name you will recognize, such as `citezot-key`.
+4. Under *Personal library*, tick **Allow library access** ("Allow third party to access your library"). You need this to use citezot. If you also want to edit your Zotero references through citezot, not just read them, also tick **Allow write access** ("Allow third party to make changes to your library"); [see below](#read-only-or-write-access).
+5. Save the key and **copy it now**. Zotero shows the key only once.
+
+![Steps 3 to 5: the new key form.](images/zotero-new-key.png){width=50%}
+
+### Read-only or write access {#read-only-or-write-access}
 
 A read-only key is enough for `cz_update_bib()`, `cz_find()`, `cz_get_item()` and `cz_fetch_items()`. Only the functions that change your library (`cz_add()`, `cz_update_item()` and `cz_pin_key()`) need **Allow write access**. Those functions are dry runs unless you pass `dry_run = FALSE`, and citezot has no delete, but a read-only key is technically the safer choice, because it cannot change your library no matter what. You can edit the key on the same page later to add write access.
 

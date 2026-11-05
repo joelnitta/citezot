@@ -16,23 +16,26 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>", eval = FALSE)
 
 ## 1. API キーを作成する
 
-citezot は Zotero Web API と通信するため、API キーが必要です。Zotero デスクトップを起動しておく必要はありませんが、ライブラリが zotero.org と同期されている必要があります(Zotero デスクトップの*設定*→*同期*)。
-
-<!-- TODO: add screenshots of the Zotero keys page -->
+citezot は Zotero Web API と通信するため、API キーが必要です。Zotero デスクトップを起動しておく必要はありませんが、ライブラリが zotero.org と同期されている必要があります（Zotero デスクトップの*設定*→*同期*）。
 
 1. <https://www.zotero.org/settings/keys> にサインインし、**Create new private key** を選びます。
-2. わかりやすい名前を付けます(例: `citezot (read only)`)。
-3. *Personal library* の下で **Allow library access** にチェックを入れます。citezot で項目の追加や編集をしたい場合を除き、**Allow write access** はチェックを外したままにします(後述)。
-4. キーを保存し、**今すぐコピーしてください**。Zotero がキーを表示するのは一度だけです。
-5. **数字のユーザー ID** を控えます。同じページの「Your userID for use in API calls is ...」という文に表示されています。ユーザー名では*ありません*。
+2. **数字のユーザー ID** を控えます。同じページの「Your user ID for use in API calls is ...」という文に表示されています（ユーザー名ではありません）。
 
-### 読み取り専用か、書き込み権限か
+![手順 1〜2: Zotero のキーのページ](../vignettes/images/zotero-keys-page.png){fig-alt="Zotero のキーのページ。「Create new private key」ボタンに 1、ユーザー ID に 2 の印が付いている。" width=80%}
 
-`cz_update_bib()`、`cz_find()`、`cz_get_item()`、`cz_fetch_items()` には、読み取り専用のキーで足ります。ライブラリを変更する関数(`cz_add()`、`cz_update_item()`、`cz_pin_key()`)だけが **Allow write access** を必要とします。これらの関数は `dry_run = FALSE` を渡さない限りドライランで、citezot には削除機能もありませんが、読み取り専用のキーは何が起きてもライブラリを変更できないため、技術的にはより安全です。書き込み権限は、あとで同じページからキーを編集して追加できます。
+3. わかりやすい名前を付けます（例: `citezot-key`）。
+4. *Personal library* の下で、**Allow library access**（「Allow third party to access your library」）にチェックを入れます。citezot を使うには必須です。citezot で Zotero の文献を読み取るだけでなく編集もしたい場合は、**Allow write access**（「Allow third party to make changes to your library」）にもチェックを入れます（[後述](#read-only-or-write-access)）。
+5. キーを保存し、**今すぐコピーしてください**。Zotero がキーを表示するのは一度だけです。
+
+![手順 3〜5: 新しいキーのフォーム](../vignettes/images/zotero-new-key.png){fig-alt="Zotero の新しいキーのフォーム。キー名に 3、ライブラリアクセスと書き込みアクセスのチェックボックスに 4、「Save Key」ボタンに 5 の印が付いている。" width=50%}
+
+### 読み取り専用か、書き込み権限か {#read-only-or-write-access}
+
+`cz_update_bib()`、`cz_find()`、`cz_get_item()`、`cz_fetch_items()` には、読み取り専用のキーで足ります。ライブラリを変更する関数（`cz_add()`、`cz_update_item()`、`cz_pin_key()`）だけが **Allow write access** を必要とします。これらの関数は `dry_run = FALSE` を渡さない限りドライランで、citezot には削除機能もありませんが、読み取り専用のキーは何が起きてもライブラリを変更できないため、技術的にはより安全です。書き込み権限は、あとで同じページからキーを編集して追加できます。
 
 ### グループライブラリ
 
-グループライブラリの場合は、同じページの *Group permissions* でキーを作成します。グループ ID は、グループの URL(`https://www.zotero.org/groups/<ID>/<name>`)に含まれる数字です。そのうえで、`ZOTERO_LIBRARY_ID`(下記)にそのグループ ID を設定し、`cz_auth(library_type = "group")` を使います。
+グループライブラリの場合は、同じページの *Group permissions* でキーを作成します。グループ ID は、グループの URL（`https://www.zotero.org/groups/<ID>/<name>`）に含まれる数字です。そのうえで、`ZOTERO_LIBRARY_ID`（下記）にそのグループ ID を設定し、`cz_auth(library_type = "group")` を使います。
 
 ## 2. キーを R に教える
 
@@ -41,7 +44,7 @@ citezot は次の環境変数を読み取ります。
 | 変数 | 内容 |
 |---|---|
 | `ZOTERO_API_KEY` | API キー |
-| `ZOTERO_LIBRARY_ID` | 個人ライブラリ(ユーザー ID)またはグループライブラリの数字の ID |
+| `ZOTERO_LIBRARY_ID` | 個人ライブラリ（ユーザー ID）またはグループライブラリの数字の ID |
 
 これらは**ユーザーレベル**の `.Renviron` に書いてください。すべてのプロジェクトで使え、誤ってコミットしてしまうこともありません。
 
@@ -68,7 +71,7 @@ cz_auth()
 
 * キーは `api.zotero.org` にのみ、ベアラートークンとして送信します。
 * キーを表示、記録、保存することはありません。認証オブジェクトを `print()` してもキーは隠されます。
-* 任意のキャッシュ(`cz_clear_cache()` を参照)に保存されるのは書誌情報のみで、キーは含まれません。
+* 任意のキャッシュ（`cz_clear_cache()` を参照）に保存されるのは書誌情報のみで、キーは含まれません。
 
 ## 3. 項目に引用キーがあることを確認する
 
@@ -76,7 +79,7 @@ citezot は、項目に**保存された引用キー**で項目を引用しま�
 
 項目にキーを付ける方法は 2 つあります。
 
-### Better BibTeX を使う(推奨)
+### Better BibTeX を使う（推奨）
 
 [Better BibTeX](https://retorque.re/zotero-better-bibtex/installation/) は、選んだ書式からキーを生成し、キーを*固定*して変わらないようにできます。固定されたキーは項目に保存され、citezot が読み取るのはそれです。Zotero デスクトップで項目を選択し、右クリックして *Better BibTeX*→*Pin BibTeX key* を選びます。その後同期すると、キーがアップロードされます。
 
@@ -97,6 +100,6 @@ cz_add("10.1016/0022-5193(64)90038-4", key = "auto")        # または、生成
 ## トラブルシューティング
 
 * **「Zotero credentials not found.」** この R セッションで環境変数が設定されていません。`Sys.getenv("ZOTERO_API_KEY") != ""` を確認し、`.Renviron` を編集したら R を再起動してください。
-* **HTTP 403。** キーが無効か、要求した権限がありません(たとえば、読み取り専用キーで項目を追加しようとした場合)。
+* **HTTP 403。** キーが無効か、要求した権限がありません（たとえば、読み取り専用キーで項目を追加しようとした場合）。
 * **存在するライブラリなのに HTTP 404。** ユーザー ID が間違っています。ユーザー名ではなく数字を使ってください。
 * **Zotero デスクトップで追加したばかりの項目が見つからない。** ライブラリがまだ同期されていません。
