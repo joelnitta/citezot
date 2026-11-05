@@ -100,7 +100,7 @@ cz_pin_key("Darwin1859", "Darwin1859")          # preview; item = any of the ide
 cz_add("10.1016/0022-5193(64)90038-4", key = "auto")        # or add a new item with a generated key
 ```
 
-See `vignette("citezot")` for the full workflow, including how new keys are generated.
+See `vignette("manuscript")` for the full workflow, including how new keys are generated.
 
 ## Troubleshooting
 

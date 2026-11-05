@@ -216,7 +216,7 @@ pre-commit install
 
 ## Getting help
 
-Documentation, including a worked example, is at <https://joelnitta.github.io/citezot/> (or `vignette("citezot")` once installed). Please report bugs and ideas at <https://github.com/joelnitta/citezot/issues>.
+Documentation, including a worked example, is at <https://joelnitta.github.io/citezot/> (or `vignette("manuscript")` once installed). Please report bugs and ideas at <https://github.com/joelnitta/citezot/issues>.
 
 ## License
 
