@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file, then run devtools::build_readme() -->
 
-# citezot
+# citezot <img src="man/figures/logo.png" align="right" height="139" alt="citezot hex sticker: [@] in white on a red hexagon" />
 
 <!-- badges: start -->
 
