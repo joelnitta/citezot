@@ -17,7 +17,7 @@ library(citezot)
 options(citezot.cache = TRUE)
 ```
 
-# citezot
+# citezot <img src="man/figures/logo.png" align="right" height="139" alt="citezot hex sticker: [@] in white on a red hexagon" />
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/joelnitta/citezot/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/joelnitta/citezot/actions/workflows/R-CMD-check.yaml)
