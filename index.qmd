@@ -60,7 +60,16 @@ citezot is not affiliated with or endorsed by Zotero.
 
 ## Installation
 
-citezot is not on CRAN. Install the development version from GitHub:
+citezot is not on CRAN. Install it from [R-universe](https://joelnitta.r-universe.dev), which provides prebuilt binaries for macOS and Windows:
+
+``` r
+install.packages(
+  "citezot",
+  repos = c("https://joelnitta.r-universe.dev", "https://cloud.r-project.org")
+)
+```
+
+To install the development version from GitHub instead, use [pak](https://pak.r-lib.org):
 
 ``` r
 # install.packages("pak")

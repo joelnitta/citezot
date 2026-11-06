@@ -59,7 +59,16 @@ citezot は Zotero とは無関係であり、Zotero の承認を受けたもの
 
 ## インストール
 
-citezot は CRAN には登録されていません。GitHub から開発版をインストールしてください。
+citezot は CRAN には登録されていません。[R-universe](https://joelnitta.r-universe.dev) からインストールしてください（macOS と Windows 向けにビルド済みのバイナリが提供されています）。
+
+``` r
+install.packages(
+  "citezot",
+  repos = c("https://joelnitta.r-universe.dev", "https://cloud.r-project.org")
+)
+```
+
+代わりに GitHub から開発版をインストールするには、[pak](https://pak.r-lib.org) を使います。
 
 ``` r
 # install.packages("pak")
