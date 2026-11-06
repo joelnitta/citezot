@@ -1,6 +1,6 @@
 # citezot 0.0.0.9000
 
-* citezot has a hex sticker (`[@]`, the Pandoc citation syntax), shown in the README and on the website. The website now uses a Zotero-red theme with a dark mode and a light/dark switch.
+* citezot has a hex sticker (`[@]`, the Pandoc citation syntax), shown in the README and on the website. The website now uses a Zotero-red theme with a dark mode and a light/dark switch. Links to the website now show a social card with the sticker (Open Graph and Twitter card tags).
 * citezot can now be installed from [R-universe](https://joelnitta.r-universe.dev) with `install.packages()`, so installing it no longer requires pak. The README and the website home page (English and Japanese) give the new instructions.
 * `cz_update_bib()` writes a BibLaTeX (default) or CSL-YAML bibliography containing only the items cited in `.qmd` / `.Rmd` files, reading the output path from `bibliography:`. It refuses to overwrite the file when a cited key is missing from Zotero.
 * `cz_update_bib()` no longer leaves HTML tags in titles and other fields of the BibLaTeX output. Zotero's exporter leaves tags such as `<span class="nocase">`, `<em>`, `<strong>` and small-caps spans as literal text; they are now converted to LaTeX commands (a `shorttitle` that Zotero cut in the middle of a tag is dropped) (#1).

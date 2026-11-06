@@ -1,5 +1,6 @@
 ---
 title: "citezot"
+description: "Quarto の文献リストに、引用した Zotero の文献だけを取り込む R パッケージ。"
 toc: false
 ---
 
