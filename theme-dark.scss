@@ -1,0 +1,33 @@
+/*-- scss:defaults --*/
+// Dark counterpart of theme.scss: Bootswatch darkly with the sticker's reds,
+// using lighter tints for links so they stay readable on a dark background.
+$zotero-red: #b3202c;
+$zotero-dark: #7a1119;
+$zotero-light: #ee7b85;
+
+$primary: $zotero-red;
+$link-color: $zotero-light;
+$link-hover-color: #fff;
+$code-color: $zotero-light;
+
+// Match cosmo's font and navbar sizing so the header doesn't change size
+// when switching themes
+$font-family-sans-serif: "Source Sans Pro", -apple-system, BlinkMacSystemFont,
+  "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif,
+  "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+$web-font-path: "https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;700&display=swap";
+$navbar-padding-y: 0.5rem;
+$nav-link-padding-x: 1rem;
+
+$navbar-bg: $zotero-dark;
+$navbar-fg: #fff;
+$navbar-hl: #fff;
+
+/*-- scss:rules --*/
+.navbar {
+  border-bottom: 3px solid $zotero-red;
+}
+.navbar .btn-primary {
+  background-color: $zotero-red;
+  border-color: $zotero-red;
+}
