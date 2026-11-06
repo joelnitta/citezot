@@ -4,6 +4,7 @@ project:
   resources:
     - styles.css
     - man/figures/logo.png
+    - man/figures/social-card.png
   render:
     - index.qmd
     - articles/*.qmd
@@ -14,6 +15,12 @@ website:
   site-url: https://joelnitta.github.io/citezot/
   repo-url: https://github.com/joelnitta/citezot
   favicon: man/figures/logo.png
+  open-graph:
+    image: man/figures/social-card.png
+    image-alt: "citezot hex sticker: [@] in white on a red hexagon"
+  twitter-card:
+    card-style: summary_large_image
+    image: man/figures/social-card.png
 
 format:
   html:

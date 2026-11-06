@@ -1,5 +1,6 @@
 ---
 title: "citezot"
+description: "Pull cited references from Zotero into Quarto bibliographies, and find, add and update Zotero items from R."
 toc: false
 ---
 

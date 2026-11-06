@@ -17,3 +17,4 @@
 ^\.quarto$
 ^styles\.css$
 ^theme(-dark)?\.scss$
+^man/figures/social-card\.png$
