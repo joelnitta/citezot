@@ -1,7 +1,9 @@
 project:
   type: website
   output-dir: _site
-  resources: styles.css
+  resources:
+    - styles.css
+    - man/figures/logo.png
   render:
     - index.qmd
     - articles/*.qmd
@@ -11,6 +13,7 @@ website:
   title: "citezot"
   site-url: https://joelnitta.github.io/citezot/
   repo-url: https://github.com/joelnitta/citezot
+  favicon: man/figures/logo.png
 
 format:
   html:

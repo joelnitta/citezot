@@ -4,6 +4,8 @@ toc: false
 ---
 
 ::: {.column-margin .home-sidebar}
+![](man/figures/logo.png){fig-alt="citezot hex sticker: [@] in white on a red hexagon" width=140}
+
 ### リンク
 
 - [ソースコード](https://github.com/joelnitta/citezot)
