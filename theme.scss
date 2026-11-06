@@ -1,0 +1,23 @@
+/*-- scss:defaults --*/
+// Colors from the hex sticker (Zotero-style red) on top of Bootswatch cosmo
+$zotero-red: #b3202c;
+$zotero-dark: #7a1119;
+
+$primary: $zotero-red;
+$link-color: $zotero-red;
+$link-hover-color: $zotero-dark;
+$code-color: $zotero-dark;
+
+$navbar-bg: $zotero-red;
+$navbar-fg: #fff;
+$navbar-hl: #fff;
+
+/*-- scss:rules --*/
+.navbar {
+  border-bottom: 3px solid $zotero-dark;
+}
+// The language switcher is a primary button; keep it visible on the red bar
+.navbar .btn-primary {
+  background-color: $zotero-dark;
+  border-color: $zotero-dark;
+}

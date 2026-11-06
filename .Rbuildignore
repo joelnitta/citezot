@@ -16,3 +16,4 @@
 ^_site$
 ^\.quarto$
 ^styles\.css$
+^theme(-dark)?\.scss$
