@@ -445,7 +445,7 @@
     "href": "index.html#インストール",
     "title": "citezot",
     "section": "インストール",
-    "text": "インストール\ncitezot は CRAN には登録されていません。GitHub から開発版をインストールしてください。\n# install.packages(\"pak\")\npak::pak(\"joelnitta/citezot\")"
+    "text": "インストール\ncitezot は CRAN には登録されていません。R-universe からインストールしてください（macOS と Windows 向けにビルド済みのバイナリが提供されています）。\ninstall.packages(\n  \"citezot\",\n  repos = c(\"https://joelnitta.r-universe.dev\", \"https://cloud.r-project.org\")\n)\n代わりに GitHub から開発版をインストールするには、pak を使います。\n# install.packages(\"pak\")\npak::pak(\"joelnitta/citezot\")"
   },
   {
     "objectID": "index.html#セットアップ",

@@ -445,7 +445,7 @@
     "href": "index.html#installation",
     "title": "citezot",
     "section": "Installation",
-    "text": "Installation\ncitezot is not on CRAN. Install the development version from GitHub:\n# install.packages(\"pak\")\npak::pak(\"joelnitta/citezot\")"
+    "text": "Installation\ncitezot is not on CRAN. Install it from R-universe, which provides prebuilt binaries for macOS and Windows:\ninstall.packages(\n  \"citezot\",\n  repos = c(\"https://joelnitta.r-universe.dev\", \"https://cloud.r-project.org\")\n)\nTo install the development version from GitHub instead, use pak:\n# install.packages(\"pak\")\npak::pak(\"joelnitta/citezot\")"
   },
   {
     "objectID": "index.html#setup",

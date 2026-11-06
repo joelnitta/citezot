@@ -199,10 +199,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>citezot は Zotero Web API と通信するため、Zotero デスクトップを起動していなくても動作します。そのため、サーバー上や、GitHub Actions で自動生成する文書（自動生成の CV など）でも文献を引用できます。</p>
 <p>citezot は Zotero とは無関係であり、Zotero の承認を受けたものではありません。</p>
 <section id="インストール" class="level2"><h2 class="anchored" data-anchor-id="インストール">インストール</h2>
-<p>citezot は CRAN には登録されていません。GitHub から開発版をインストールしてください。</p>
+<p>citezot は CRAN には登録されていません。<a href="https://joelnitta.r-universe.dev">R-universe</a> からインストールしてください（macOS と Windows 向けにビルド済みのバイナリが提供されています）。</p>
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("pak")</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>pak<span class="sc">::</span><span class="fu">pak</span>(<span class="st">"joelnitta/citezot"</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"citezot"</span>,</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">repos =</span> <span class="fu">c</span>(<span class="st">"https://joelnitta.r-universe.dev"</span>, <span class="st">"https://cloud.r-project.org"</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<button title="コピー" class="code-copy-button"><i class="bi"></i></button>
+</div>
+<p>代わりに GitHub から開発版をインストールするには、<a href="https://pak.r-lib.org">pak</a> を使います。</p>
+<div class="code-copy-outer-scaffold">
+<div class="sourceCode" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("pak")</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>pak<span class="sc">::</span><span class="fu">pak</span>(<span class="st">"joelnitta/citezot"</span>)</span></code></pre></div>
 <button title="コピー" class="code-copy-button"><i class="bi"></i></button>
 </div>
 </section><section id="セットアップ" class="level2"><h2 class="anchored" data-anchor-id="セットアップ">セットアップ</h2>
@@ -211,8 +219,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section><section id="使い方" class="level2"><h2 class="anchored" data-anchor-id="使い方">使い方</h2>
 <section id="参考文献ファイルの生成" class="level3"><h3 class="anchored" data-anchor-id="参考文献ファイルの生成">参考文献ファイルの生成</h3>
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cz_update_bib</span>(<span class="st">"manuscript.qmd"</span>) <span class="co"># `bibliography:` で指定されたファイルに書き出す</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cz_update_bib</span>(<span class="st">"manuscript.qmd"</span>, <span class="at">out =</span> <span class="st">"references.yaml"</span>) <span class="co"># BibLaTeX ではなく CSL-YAML 形式</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cz_update_bib</span>(<span class="st">"manuscript.qmd"</span>) <span class="co"># `bibliography:` で指定されたファイルに書き出す</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cz_update_bib</span>(<span class="st">"manuscript.qmd"</span>, <span class="at">out =</span> <span class="st">"references.yaml"</span>) <span class="co"># BibLaTeX ではなく CSL-YAML 形式</span></span></code></pre></div>
 <button title="コピー" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <ul>
@@ -224,22 +232,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section><section id="レンダリングのたびに実行できる速さ" class="level3"><h3 class="anchored" data-anchor-id="レンダリングのたびに実行できる速さ">レンダリングのたびに実行できる速さ</h3>
 <p>大きなライブラリの取得には、初回はしばらくかかります（約 6,000 件で 20 秒ほど、並列でリクエストします）。キャッシュを有効にすると、2 回目以降は変更分だけをダウンロードし、変更がなければ 0.3 秒ほどで終わります。</p>
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># .Rprofile に書いておくこともできます</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co"># キャッシュは tools::R_user_dir("citezot", "cache") に保存されます</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">citezot.cache =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># .Rprofile に書いておくこともできます</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co"># キャッシュは tools::R_user_dir("citezot", "cache") に保存されます</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">citezot.cache =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <button title="コピー" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <p>キャッシュは、指定しない限り無効です。キャッシュに保存されるのは書誌情報のみで、API キーは含まれません。<code>cz_clear_cache()</code> で削除できます。</p>
 </section></section><section id="項目の検索追加修正" class="level2"><h2 class="anchored" data-anchor-id="項目の検索追加修正">項目の検索・追加・修正</h2>
 <p>ライブラリを変更する操作はすべて、特に指定しない限り<strong>ドライラン</strong>です。読み取りと、実行内容の表示だけを行い、<code>dry_run = FALSE</code> を付けるまで何も書き込みません。削除機能はありません。</p>
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cz_find</span>(<span class="st">"darwin origin of species"</span>) <span class="co"># 自由テキスト</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cz_find</span>(<span class="at">doi =</span> <span class="st">"10.2307/1796430"</span>) <span class="co"># DOI、ISBN、または完全一致する引用キー</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cz_find</span>(<span class="at">citekey =</span> <span class="st">"Darwin1859"</span>)</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cz_add</span>(<span class="st">"10.1016/0022-5193(64)90038-4"</span>, <span class="at">key =</span> <span class="st">"auto"</span>)</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="fu">cz_update_item</span>(<span class="st">"Darwin1859"</span>, <span class="fu">list</span>(<span class="at">publisher =</span> <span class="st">"John Murray"</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cz_find</span>(<span class="st">"darwin origin of species"</span>) <span class="co"># 自由テキスト</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cz_find</span>(<span class="at">doi =</span> <span class="st">"10.2307/1796430"</span>) <span class="co"># DOI、ISBN、または完全一致する引用キー</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cz_find</span>(<span class="at">citekey =</span> <span class="st">"Darwin1859"</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cz_add</span>(<span class="st">"10.1016/0022-5193(64)90038-4"</span>, <span class="at">key =</span> <span class="st">"auto"</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="fu">cz_update_item</span>(<span class="st">"Darwin1859"</span>, <span class="fu">list</span>(<span class="at">publisher =</span> <span class="st">"John Murray"</span>))</span></code></pre></div>
 <button title="コピー" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <p><code>item</code> を受け取る関数には、DOI、Zotero の項目 ID、既存の引用キー、または <code>cz_find()</code> が返す 1 行の結果を渡せます。</p>
@@ -256,40 +264,40 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>書式は次の順で決まります。<code>options(citezot.key_format = "...")</code>、Better BibTeX が Zotero のプロファイルに保存したパターン（citezot は Zotero の <code>prefs.js</code> からこの 1 項目だけを、キーを生成するときにのみ読み取り、セッションごとに一度お知らせします）、そして Better BibTeX の既定のパターンです。同じキーがすでにある場合は、新しいキーの末尾に文字（<code>a</code>、<code>b</code>、…）が付きます。</p>
 <p>書式言語はドキュメント化された一部のみ対応しており、それ以外はキーが変わるのではなくエラーになります。使用中の書式は <code>cz_key_format()</code> で確認でき、<code>cz_suggest_key()</code> で試せます。</p>
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>item <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">itemType =</span> <span class="st">"journalArticle"</span>,</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">title =</span> <span class="st">"The genetical evolution of social behaviour. I"</span>,</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">date =</span> <span class="st">"1964-07"</span>,</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">creators =</span> <span class="fu">list</span>(<span class="fu">list</span>(</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">creatorType =</span> <span class="st">"author"</span>,</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">firstName =</span> <span class="st">"W. D."</span>,</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">lastName =</span> <span class="st">"Hamilton"</span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  ))</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="fu">cz_suggest_key</span>(item, <span class="st">"auth.lower + year + shorttitle(1).lower"</span>)</span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="fu">cz_suggest_key</span>(</span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>  item,</span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>  <span class="st">"auth.lower + year + shorttitle(1).lower"</span>,</span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">existing =</span> <span class="st">"hamilton1964genetical"</span></span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>item <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">itemType =</span> <span class="st">"journalArticle"</span>,</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">title =</span> <span class="st">"The genetical evolution of social behaviour. I"</span>,</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">date =</span> <span class="st">"1964-07"</span>,</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">creators =</span> <span class="fu">list</span>(<span class="fu">list</span>(</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">creatorType =</span> <span class="st">"author"</span>,</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">firstName =</span> <span class="st">"W. D."</span>,</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">lastName =</span> <span class="st">"Hamilton"</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  ))</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="fu">cz_suggest_key</span>(item, <span class="st">"auth.lower + year + shorttitle(1).lower"</span>)</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="fu">cz_suggest_key</span>(</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>  item,</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>  <span class="st">"auth.lower + year + shorttitle(1).lower"</span>,</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">existing =</span> <span class="st">"hamilton1964genetical"</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
 <button title="コピー" class="code-copy-button"><i class="bi"></i></button>
 </div>
 </section></section><section id="自動化" class="level2"><h2 class="anchored" data-anchor-id="自動化">自動化</h2>
 <p><code>cz_update_bib()</code> を手作業で実行する代わりに、文書をレンダリングするたびに自動で実行したい場合があります。</p>
 <p><code>_quarto.yml</code> に Quarto の <code>pre-render</code> ステップを書けば実現できます。</p>
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode" id="cb9"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">project</span><span class="kw">:</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">pre-render</span><span class="kw">:</span><span class="at"> Rscript -e 'citezot::cz_update_bib()'</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">project</span><span class="kw">:</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">pre-render</span><span class="kw">:</span><span class="at"> Rscript -e 'citezot::cz_update_bib()'</span></span></code></pre></div>
 <button title="コピー" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <p><a href="https://docs.ropensci.org/targets/">targets</a> を使う場合は、<code>tar_make()</code> のたびに必ず再確認されるターゲットを定義できます。</p>
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tar_target</span>(</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  references,</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cz_update_bib</span>(<span class="st">"manuscript.qmd"</span>, <span class="at">quiet =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">format =</span> <span class="st">"file"</span>,</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">cue =</span> <span class="fu">tar_cue</span>(<span class="at">mode =</span> <span class="st">"always"</span>)</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tar_target</span>(</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  references,</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cz_update_bib</span>(<span class="st">"manuscript.qmd"</span>, <span class="at">quiet =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">format =</span> <span class="st">"file"</span>,</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">cue =</span> <span class="fu">tar_cue</span>(<span class="at">mode =</span> <span class="st">"always"</span>)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
 <button title="コピー" class="code-copy-button"><i class="bi"></i></button>
 </div>
 </section><section id="他のパッケージとの違い" class="level2"><h2 class="anchored" data-anchor-id="他のパッケージとの違い">他のパッケージとの違い</h2>
@@ -307,7 +315,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul></section><section id="開発" class="level2"><h2 class="anchored" data-anchor-id="開発">開発</h2>
 <p>citezot の開発に参加するには、リポジトリをクローンし、開発用の依存パッケージをインストールします（<code>pak::local_install_dev_deps()</code>）。コミット前のチェックには <a href="https://pre-commit.com">pre-commit</a> を使います。一度インストールしてください（たとえば <code>brew install pre-commit</code> や <code>pip install pre-commit</code>）。そのうえで、クローンしたリポジトリでフックを有効にします。</p>
 <div class="code-copy-outer-scaffold">
-<div class="sourceCode" id="cb11"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pre-commit</span> install</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode sh code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pre-commit</span> install</span></code></pre></div>
 <button title="コピー" class="code-copy-button"><i class="bi"></i></button>
 </div>
 <ul>
