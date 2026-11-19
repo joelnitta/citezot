@@ -17,10 +17,10 @@
 #' `"bib"` (default) writes BibLaTeX using Zotero's own exporter, with each
 #' entry keyed by its pinned citekey; it works with every Quarto output format,
 #' including Typst. `"yaml"` writes CSL-YAML (a `references:` list with `id`
-#' and `citation-key` set to the citekey; HTML tags in the text, such as
-#' `<i>`, are converted to Pandoc markdown, which is how Pandoc reads YAML
-#' bibliographies). The format is inferred from the
-#' extension of `out` (`.bib` or `.yaml`/`.yml`).
+#' and `citation-key` set to the citekey). Pandoc reads the text of a YAML
+#' bibliography as markdown, so HTML tags such as `<i>` are converted to
+#' Pandoc markdown and characters such as `*`, `_` and `$` are escaped. The
+#' format is inferred from the extension of `out` (`.bib` or `.yaml`/`.yml`).
 #'
 #' @param qmd Documents to scan for `@key` citations. Defaults to every
 #'   `.qmd` and `.Rmd` file under the working directory, skipping hidden and

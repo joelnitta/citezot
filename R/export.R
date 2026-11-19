@@ -155,65 +155,171 @@ cz_export_bib <- function(auth, ids, keys) {
   out[order(keys, method = "radix")]
 }
 
-# CSL-YAML counterpart of `cz_html_to_latex()`. Pandoc reads the strings of a
-# YAML bibliography as markdown (unlike CSL-JSON, where it understands the
-# HTML-ish markup itself), so `<i>` would become raw HTML, which the Typst and
-# docx writers drop. Turn the tags into Pandoc markdown, walking the tags in
-# order with a stack so every closing tag gets the closer of its opener.
-# Unknown tags are dropped and their text kept. Text outside tags is left as
-# it is.
-cz_html_to_markdown <- function(x) {
+# CSL-YAML counterpart of `cz_html_to_latex()`. Pandoc reads every string of a
+# YAML bibliography as markdown (in CSL-JSON it reads the HTML-ish markup
+# itself), so `<i>` would become raw HTML, which the Typst and docx writers
+# drop, and a literal `*`, `_`, `$`, `[` or `<` would be read as markup. So
+# the tags Zotero uses become Pandoc markdown (`<i>x</i>` -> `*x*`), block
+# tags (`<p>`, `<br>`, headings) become a space, other known tags are dropped
+# with their text kept, and all other text is escaped so it reaches the output
+# as written. Anything that only looks like a tag (`a<b and c>d`) is text.
+# `tags = FALSE` only escapes (for links and identifiers).
+cz_html_to_markdown <- function(x, tags = TRUE) {
   if (!is.character(x)) {
     return(x)
   }
-  vapply(x, cz_html_to_markdown1, character(1), USE.NAMES = FALSE)
+  vapply(x, cz_html_to_markdown1, character(1),
+    tags = tags, USE.NAMES = FALSE
+  )
 }
 
-cz_html_to_markdown1 <- function(s) {
-  if (is.na(s) || !grepl("<", s, fixed = TRUE)) {
-    return(s)
+# Known tags only, with quoted attributes; groups: closing slash, name,
+# attributes, self-closing slash.
+cz_md_tag_re <- paste0(
+  "(?i)<(/?)",
+  "((?:jats|mml):[a-z][a-z0-9-]*|h[1-6]|i|em|b|strong|sub|sup|sc|span|u|",
+  "p|br|div|hr|a)\\b",
+  "((?:\\s+[a-z_:][-a-z0-9_:.]*\\s*=\\s*(?:\"[^\"]*\"|'[^']*'))*)",
+  "\\s*(/?)>"
+)
+
+# Backslash-escape the characters Pandoc's markdown would read as markup.
+# Autolinks (`<https://...>`) are kept: Pandoc reads them as links, and a
+# backslash inside one would end up in the URL.
+cz_md_escape <- function(s) {
+  gsub(
+    "<(?:https?|ftp)://[^\\s<>]+>(*SKIP)(*FAIL)|([\\\\`*_\\[\\]~^$<])",
+    "\\\\\\1", s,
+    perl = TRUE
+  )
+}
+
+# The tags are walked in order with a stack of open runs. `st$out` is the
+# markdown so far, `st$stack` the open runs (tag name, markers, where the run
+# starts in `out`), `st$last` the run closed last (to merge `<i>a</i><i>b</i>`
+# into `*ab*`, as `*a**b*` does not parse), `st$gap` a pending block break.
+cz_html_to_markdown1 <- function(s, tags = TRUE) {
+  if (is.na(s)) {
+    return(NA_character_)
   }
-  tag_re <- "(?i)</?[a-z][a-z0-9]*\\b[^<>]*?/?>"
-  pos <- gregexpr(tag_re, s, perl = TRUE)[[1]]
+  pos <- if (tags) gregexpr(cz_md_tag_re, s, perl = TRUE)[[1]] else -1
   if (pos[1] == -1) {
-    return(s)
+    return(cz_md_escape(s))
   }
-  tags <- regmatches(s, list(pos))[[1]]
-  text <- regmatches(s, list(pos), invert = TRUE)[[1]]
-  stack <- character()
-  out <- text[1]
-  for (i in seq_along(tags)) {
-    tg <- tags[i]
-    name <- tolower(sub("^</?([A-Za-z][A-Za-z0-9]*).*$", "\\1", tg))
-    closing <- startsWith(tg, "</")
-    selfclosed <- grepl("/>$", tg)
-    if (closing) {
-      # a closer only for a tag we opened; stray closers are dropped
-      if (length(stack)) {
-        out <- paste0(out, stack[length(stack)])
-        stack <- stack[-length(stack)]
-      }
-    } else if (!selfclosed && !name %in% c("br", "p", "div")) {
-      m <- cz_md_markers(name, tg)
-      out <- paste0(out, m[1])
-      stack <- c(stack, m[2])
-    }
-    out <- paste0(out, text[i + 1])
+  found <- regmatches(s, list(pos))[[1]]
+  text <- cz_md_escape(regmatches(s, list(pos), invert = TRUE)[[1]])
+  st <- list(out = "", stack = list(), last = NULL, gap = FALSE)
+  st <- cz_md_text(st, text[1])
+  for (i in seq_along(found)) {
+    st <- cz_md_tag(st, found[i])
+    st <- cz_md_text(st, text[i + 1])
   }
-  out
+  # unclosed tags are closed at the end, so markers always balance
+  while (length(st$stack)) st <- cz_md_close(st)
+  st$out
 }
 
-# Opening and closing markdown for one HTML opening tag.
+cz_md_text <- function(st, txt) {
+  if (!nzchar(txt)) {
+    return(st)
+  }
+  spaced <- grepl("\\s$", st$out, perl = TRUE) ||
+    grepl("^\\s", txt, perl = TRUE)
+  if (st$gap && nzchar(st$out) && !spaced) {
+    txt <- paste0(" ", txt)
+  }
+  st$gap <- FALSE
+  # Pandoc's sub- and superscripts cannot hold a bare space
+  opens <- vapply(st$stack, function(f) f$m[1], "")
+  if (any(opens %in% c("~", "^"))) {
+    txt <- gsub("\\s", "\\\\ ", txt, perl = TRUE)
+  }
+  st$out <- paste0(st$out, txt)
+  st
+}
+
+cz_md_tag <- function(st, tag) {
+  m <- regmatches(tag, regexec(cz_md_tag_re, tag, perl = TRUE))[[1]]
+  name <- tolower(m[3])
+  markers <- cz_md_markers(name, tag)
+  if (is.null(markers)) {
+    st$gap <- TRUE
+    return(st)
+  }
+  if (nzchar(m[5])) {
+    return(st)
+  }
+  if (!nzchar(m[2])) {
+    return(cz_md_open(st, name, markers))
+  }
+  # a closer closes its own opener and any runs left open inside it; a closer
+  # with no opener is dropped
+  hit <- which(vapply(st$stack, function(f) f$name, "") == name)
+  if (length(hit)) {
+    while (length(st$stack) >= max(hit)) st <- cz_md_close(st)
+  }
+  st
+}
+
+cz_md_open <- function(st, name, m) {
+  start <- nchar(st$out)
+  last <- st$last
+  adjacent <- !is.null(last) && identical(last$m, m) && last$end == start
+  if (adjacent && m[1] %in% c("*", "**")) {
+    st$out <- paste0(
+      substr(st$out, 1, last$start),
+      substr(st$out, last$start + nchar(m[1]) + 1, start - nchar(m[2]))
+    )
+    start <- last$start
+  }
+  st$stack <- c(st$stack, list(list(name = name, m = m, start = start)))
+  st$last <- NULL
+  st
+}
+
+cz_md_close <- function(st) {
+  n <- length(st$stack)
+  f <- st$stack[[n]]
+  st$stack <- st$stack[-n]
+  st$last <- NULL
+  m <- f$m
+  body <- substr(st$out, f$start + 1, nchar(st$out))
+  if (!nzchar(m[1]) || !grepl("\\S", body, perl = TRUE)) {
+    return(st)
+  }
+  before <- substr(st$out, 1, f$start)
+  lead <- trail <- ""
+  if (m[1] %in% c("*", "**")) {
+    # `*Aster *(Asteraceae)`: keep the spaces outside the emphasis
+    lead <- regmatches(body, regexpr("^\\s*", body, perl = TRUE))
+    trail <- regmatches(body, regexpr("\\s*$", body, perl = TRUE))
+    body <- substr(body, nchar(lead) + 1, nchar(body) - nchar(trail))
+  }
+  before <- paste0(before, lead)
+  st$out <- paste0(before, m[1], body, m[2])
+  st$last <- list(m = m, start = nchar(before), end = nchar(st$out))
+  st$out <- paste0(st$out, trail)
+  st
+}
+
+# Opening and closing markdown for one HTML opening tag; NULL for a block tag.
 cz_md_markers <- function(name, tag) {
   has <- function(re) grepl(re, tag, ignore.case = TRUE, perl = TRUE)
   switch(name,
     i = ,
-    em = c("*", "*"),
+    em = ,
+    `jats:italic` = c("*", "*"),
     b = ,
-    strong = c("**", "**"),
-    sub = c("~", "~"),
-    sup = c("^", "^"),
-    sc = c("[", "]{.smallcaps}"),
+    strong = ,
+    `jats:bold` = c("**", "**"),
+    sub = ,
+    `jats:sub` = c("~", "~"),
+    sup = ,
+    `jats:sup` = c("^", "^"),
+    sc = ,
+    `jats:sc` = c("[", "]{.smallcaps}"),
+    u = ,
+    `jats:underline` = c("[", "]{.underline}"),
     span = if (has("\\bnocase\\b")) {
       c("[", "]{.nocase}")
     } else if (has("font-variant\\s*:\\s*small-caps")) {
@@ -225,24 +331,31 @@ cz_md_markers <- function(name, tag) {
     } else {
       c("", "")
     },
-    c("", "")
+    p = ,
+    br = ,
+    div = ,
+    hr = ,
+    `jats:p` = ,
+    `jats:title` = ,
+    `jats:sec` = NULL,
+    if (grepl("^h[1-6]$", name)) NULL else c("", "")
   )
 }
 
-# Apply `cz_html_to_markdown()` to every string in a CSL item, except the
-# fields where `<` or markup would be wrong (links, ids).
+# Apply `cz_html_to_markdown()` to every string in a CSL item. `id` and
+# `citation-key` are left alone; links and identifiers are only escaped.
 cz_item_html_to_markdown <- function(x, name = "") {
-  skip <- c("URL", "DOI", "id", "citation-key", "ISBN", "ISSN", "PMID")
   if (is.list(x)) {
-    nms <- names(x)
+    nms <- names(x) %||% rep("", length(x))
     for (j in seq_along(x)) {
-      nm <- if (is.null(nms) || !nzchar(nms[j])) name else nms[j]
-      x[[j]] <- cz_item_html_to_markdown(x[[j]], nm)
+      nm <- if (is.na(nms[j]) || !nzchar(nms[j])) name else nms[j]
+      x[j] <- list(cz_item_html_to_markdown(x[[j]], nm))
     }
-    x
-  } else if (name %in% skip) {
-    x
-  } else {
-    cz_html_to_markdown(x)
+    return(x)
   }
+  if (name %in% c("id", "citation-key")) {
+    return(x)
+  }
+  links <- c("URL", "DOI", "ISBN", "ISSN", "PMID", "PMCID")
+  cz_html_to_markdown(x, tags = !name %in% links)
 }
