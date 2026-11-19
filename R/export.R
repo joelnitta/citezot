@@ -344,12 +344,25 @@ cz_md_markers <- function(name, tag) {
 
 # Apply `cz_html_to_markdown()` to every string in a CSL item. `id` and
 # `citation-key` are left alone; links and identifiers are only escaped.
-cz_item_html_to_markdown <- function(x, name = "") {
+cz_item_html_to_markdown <- function(item) {
+  # Zotero cuts a short title at its first colon, which can split a tag such
+  # as `font-variant:small-caps`. Such a fragment cannot be repaired; the
+  # field is optional, so drop it (as `cz_html_to_latex()` drops
+  # `shorttitle`).
+  for (f in c("title-short", "shortTitle")) {
+    if (any(grepl("(?i)<\\s*/?[a-z][^<>]*$", item[[f]], perl = TRUE))) {
+      item[[f]] <- NULL
+    }
+  }
+  cz_md_walk(item)
+}
+
+cz_md_walk <- function(x, name = "") {
   if (is.list(x)) {
     nms <- names(x) %||% rep("", length(x))
     for (j in seq_along(x)) {
       nm <- if (is.na(nms[j]) || !nzchar(nms[j])) name else nms[j]
-      x[j] <- list(cz_item_html_to_markdown(x[[j]], nm))
+      x[j] <- list(cz_md_walk(x[[j]], nm))
     }
     return(x)
   }
