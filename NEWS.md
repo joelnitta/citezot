@@ -1,6 +1,6 @@
 # citezot 0.0.0.9000
 
-* `cz_update_bib()` now converts HTML tags in the CSL-YAML output (`<i>`, `<b>`, `<sub>`, `<sup>`, small caps, `<span class="nocase">`) to Pandoc markdown. Pandoc reads YAML bibliographies as markdown, so the tags used to become raw HTML, which Typst and docx output drop (for example, no italics in titles) (#6).
+* `cz_update_bib()` now converts HTML tags in the CSL-YAML output (`<i>`, `<b>`, `<sub>`, `<sup>`, small caps, `<span class="nocase">`) to Pandoc markdown. Pandoc reads YAML bibliographies as markdown, so the tags used to become raw HTML, which Typst and docx output drop (for example, no italics in titles). Characters that Pandoc would read as markup (`*`, `_`, `$`, `[`, `<` and others) are now escaped, so a title such as `PAUP*: ...` comes out as written (#6).
 * citezot has a hex sticker (`[@]`, the Pandoc citation syntax), shown in the README and on the website. The website now uses a Zotero-red theme with a dark mode and a light/dark switch. Links to the website now show a social card with the sticker (Open Graph and Twitter card tags).
 * citezot can now be installed from [R-universe](https://joelnitta.r-universe.dev) with `install.packages()`, so installing it no longer requires pak. The README and the website home page (English and Japanese) give the new instructions.
 * `cz_update_bib()` writes a BibLaTeX (default) or CSL-YAML bibliography containing only the items cited in `.qmd` / `.Rmd` files, reading the output path from `bibliography:`. It refuses to overwrite the file when a cited key is missing from Zotero.
