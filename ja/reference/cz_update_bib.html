@@ -68,9 +68,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-447e42e69aaa9833c0ba1b986f430b20.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script><link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-7ad0d44238d52e0af72b238fc9a1385f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-c4d654b2c585e23991919ca351a78cdc.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-7ad0d44238d52e0af72b238fc9a1385f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-9ad8eb00a066cd3d14fa2639028fc1b5.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-ac6868f2bf1e9536db8c1c8b1547cb1d.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-9ad8eb00a066cd3d14fa2639028fc1b5.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -435,8 +435,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table></section><section id="details" class="level2"><h2 class="anchored" data-anchor-id="details">Details</h2>
 <p>Safety: if a key cited in a document is not found in Zotero, the function stops and leaves the existing output file untouched (a bibliography that silently loses entries breaks the render). Set <code>allow_incomplete = TRUE</code> to write what was found anyway. Keys found only in <code>bare</code> files, and duplicate citekeys in Zotero (the first match is used), give warnings. The file is only rewritten when its content would change, so unchanged bibliographies keep their modification time.</p>
 </section><section id="output-formats" class="level2"><h2 class="anchored" data-anchor-id="output-formats">Output formats</h2>
-<p><code>"bib"</code> (default) writes BibLaTeX using Zotero’s own exporter, with each entry keyed by its pinned citekey; it works with every Quarto output format, including Typst. <code>"yaml"</code> writes CSL-YAML (a references: list with <code>id</code> and <code>citation-key</code> set to the citekey). The format is inferred from the extension of <code>out</code> (<code>.bib</code> or <code>.yaml</code>/<code>.yml</code>).</p>
-</section><section id="value" class="level2"><h2 class="anchored" data-anchor-id="value">Value</h2>
+<p><code>"bib"</code> (default) writes BibLaTeX using Zotero’s own exporter, with each entry keyed by its pinned citekey; it works with every Quarto output format, including Typst. <code>"yaml"</code> writes CSL-YAML (a references: list with <code>id</code> and <code>citation-key</code> set to the citekey). Pandoc reads the text of a YAML bibliography as markdown, so HTML tags such as <i> are converted to Pandoc markdown and characters such as <code>*</code>, _ and <code>$</code> are escaped. The format is inferred from the extension of <code>out</code> (<code>.bib</code> or <code>.yaml</code>/<code>.yml</code>).</i></p>
+<i>
+</i></section><i>
+<section id="value" class="level2"><h2 class="anchored" data-anchor-id="value">Value</h2>
 <p><code>out</code>, invisibly (handy for <code>targets::tar_target(format = "file")</code>).</p>
 </section><section id="examples" class="level2"><h2 class="anchored" data-anchor-id="examples">Examples</h2>
 <div class="code-copy-outer-scaffold">
@@ -447,7 +449,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 
 
-</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+</section></i></main><i> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     // Ensure there is a toggle, if there isn't float one in the top right
     if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
@@ -969,11 +972,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   });
   </script><script type="application/javascript">
   window.quartoScrollableRegionsLabels = {"code":"スクロール可能なコード","output":"スクロール可能な出力"};
-  </script>
-</div> <!-- /content -->
+  </script></i>
+</div>
+<i> <!-- /content -->
 
 
 
 
+</i>
 </body>
 </html>

@@ -53,7 +53,7 @@
     "href": "reference/cz_update_bib.html#output-formats",
     "title": "Write a bibliography file from the references cited in your documents",
     "section": "Output formats",
-    "text": "Output formats\n\"bib\" (default) writes BibLaTeX using Zotero’s own exporter, with each entry keyed by its pinned citekey; it works with every Quarto output format, including Typst. \"yaml\" writes CSL-YAML (a references: list with id and citation-key set to the citekey). The format is inferred from the extension of out (.bib or .yaml/.yml)."
+    "text": "Output formats\n\"bib\" (default) writes BibLaTeX using Zotero’s own exporter, with each entry keyed by its pinned citekey; it works with every Quarto output format, including Typst. \"yaml\" writes CSL-YAML (a references: list with id and citation-key set to the citekey). Pandoc reads the text of a YAML bibliography as markdown, so HTML tags such as  are converted to Pandoc markdown and characters such as *, _ and $ are escaped. The format is inferred from the extension of out (.bib or .yaml/.yml)."
   },
   {
     "objectID": "reference/cz_update_bib.html#value",
