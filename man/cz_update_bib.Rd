@@ -63,7 +63,9 @@ bibliographies keep their modification time.
 \code{"bib"} (default) writes BibLaTeX using Zotero's own exporter, with each
 entry keyed by its pinned citekey; it works with every Quarto output format,
 including Typst. \code{"yaml"} writes CSL-YAML (a \verb{references:} list with \code{id}
-and \code{citation-key} set to the citekey). The format is inferred from the
+and \code{citation-key} set to the citekey; HTML tags in the text, such as
+\verb{<i>}, are converted to Pandoc markdown, which is how Pandoc reads YAML
+bibliographies). The format is inferred from the
 extension of \code{out} (\code{.bib} or \code{.yaml}/\code{.yml}).
 }
 

@@ -228,3 +228,47 @@ test_that("cz_export_bib converts markup in exported entries", {
   expect_match(out, "title = {{An \\emph{open} tree}}", fixed = TRUE)
   expect_no_match(out, "<")
 })
+
+test_that("cz_html_to_markdown converts tags to Pandoc markdown", {
+  f <- cz_html_to_markdown
+  cases <- list(
+    c("New <i>Trichomanes</i> X", "New *Trichomanes* X"),
+    c("<em>A</em> and <strong>B</strong>", "*A* and **B**"),
+    c("H<sub>2</sub>O, m<sup>2</sup>", "H~2~O, m^2^"),
+    c("<sc>Smith</sc>", "[Smith]{.smallcaps}"),
+    c("<span class=\"nocase\">DNA</span> data", "[DNA]{.nocase} data"),
+    c("<span class=\"nocase\"><i>Deparia</i></span>", "[*Deparia*]{.nocase}"),
+    c("<span style=\"font-variant:small-caps\">X</span>", "[X]{.smallcaps}"),
+    c("<span style=\"font-style: italic\">X</span>", "*X*"),
+    c("<span>plain</span>", "plain"),
+    c("<p>one</p><br/>two", "onetwo"),
+    c("<I>A</I>", "*A*"),
+    c("stray </i> closer", "stray  closer"),
+    c("p < 0.05 and q > 1", "p < 0.05 and q > 1"),
+    c("no tags", "no tags")
+  )
+  for (case in cases) {
+    expect_identical(f(case[1]), case[2], info = case[1])
+  }
+  expect_identical(f(c("<i>a</i>", NA)), c("*a*", NA))
+  expect_identical(f(3), 3)
+})
+
+test_that("cz_item_html_to_markdown skips links and ids, walks nested fields", {
+  item <- list(
+    title = "A <i>b</i> c",
+    URL = "https://x.org/?a=<i>",
+    author = list(list(family = "<i>X</i>")),
+    issued = list(`date-parts` = list(list(2020)))
+  )
+  out <- cz_item_html_to_markdown(item)
+  expect_identical(out$title, "A *b* c")
+  expect_identical(out$URL, "https://x.org/?a=<i>")
+  expect_identical(out$author[[1]]$family, "*X*")
+  expect_identical(out$issued, item$issued)
+})
+
+test_that("a YAML title starting with markdown emphasis round-trips", {
+  txt <- yaml::as.yaml(list(references = list(list(title = "*Abc* d"))))
+  expect_identical(yaml::yaml.load(txt)$references[[1]]$title, "*Abc* d")
+})
