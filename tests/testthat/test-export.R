@@ -338,12 +338,29 @@ test_that("cz_item_html_to_markdown leaves ids, escapes links, walks lists", {
   expect_identical(out$issued, item$issued)
 })
 
+test_that("a short title with a tag cut in two is dropped", {
+  # Zotero cuts short titles at the first colon, splitting
+  # `font-variant:small-caps`
+  item <- list(
+    title = "Using <span style=\"font-variant:small-caps;\">eDNA</span>: x",
+    `title-short` = "Using <span style=\"font-variant",
+    shortTitle = "Using <span style=\"font-variant"
+  )
+  out <- cz_item_html_to_markdown(item)
+  expect_identical(out$title, "Using [eDNA]{.smallcaps}: x")
+  expect_null(out$`title-short`)
+  expect_null(out$shortTitle)
+  ok <- list(`title-short` = "<i>Ynesmexia</i>")
+  expect_identical(cz_item_html_to_markdown(ok)$`title-short`, "*Ynesmexia*")
+})
+
 test_that("cz_render_yaml writes the converted markup as valid YAML", {
   items <- list(list(
     id = "1/ID1",
     type = "article-journal",
     title = "<i>Abc</i> d",
     `container-title` = "[Ecology] & PAUP*",
+    `title-short` = "<span class=\"nocase\">X</span>",
     note = "Citation Key: Key2020\n_eprint: https://x.org/a_b"
   ))
   txt <- cz_render_yaml(items, "Key2020")
@@ -352,6 +369,7 @@ test_that("cz_render_yaml writes the converted markup as valid YAML", {
   expect_identical(ref$`citation-key`, "Key2020")
   expect_identical(ref$title, "*Abc* d")
   expect_identical(ref$`container-title`, "\\[Ecology\\] & PAUP\\*")
+  expect_identical(ref$`title-short`, "[X]{.nocase}")
   expect_identical(ref$note, "\\_eprint: https://x.org/a\\_b")
 })
 
