@@ -17,7 +17,9 @@
 #' `"bib"` (default) writes BibLaTeX using Zotero's own exporter, with each
 #' entry keyed by its pinned citekey; it works with every Quarto output format,
 #' including Typst. `"yaml"` writes CSL-YAML (a `references:` list with `id`
-#' and `citation-key` set to the citekey). The format is inferred from the
+#' and `citation-key` set to the citekey; HTML tags in the text, such as
+#' `<i>`, are converted to Pandoc markdown, which is how Pandoc reads YAML
+#' bibliographies). The format is inferred from the
 #' extension of `out` (`.bib` or `.yaml`/`.yml`).
 #'
 #' @param qmd Documents to scan for `@key` citations. Defaults to every
@@ -233,13 +235,14 @@ cz_resolve_format <- function(out, format) {
 }
 
 # CSL-YAML for the chosen items: the pinned key becomes both `id` and
-# `citation-key`; the key line is dropped from the note (Extra) field.
+# `citation-key`; the key line is dropped from the note (Extra) field; HTML
+# tags in the text fields become Pandoc markdown (`<i>x</i>` -> `*x*`).
 cz_render_yaml <- function(items, keys) {
   items <- Map(function(item, key) {
     item$note <- cz_strip_key_line(item$note)
     item$id <- key
     item[["citation-key"]] <- key
-    item
+    cz_item_html_to_markdown(item)
   }, items, keys)
   items <- unname(items[order(keys, method = "radix")])
   paste0(

@@ -154,3 +154,95 @@ cz_export_bib <- function(auth, ids, keys) {
   out <- vapply(out, cz_html_to_latex, character(1), USE.NAMES = FALSE)
   out[order(keys, method = "radix")]
 }
+
+# CSL-YAML counterpart of `cz_html_to_latex()`. Pandoc reads the strings of a
+# YAML bibliography as markdown (unlike CSL-JSON, where it understands the
+# HTML-ish markup itself), so `<i>` would become raw HTML, which the Typst and
+# docx writers drop. Turn the tags into Pandoc markdown, walking the tags in
+# order with a stack so every closing tag gets the closer of its opener.
+# Unknown tags are dropped and their text kept. Text outside tags is left as
+# it is.
+cz_html_to_markdown <- function(x) {
+  if (!is.character(x)) {
+    return(x)
+  }
+  vapply(x, cz_html_to_markdown1, character(1), USE.NAMES = FALSE)
+}
+
+cz_html_to_markdown1 <- function(s) {
+  if (is.na(s) || !grepl("<", s, fixed = TRUE)) {
+    return(s)
+  }
+  tag_re <- "(?i)</?[a-z][a-z0-9]*\\b[^<>]*?/?>"
+  pos <- gregexpr(tag_re, s, perl = TRUE)[[1]]
+  if (pos[1] == -1) {
+    return(s)
+  }
+  tags <- regmatches(s, list(pos))[[1]]
+  text <- regmatches(s, list(pos), invert = TRUE)[[1]]
+  stack <- character()
+  out <- text[1]
+  for (i in seq_along(tags)) {
+    tg <- tags[i]
+    name <- tolower(sub("^</?([A-Za-z][A-Za-z0-9]*).*$", "\\1", tg))
+    closing <- startsWith(tg, "</")
+    selfclosed <- grepl("/>$", tg)
+    if (closing) {
+      # a closer only for a tag we opened; stray closers are dropped
+      if (length(stack)) {
+        out <- paste0(out, stack[length(stack)])
+        stack <- stack[-length(stack)]
+      }
+    } else if (!selfclosed && !name %in% c("br", "p", "div")) {
+      m <- cz_md_markers(name, tg)
+      out <- paste0(out, m[1])
+      stack <- c(stack, m[2])
+    }
+    out <- paste0(out, text[i + 1])
+  }
+  out
+}
+
+# Opening and closing markdown for one HTML opening tag.
+cz_md_markers <- function(name, tag) {
+  has <- function(re) grepl(re, tag, ignore.case = TRUE, perl = TRUE)
+  switch(name,
+    i = ,
+    em = c("*", "*"),
+    b = ,
+    strong = c("**", "**"),
+    sub = c("~", "~"),
+    sup = c("^", "^"),
+    sc = c("[", "]{.smallcaps}"),
+    span = if (has("\\bnocase\\b")) {
+      c("[", "]{.nocase}")
+    } else if (has("font-variant\\s*:\\s*small-caps")) {
+      c("[", "]{.smallcaps}")
+    } else if (has("font-style\\s*:\\s*italic")) {
+      c("*", "*")
+    } else if (has("font-weight\\s*:\\s*bold")) {
+      c("**", "**")
+    } else {
+      c("", "")
+    },
+    c("", "")
+  )
+}
+
+# Apply `cz_html_to_markdown()` to every string in a CSL item, except the
+# fields where `<` or markup would be wrong (links, ids).
+cz_item_html_to_markdown <- function(x, name = "") {
+  skip <- c("URL", "DOI", "id", "citation-key", "ISBN", "ISSN", "PMID")
+  if (is.list(x)) {
+    nms <- names(x)
+    for (j in seq_along(x)) {
+      nm <- if (is.null(nms) || !nzchar(nms[j])) name else nms[j]
+      x[[j]] <- cz_item_html_to_markdown(x[[j]], nm)
+    }
+    x
+  } else if (name %in% skip) {
+    x
+  } else {
+    cz_html_to_markdown(x)
+  }
+}
