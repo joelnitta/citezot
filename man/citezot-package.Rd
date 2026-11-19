@@ -6,6 +6,8 @@
 \alias{citezot-package}
 \title{citezot: Cite Zotero References in Quarto Documents}
 \description{
+\if{html}{\figure{logo.svg}{options: style='float: right' alt='logo' width='120'}}
+
 Scans Quarto and R Markdown documents for citation keys, pulls the matching items from the Zotero web API, and writes a bibliography file. Also provides dry-run-by-default helpers to find, add, and update Zotero items.
 }
 \seealso{
